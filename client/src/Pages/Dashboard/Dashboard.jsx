@@ -1,0 +1,157 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import { FiUser, FiDollarSign, FiUsers, FiRefreshCw, FiEdit, FiLock, FiHelpCircle, FiGrid, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
+import LoginAlert from '../../Components/AlertPages/LoginAlert';
+import { LogOut } from 'lucide-react';
+
+function Dashboard() {
+    const [allProvider, setAllProvider] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
+    const SessionData = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        return <LoginAlert />;
+    }
+
+    const handleLogOut = () => {
+        sessionStorage.clear()
+        window.location.href = '/'
+    }
+
+    const Provider = JSON.parse(SessionData);
+    const providerId = Provider?._id;
+
+    const fetchProvider = async () => {
+        try {
+            setIsLoading(true);
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`);
+            setAllProvider(data.data);
+        } catch (error) {
+            console.log("Internal server error", error);
+            toast.error(error?.response?.data?.message || 'Internal server error');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProvider();
+    }, []);
+
+    const menuItems = [
+        { icon: <FiRefreshCw className="w-6 h-6" />, title: 'Quick Recharge', description: 'Top up your account', link: '/recharge', color: 'from-blue-400 to-blue-600' },
+        { icon: <FiEdit className="w-6 h-6" />, title: 'Update Profile', description: 'Modify your details', link: '/update-profile', color: 'from-purple-400 to-purple-600' },
+        { icon: <FiLock className="w-6 h-6" />, title: 'Security', description: 'Change password', link: '/change-password', color: 'from-red-400 to-red-600' },
+        { icon: <FiHelpCircle className="w-6 h-6" />, title: 'Support', description: 'Get help', link: '/contact', color: 'from-green-400 to-green-600' },
+        { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' }
+    ];
+
+    return (
+        <div className="min-h-screen bg-gray-50/50">
+            {/* Header Section */}
+            <div className="relative overflow-hidden bg-[#A91E1B] px-6 py-8">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI1MDAgdmlld0JveD0iMCAwIDE0NDAgNTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBvcGFjaXR5PSIwLjA1IiBkPSJNLTI4LjY2NjcgNDkuMzMzM0wxNDQwIDQ5LjMzMzNWNDcwLjY2N0wtMjguNjY2NyA0NzAuNjY3VjQ5LjMzMzNaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXIpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXIiIHgxPSI3MDUuNjY3IiB5MT0iNDkuMzMzMyIgeDI9IjcwNS42NjciIHkyPSI0NzAuNjY3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IndoaXRlIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0id2hpdGUiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPg==')] opacity-10"></div>
+                <div className="relative">
+                    <div className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
+                        <div className="text-center sm:text-left">
+                            <h1 className="text-3xl font-bold text-white mb-2">
+                                {allProvider?.name || 'Welcome Back!'}
+                            </h1>
+                            <div className="flex items-center justify-center sm:justify-start space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                                <FiUser className="text-white" />
+                                <span className="text-white font-medium">ID: {allProvider?._id?.slice(-6) || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div onClick={handleLogOut} className="flex items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                            <LogOut className="text-white" />
+                            <span className="text-white font-medium">Log Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="container mx-auto px-6 -mt-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500 mb-1">Total Earnings</p>
+                                <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.referralEarnings || '0'}</h3>
+                                <p className="text-xs text-green-500 mt-2 flex items-center">
+                                    <FiTrendingUp className="mr-1" />
+                                    +12.5% from last month
+                                </p>
+                            </div>
+                            <div className="bg-blue-500/10 p-3 rounded-full">
+                                <FiDollarSign className="w-8 h-8 text-blue-500" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500 mb-1">Total Referrals</p>
+                                <h3 className="text-2xl font-bold text-gray-900">{allProvider?.referralCount || '0'}</h3>
+                                <p className="text-xs text-green-500 mt-2 flex items-center">
+                                    <FiActivity className="mr-1" />
+                                    +8.2% growth rate
+                                </p>
+                            </div>
+                            <div className="bg-purple-500/10 p-3 rounded-full">
+                                <FiUsers className="w-8 h-8 text-purple-500" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-500 mb-1">Category Earnings</p>
+                                <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.categoryEarnings || '0'}</h3>
+                                <p className="text-xs text-green-500 mt-2 flex items-center">
+                                    <FiPieChart className="mr-1" />
+                                    +15.3% category growth
+                                </p>
+                            </div>
+                            <div className="bg-green-500/10 p-3 rounded-full">
+                                <FiDollarSign className="w-8 h-8 text-green-500" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Quick Actions Grid */}
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 pb-8">
+                    {menuItems.map((item, index) => (
+                        <Link
+                            key={index}
+                            to={item.link}
+                            className="group relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300"
+                        >
+                            <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                            <div className="p-6">
+                                <div className="mb-4">
+                                    <div className="bg-gray-100 group-hover:bg-white/10 rounded-full w-12 h-12 flex items-center justify-center transition-colors duration-300">
+                                        {item.icon}
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-gray-900 transition-colors">
+                                    {item.title}
+                                </h3>
+                                <p className="text-sm text-gray-500 mt-1">{item.description}</p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Dashboard;

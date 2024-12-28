@@ -1,0 +1,31 @@
+/* Custom styles for the OTP Component */
+.otp-container {
+    background: #f8f9fa;
+}
+
+.otp-card {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+}
+
+.otp-card h2 {
+    color: #e53e3e;
+}
+
+.otp-card .btn-primary {
+    background-color: #e53e3e;
+    border-color: #e53e3e;
+}
+
+.otp-card .btn-primary:hover {
+    background-color: #e53e3e;
+}
+
+.otp-card .btn-link {
+    color: #e53e3e;
+}
+
+.otp-card .btn-link:hover {
+    text-decoration: underline;
+}
