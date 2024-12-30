@@ -15,13 +15,15 @@ const upload = multer({
     }
 });
 
+
 const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword } = require('../controllers/vendor.controller');
 const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory } = require('../controllers/category.controller');
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan } = require('../controllers/Member_ship.controller');
 const { DoRecharge, getMyRecharges, getApprovedRecharge } = require('../controllers/Recharge_controller');
 const Protect = require('../middlewares/Protect');
 const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId } = require('../controllers/Bh.controller');
-const { doReffer, getMyReferral } = require('../controllers/Refrreal');
+const { doReffer, getMyReferral, GetRefrealDetailsBy } = require('../controllers/Refrreal');
+const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals } = require('../controllers/Withdraw.controller');
 
 router.post('/register_vendor', upload.any(), registerVendor);
 // upload.fields([
@@ -52,6 +54,16 @@ router.post('/forget-password', forgetPassword);
 router.post('/do-recharge', Protect, DoRecharge);
 router.get('/get-recharge', Protect, getMyRecharges);
 
+
+// Vendor: Create a withdrawal request
+router.post('/create-withdrawal',Protect, createWithdrawal);
+router.put('/approve-withdrawal/:id', approveWithdrawal);
+router.put('/reject-withdrawal/:id', rejectWithdrawal);
+router.put('/cancel-withdrawal/:id', cancelWithdrawal);
+router.get('/withdrawals', getAllWithdrawals);
+router.get('/withdrawal',Protect, getWithdrawalById);
+router.get('/pending-withdrawal', getPendingWithdrawals)
+
 //Create Bh id 
 router.get('/create-bh-id', createBhId);
 router.post('/check-bh-id', checkBhId);
@@ -62,10 +74,12 @@ router.post('/toogle-id', toggleStatus);
 
 
 // do doReffer
-router.post('/do-Reffer',Protect,doReffer)
-router.get('/get-my-referral',Protect,getMyReferral)
+router.post('/do-Reffer', Protect, doReffer)
+router.get('/get-my-referral', Protect, getMyReferral)
 
-router.get('/get-data',getApprovedRecharge)
+router.get('/get-data', getApprovedRecharge)
+router.get('/get-refer-data', GetRefrealDetailsBy)
+
 
 
 

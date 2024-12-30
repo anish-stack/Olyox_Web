@@ -176,7 +176,21 @@ const vendorSchema = new mongoose.Schema({
                 type: String,
                 required: true
             }
+        },
+        documentThird: {
+            image: {
+                type: String,
+                
+            },
+            public_id: {
+                type: String,
+                
+            }
         }
+        
+    },
+    dob:{
+        type:Date,
     },
     wallet: {
         type: Number

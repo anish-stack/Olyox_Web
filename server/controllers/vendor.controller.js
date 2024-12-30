@@ -10,9 +10,8 @@ const BhIdSchema = require('../model/Partner.model.js');
 
 exports.registerVendor = async (req, res) => {
     try {
-        console.log("i am hoit")
         const {
-
+            dob,
             name, VehicleNumber, email, number, password, category,
             aadharNumber,
             panNumber,
@@ -23,7 +22,17 @@ exports.registerVendor = async (req, res) => {
         if (!name || !email || !number || !password || !category) {
             return res.status(400).json({ success: false, message: 'Please enter all fields' });
         }
-        console.log(address.location)
+
+        if (dob) {
+            const dobDate = new Date(dob);
+            const currentDate = new Date();
+            const age = currentDate.getFullYear() - dobDate.getFullYear();
+            const isBeforeBirthday = currentDate < new Date(dobDate.setFullYear(currentDate.getFullYear()));
+
+            if (age < 18 || (age === 18 && isBeforeBirthday)) {
+                return res.status(400).json({ success: false, message: 'Vendor must be at least 18 years old' });
+            }
+        }
 
         // Validate phone number
         if (!/^\d{10}$/.test(number)) {
@@ -91,8 +100,10 @@ exports.registerVendor = async (req, res) => {
         }
 
         // Validate file uploads
-        const imageFileOne = files.find(file => file.fieldname === 'imageone');
-        const imageFileTwo = files.find(file => file.fieldname === 'imagetwo');
+        const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
+        const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
+        const imageFileThree = files.find(file => file.fieldname === 'pancard');
+
         if (!imageFileOne || !imageFileTwo) {
             return res.status(400).json({ success: false, message: 'Please upload both images' });
         }
@@ -100,6 +111,8 @@ exports.registerVendor = async (req, res) => {
         // Upload images to Cloudinary
         const uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne.buffer);
         const uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo.buffer);
+        const uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree.buffer);
+
 
 
         // Generate codes
@@ -142,6 +155,7 @@ exports.registerVendor = async (req, res) => {
             myReferral: genreateReferral,
             Documents: {
                 documentFirst: {
+
                     image: uploadImageOne.secure_url,
                     public_id: uploadImageOne.public_id,
                 },
@@ -149,16 +163,21 @@ exports.registerVendor = async (req, res) => {
                     image: uploadImageTwo.secure_url,
                     public_id: uploadImageTwo.public_id,
                 },
+                documentThird: {
+                    image: uploadImageThree.secure_url,
+                    public_id: uploadImageThree.public_id,
+                },
             },
             referral_code_which_applied,
             is_referral_applied,
             otp_: otp,
+            dob,
             order_id: genreateOrder,
             otp_expire_time: expiryTime,
             member_id,
         });
 
-        
+
         async function addChildToAllParents(vendorId, parentReferralId) {
             if (!parentReferralId) return;
 
