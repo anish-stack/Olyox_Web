@@ -75,7 +75,7 @@ function Dashboard() {
     useEffect(() => {
         fetchReferralsDetaisl()
         fetchProvider();
-    }, []);
+    }, [allProvider?.myReferral]);
 
     const menuItems = [
         { icon: <FiRefreshCw className="w-6 h-6" />, fnd: handleOpen, title: 'Quick Recharge', description: 'Top up your account', color: 'from-blue-400 to-blue-600' },
