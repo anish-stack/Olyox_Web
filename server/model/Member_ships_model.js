@@ -10,13 +10,19 @@ const MembershipPlanSchema = new mongoose.Schema({
         required: true
     },
     description: {},
-    level:{
+    level: {
         type: Number,
         required: true
     },
     includes: {
         type: [String],
         required: true
+    },
+    validityDays: {
+        type: Number,
+    },
+    whatIsThis:{
+        type:String,
     },
     active: {
         type: Boolean,

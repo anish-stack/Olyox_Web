@@ -4,11 +4,16 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { FiUser, FiDollarSign, FiUsers, FiRefreshCw, FiEdit, FiLock, FiHelpCircle, FiGrid, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
 import LoginAlert from '../../Components/AlertPages/LoginAlert';
-import { LogOut } from 'lucide-react';
+import { Coins, LogOut, Outdent, Share, Share2Icon } from 'lucide-react';
+import Recharge_Model from './Recharge_Model';
+import { formatDate } from './formData';
+import ReferralModal from './Refreal.model';
 
 function Dashboard() {
     const [allProvider, setAllProvider] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isOpen, setIsOpen] = useState(false)
+    const [isRefreal, setIsRefreal] = useState(false)
 
     const SessionData = sessionStorage.getItem('user');
     const token = sessionStorage.getItem('token');
@@ -17,6 +22,35 @@ function Dashboard() {
         return <LoginAlert />;
     }
 
+
+    const handleOpen = () => {
+        setIsOpen(true)
+    }
+    const handleClose = () => {
+        setIsOpen(false)
+    }
+    const handleOpenR = ()=>{
+        setIsRefreal(true)
+    }
+    const handleCloseR = ()=>{
+        setIsRefreal(false)
+        }
+        const fetchReferrals = async () => {
+            setLoading(true);
+            setError('');
+            try {
+              const token = sessionStorage.getItem('token');
+              const response = await axios.get('http://localhost:7000/api/v1/get-my-referral', {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              setReferrals(response.data.data);
+              setFilteredReferrals(response.data.data);
+            } catch (err) {
+              setError(err.response?.data?.message || 'Failed to fetch referrals.');
+            } finally {
+              setLoading(false);
+            }
+          }; 
     const handleLogOut = () => {
         sessionStorage.clear()
         window.location.href = '/'
@@ -29,6 +63,7 @@ function Dashboard() {
         try {
             setIsLoading(true);
             const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`);
+            console.log(data)
             setAllProvider(data.data);
         } catch (error) {
             console.log("Internal server error", error);
@@ -38,16 +73,23 @@ function Dashboard() {
         }
     };
 
+  
+
+
     useEffect(() => {
         fetchProvider();
     }, []);
 
     const menuItems = [
-        { icon: <FiRefreshCw className="w-6 h-6" />, title: 'Quick Recharge', description: 'Top up your account', link: '/recharge', color: 'from-blue-400 to-blue-600' },
+        { icon: <FiRefreshCw className="w-6 h-6" />, fnd: handleOpen, title: 'Quick Recharge', description: 'Top up your account', color: 'from-blue-400 to-blue-600' },
         { icon: <FiEdit className="w-6 h-6" />, title: 'Update Profile', description: 'Modify your details', link: '/update-profile', color: 'from-purple-400 to-purple-600' },
         { icon: <FiLock className="w-6 h-6" />, title: 'Security', description: 'Change password', link: '/change-password', color: 'from-red-400 to-red-600' },
         { icon: <FiHelpCircle className="w-6 h-6" />, title: 'Support', description: 'Get help', link: '/contact', color: 'from-green-400 to-green-600' },
-        { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' }
+        { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' },
+        { icon: <Coins className="w-6 h-6" />, title: 'Recharge History', description: 'Check Your Past Recharge', link: '/Recharge-History', color: 'from-indigo-400 to-yellow-600' },
+        { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' }
+
+
     ];
 
     return (
@@ -58,14 +100,44 @@ function Dashboard() {
                 <div className="relative">
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
                         <div className="text-center sm:text-left">
-                            <h1 className="text-3xl font-bold text-white mb-2">
+                            <h1 className="text-3xl font-bold flex gap-3 text-white mb-2">
                                 {allProvider?.name || 'Welcome Back!'}
+                                <p className="text-sm font-bold text-white mb-2">
+                                    <span className="inline-block px-3 py-1 text-xs font-semibold text-white bg-red-500 rounded-full">
+                                        {allProvider?.member_id?.title || 'Plan Expired'}
+                                    </span>
+                                </p>
                             </h1>
-                            <div className="flex items-center justify-center sm:justify-start space-x-2 bg-white/10 rounded-lg px-4 py-2">
-                                <FiUser className="text-white" />
-                                <span className="text-white font-medium">ID: {allProvider?._id?.slice(-6) || 'N/A'}</span>
+                            <p className="text-sm font-bold text-white mb-2">{allProvider?.category?.title}</p>
+
+                            <div className="mb-3 mt-3">
+                                {allProvider?.payment_id?.payment_approved ? (
+                                    new Date(allProvider?.payment_id?.end_date) < new Date() ? (
+                                        <span className="inline-block bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                            Plan Expired
+                                        </span>
+                                    ) : (
+                                        <span className="inline-block bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                                            Plan Expire At: {formatDate(allProvider?.payment_id?.end_date)}
+                                        </span>
+                                    )
+                                ) : null}
+                            </div>
+
+                            <div className="flex items-center cursor-pointer justify-between sm:justify-start space-x-4 bg-gradient-to-r from-red-700 to-red-600 rounded-lg px-6 py-3 shadow-lg">
+                                <div onClick={handleOpenR} className="flex items-center space-x-2">
+                                    <FiUser className="text-white text-lg" />
+                                    <span className="text-white font-semibold text-sm">
+                                        Referral Code: {allProvider?.myReferral || 'N/A'}
+                                    </span>
+                                </div>
+                                <div onClick={() => message(allProvider?.myReferral)} className="flex items-center space-x-2">
+                                    <span className="text-white text-xs font-medium">Share</span>
+                                    <Share2Icon className="text-white text-lg" />
+                                </div>
                             </div>
                         </div>
+
                         <div onClick={handleLogOut} className="flex items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
                             <LogOut className="text-white" />
                             <span className="text-white font-medium">Log Out</span>
@@ -78,7 +150,7 @@ function Dashboard() {
             <div className="container mx-auto px-6 -mt-12">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Total Earnings</p>
                                 <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.referralEarnings || '0'}</h3>
@@ -94,7 +166,7 @@ function Dashboard() {
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                        <div className="flex items-center justify-between">
+                        <a href="/get-my-referral"  className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Total Referrals</p>
                                 <h3 className="text-2xl font-bold text-gray-900">{allProvider?.referralCount || '0'}</h3>
@@ -106,11 +178,11 @@ function Dashboard() {
                             <div className="bg-purple-500/10 p-3 rounded-full">
                                 <FiUsers className="w-8 h-8 text-purple-500" />
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Category Earnings</p>
                                 <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.categoryEarnings || '0'}</h3>
@@ -132,6 +204,7 @@ function Dashboard() {
                         <Link
                             key={index}
                             to={item.link}
+                            onClick={item?.fnd}
                             className="group relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300"
                         >
                             <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
@@ -150,6 +223,8 @@ function Dashboard() {
                     ))}
                 </div>
             </div>
+            <ReferralModal isOpen={isRefreal} onClose={handleCloseR} referralCode={allProvider?.myReferral} vendor_id={allProvider?._id} />
+            <Recharge_Model isOpen={isOpen} onClose={handleClose} user_id={allProvider?._id} alreadySelectedMember_id={allProvider?.member_id?._id} />
         </div>
     );
 }
