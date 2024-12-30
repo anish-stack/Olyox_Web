@@ -5,21 +5,25 @@ const SendEmailService = require('../service/SendEmail.Service.js');
 const crypto = require('crypto');
 const sendToken = require('../utils/SendToken.js');
 const bcrypt = require('bcrypt');
+const BhIdSchema = require('../model/Partner.model.js');
 // Register a vendor and send a verification email
+
 exports.registerVendor = async (req, res) => {
     try {
-        console.log(req.body);
+        console.log("i am hoit")
         const {
+
             name, VehicleNumber, email, number, password, category,
+            aadharNumber,
+            panNumber,
             address, referral_code_which_applied, is_referral_applied = false, member_id
         } = req.body;
 
-        const files = req.files;
-        console.log(files);
-
+        const files = req.files || [];
         if (!name || !email || !number || !password || !category) {
             return res.status(400).json({ success: false, message: 'Please enter all fields' });
         }
+        console.log(address.location)
 
         // Validate phone number
         if (!/^\d{10}$/.test(number)) {
@@ -29,23 +33,54 @@ exports.registerVendor = async (req, res) => {
             });
         }
 
-        // Parse and validate coordinates
-        let coordinatesArray;
-        try {
-            const coordinatesString = address.location.coordinates;
-            coordinatesArray = typeof coordinatesString === 'string'
-                ? JSON.parse(coordinatesString).map(coord => parseFloat(coord))
-                : coordinatesString;
 
-            if (!Array.isArray(coordinatesArray) || coordinatesArray.length !== 2) {
-                throw new Error('Invalid coordinates format.');
+
+        // Validate address and coordinates
+        if (!address || !address.location || !address.location.coordinates) {
+            return res.status(400).json({
+                success: false,
+                message: 'Address or location coordinates are missing',
+            });
+        }
+
+        // Check if the coordinates field is a string
+        let coordinatesArray = [];
+
+        if (
+            address?.location?.coordinates &&
+            typeof address.location.coordinates === 'string'
+        ) {
+            // Parse the string into an array
+            try {
+                coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
+            } catch (error) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid coordinates format. Unable to parse string to array.',
+                });
             }
-        } catch (err) {
+        } else if (
+            address?.location?.coordinates &&
+            Array.isArray(address.location.coordinates) &&
+            address.location.coordinates.length === 2
+        ) {
+            // If coordinates are already in an array format, use them as is
+            coordinatesArray = address.location.coordinates.map(coord => parseFloat(coord));
+        }
+
+        // Final validation to ensure the coordinates are a valid array of two numbers
+        if (
+            !Array.isArray(coordinatesArray) ||
+            coordinatesArray.length !== 2 ||
+            coordinatesArray.some(isNaN)
+        ) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid coordinates format. Expected [longitude, latitude].',
             });
         }
+
+        console.log('Normalized Coordinates:', coordinatesArray);
 
         address.location.coordinates = coordinatesArray;
 
@@ -56,22 +91,41 @@ exports.registerVendor = async (req, res) => {
         }
 
         // Validate file uploads
-        const imageFileOne = req.files.find(file => file.fieldname === 'imageone');
-        const imageFileTwo = req.files.find(file => file.fieldname === 'imagetwo');
-
+        const imageFileOne = files.find(file => file.fieldname === 'imageone');
+        const imageFileTwo = files.find(file => file.fieldname === 'imagetwo');
         if (!imageFileOne || !imageFileTwo) {
             return res.status(400).json({ success: false, message: 'Please upload both images' });
         }
-
-        // Generate OTP
-        const otpService = new OtpService();
-        const { otp, expiryTime } = otpService.generateOtp();
 
         // Upload images to Cloudinary
         const uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne.buffer);
         const uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo.buffer);
 
+
+        // Generate codes
+        const otpService = new OtpService();
+        const { otp, expiryTime } = otpService.generateOtp();
         const genreateOrder = crypto.randomBytes(16).toString('hex');
+        function generateBhId() {
+            const randomNum = crypto.randomInt(100000, 999999);
+            return `BH${randomNum}`;
+        }
+
+        const genreateReferral = generateBhId()
+        const insertBh = new BhIdSchema({
+            BhId: genreateReferral,
+        })
+
+        let checkReferral = null;
+        let checkReferralFromBh = null;
+
+        if (referral_code_which_applied) {
+            checkReferral = await Vendor_Model.findOne({ myReferral: referral_code_which_applied });
+        } else {
+            checkReferralFromBh = await BhIdSchema.findOne({ BhId: referral_code_which_applied });
+        }
+
+
 
         // Save vendor to the database
         const vendor = new Vendor_Model({
@@ -80,8 +134,12 @@ exports.registerVendor = async (req, res) => {
             number,
             password,
             VehicleNumber,
+            parentReferral_id: checkReferral?._id,
             category,
             address,
+            aadharNumber,
+            panNumber,
+            myReferral: genreateReferral,
             Documents: {
                 documentFirst: {
                     image: uploadImageOne.secure_url,
@@ -97,9 +155,38 @@ exports.registerVendor = async (req, res) => {
             otp_: otp,
             order_id: genreateOrder,
             otp_expire_time: expiryTime,
-            member_id
+            member_id,
         });
 
+        
+        async function addChildToAllParents(vendorId, parentReferralId) {
+            if (!parentReferralId) return;
+
+            const parentReferral = await Vendor_Model.findById(parentReferralId);
+            if (parentReferral) {
+                if (!parentReferral.Child_referral_ids.includes(vendorId)) {
+                    parentReferral.Child_referral_ids.push(vendorId);
+                    await parentReferral.save();
+                }
+
+                if (parentReferral.parentReferral_id) {
+                    await addChildToAllParents(vendorId, parentReferral.parentReferral_id);
+                }
+            }
+        }
+
+        if (checkReferral && checkReferral.isActive) {
+            checkReferral.Child_referral_ids.push(vendor._id);
+            await addChildToAllParents(vendor._id, checkReferral.parentReferral_id);
+            await checkReferral.save();
+        }
+
+        if (checkReferralFromBh) {
+            checkReferralFromBh.vendorIds.push(vendor._id);
+            await checkReferralFromBh.save();
+        }
+
+        await insertBh.save();
         await vendor.save();
 
         res.status(201).json({
@@ -108,39 +195,60 @@ exports.registerVendor = async (req, res) => {
             data: vendor,
             type: 'email',
             email: vendor.email,
-            time: vendor?.otp_expire_time
+            time: vendor.otp_expire_time,
         });
     } catch (error) {
         console.error('Error registering vendor:', error);
         res.status(500).json({
             success: false,
             message: 'Vendor registration failed',
-            error: error.message,
+            error: error.message || 'An unexpected error occurred',
         });
     }
 };
 
-
 exports.verifyVendorEmail = async (req, res) => {
     try {
         const { email, otp, type } = req.body;
-        const vendor = await Vendor_Model.findOne({ email });
 
+        // Validate input
+        if (!email || !otp) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email, OTP are required.',
+            });
+        }
+
+        // Check if vendor exists
+        const vendor = await Vendor_Model.findOne({ email });
         if (!vendor) {
-            return res.status(404).json({ success: false, message: 'Vendor not found' });
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found. Please check the email and try again.',
+            });
         }
 
         if (type === 'email') {
+            // Handle email verification
             if (vendor.isEmailVerified) {
-                return res.status(400).json({ success: false, message: 'Email already verified' });
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is already verified.',
+                });
             }
 
             if (vendor.otp_ !== otp) {
-                return res.status(401).json({ success: false, message: 'Invalid OTP' });
+                return res.status(401).json({
+                    success: false,
+                    message: 'The provided OTP is invalid. Please check and try again.',
+                });
             }
 
             if (vendor.otp_expire_time && new Date() > vendor.otp_expire_time) {
-                return res.status(401).json({ success: false, message: 'OTP has expired' });
+                return res.status(401).json({
+                    success: false,
+                    message: 'The OTP has expired. Please request a new OTP.',
+                });
             }
 
             // Update vendor's email verified status
@@ -149,29 +257,62 @@ exports.verifyVendorEmail = async (req, res) => {
             vendor.otp_expire_time = null;
 
             await vendor.save();
-            return res.status(200).json({ success: true, message: 'Email verified successfully' });
-        } else {
+
+            return res.status(200).json({
+                success: true,
+                message: 'Email has been verified successfully.',
+            });
+
+        } else if (type === 'password') {
+            // Handle password OTP verification
             if (vendor.password_otp !== otp) {
-                return res.status(401).json({ success: false, message: 'Invalid OTP' });
+                return res.status(401).json({
+                    success: false,
+                    message: 'The provided OTP is invalid. Please check and try again.',
+                });
             }
 
             if (vendor.password_otp_expire && new Date() > vendor.password_otp_expire) {
-                return res.status(401).json({ success: false, message: 'OTP has expired' });
+                return res.status(401).json({
+                    success: false,
+                    message: 'The OTP has expired. Please request a new OTP.',
+                });
             }
 
-            // Clear password OTP data
+            // Clear password OTP and update password if temporary password exists
             vendor.password_otp = null;
             vendor.password_otp_expire = null;
 
+            if (vendor.temp_password) {
+                vendor.password = vendor.temp_password;
+                vendor.temp_password = null;
+            }
+
             await vendor.save();
-            return res.status(200).json({ success: true, message: 'Password OTP verified successfully' });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Password OTP verified successfully. Your password has been updated.',
+            });
+
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid type. Please provide a valid type (email or password).',
+            });
         }
 
     } catch (error) {
         console.error('Error verifying vendor email:', error);
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+
+        // Provide a user-friendly error message
+        return res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred while verifying your email or OTP. Please try again later.',
+        });
     }
 };
+
 
 exports.resendOtp = async (req, res) => {
     try {
@@ -226,11 +367,19 @@ exports.loginVendor = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ success: false, message: 'Please provide both email and password' });
         }
-
-        const vendor = await Vendor_Model.findOne({ email }).populate('category', 'Profile_id');
+        let vendor = await Vendor_Model.findOne({ myReferral: email }).populate('category', 'Profile_id');
         if (!vendor) {
-            return res.status(404).json({ success: false, message: 'Vendor not found' });
+            vendor = await Vendor_Model.findOne({ number: email }).populate('category', 'Profile_id');
         }
+
+
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found. Please check your email or number and try again.',
+            });
+        }
+
 
         const isPasswordMatch = await vendor.comparePassword(password);
         if (!isPasswordMatch) {
@@ -259,7 +408,7 @@ exports.getSingleProvider = async (req, res) => {
     try {
         // console.log("i am hit")
         const { id } = req.params;
-        const provider = await Vendor_Model.findById(id).select('-password').populate('category').populate('member_id').populate('order_id');
+        const provider = await Vendor_Model.findById(id).select('-password').populate('category').populate('member_id').populate('payment_id');
         if (!provider) {
             return res.status(400).json({
                 success: false,
@@ -309,9 +458,7 @@ exports.changeVendorCategory = async (req, res) => {
 // Change vendor's password
 exports.changeVendorPassword = async (req, res) => {
     try {
-        console.log('i am hit')
         const { email, oldPassword, newPassword } = req.body;
-        console.log('body',req.body)
 
         if (!email || !oldPassword || !newPassword) {
             return res.status(400).json({ success: false, message: 'Please provide email, old password, and new password' });
@@ -366,42 +513,66 @@ exports.deleteVendorAccount = async (req, res) => {
 exports.updateVendorDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log("i am hit ",id,req.body)
-        const { name, email, number, password, category, address, referral_code_which_applied, is_referral_applied, member_id, VehicleNumber } = req.body;
-        // console.log('object', req.body)
-        // Find the vendor by email or number
-        // const vendor = await Vendor_Model.findOne({ $or: [{ email }, { number }] });
-        const vendor = await Vendor_Model.findById(id)
+        const {
+            name,
+            email,
+            number,
+            password,
+            category,
+            address,
+            referral_code_which_applied,
+            is_referral_applied,
+            member_id,
+            VehicleNumber,
+        } = req.body;
+
+        console.log(category)
+        // Find the vendor by ID
+        const vendor = await Vendor_Model.findById(id);
 
         if (!vendor) {
             return res.status(404).json({ success: false, message: 'Vendor not found' });
         }
 
-        // Update only the fields that are provided in the request
+        // Check if the provided number is already used by another vendor
+        if (number) {
+            const existingVendor = await Vendor_Model.findOne({ number });
+            if (existingVendor && existingVendor._id.toString() !== id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Number already exists',
+                });
+            }
+            vendor.number = number; // Update the vendor's number
+        }
+
+        // Update vendor fields if they are provided
         if (name) vendor.name = name;
         if (email) vendor.email = email;
-        if (number) vendor.number = number;
         if (VehicleNumber) vendor.VehicleNumber = VehicleNumber;
-        if (password) vendor.password = password; // you may want to hash the password here before saving
+        if (password) {
+            // Hash the password before saving (use a hashing library like bcrypt)
+            vendor.password = password; // Replace with hashed password
+        }
         if (category) vendor.category = category;
         if (address) vendor.address = address;
         if (referral_code_which_applied !== undefined) vendor.referral_code_which_applied = referral_code_which_applied;
         if (is_referral_applied !== undefined) vendor.is_referral_applied = is_referral_applied;
         if (member_id) vendor.member_id = member_id;
 
-        // Save the updated vendor details
+        // Save the updated vendor
         await vendor.save();
-        // console.log("vendor",vendor)
-        res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             message: 'Vendor details updated successfully',
             vendor,
         });
     } catch (error) {
         console.error('Error updating vendor details:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: 'Vendor details update failed',
+            message: 'An error occurred while updating vendor details. Please try again later.',
             error: error.message,
         });
     }
@@ -449,6 +620,69 @@ exports.updatePassword = async (req, res) => {
             success: false,
             message: 'Internal server error',
             error: error.message,
+        });
+    }
+};
+
+
+exports.forgetPassword = async (req, res) => {
+    try {
+        const { number, newPassword } = req.body;
+
+        if (!number || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Number and new password are required.',
+            });
+        }
+
+        // Find the vendor by number
+        const vendor = await Vendor_Model.findOne({ number });
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found. Please check the number and try again.',
+            });
+        }
+
+        // Generate OTP and expiry time
+        const otpService = new OtpService();
+        const { otp, expiryTime } = otpService.generateOtp();
+
+        // Send OTP via email
+        const emailService = new SendEmailService();
+        const emailData = {
+            to: vendor.email, // Assuming vendor.email is available
+            subject: 'Reset your Password',
+            text: `Your OTP for password reset is: ${otp}`,
+        };
+
+        try {
+            await emailService.sendEmail(emailData);
+        } catch (emailError) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send OTP email. Please try again later.',
+            });
+        }
+
+        // Save OTP and expiry time in the database
+        vendor.password_otp = otp;
+        vendor.password_otp_expire = expiryTime;
+        vendor.temp_password = newPassword
+        await vendor.save();
+        // Respond with success
+        return res.status(200).json({
+            success: true,
+            email: vendor.email,
+            time: vendor?.password_otp_expire,
+            message: 'OTP has been sent to your email. Please check your inbox.',
+        });
+    } catch (error) {
+        console.error('Error in forgetPassword:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred. Please try again later.',
         });
     }
 };

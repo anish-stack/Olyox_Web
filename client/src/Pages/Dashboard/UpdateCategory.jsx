@@ -49,8 +49,9 @@ function UpdateCategory() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.post(`http://localhost:7000/api/v1/update_account/${providerId}`, formData);
+            await axios.put(`http://localhost:7000/api/v1/update_account/${providerId}`, formData);
             toast.success('Category updated successfully');
+            window.location.href="/Dashboard"
         } catch (error) {
             console.log("Internal server error", error);
             toast.error(error.response?.data?.message || 'Failed to update category');

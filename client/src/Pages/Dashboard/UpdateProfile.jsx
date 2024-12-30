@@ -114,30 +114,29 @@ function UpdateProfile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const updatedData = new FormData();
+        // const updatedData = new FormData();
 
-        Object.entries(formData).forEach(([key, value]) => {
-            if (key === 'address') {
-                Object.entries(value).forEach(([addressKey, addressValue]) => {
-                    if (addressKey === 'location') {
-                        updatedData.append(`address[${addressKey}][type]`, addressValue.type);
-                        updatedData.append(`address[${addressKey}][coordinates]`, JSON.stringify(addressValue.coordinates));
-                    } else {
-                        updatedData.append(`address[${addressKey}]`, addressValue);
-                    }
-                });
-            } else {
-                updatedData.append(key, value);
-            }
-        });
+        // Object.entries(formData).forEach(([key, value]) => {
+        //     if (key === 'address') {
+        //         Object.entries(value).forEach(([addressKey, addressValue]) => {
+        //             if (addressKey === 'location') {
+        //                 updatedData.append(`address[${addressKey}][type]`, addressValue.type);
+        //                 updatedData.append(`address[${addressKey}][coordinates]`, JSON.stringify(addressValue.coordinates));
+        //             } else {
+        //                 updatedData.append(`address[${addressKey}]`, addressValue);
+        //             }
+        //         });
+        //     } else {
+        //         updatedData.append(key, value);
+        //     }
+        // });
 
         try {
-            const response = await axios.put(`http://localhost:7000/api/v1/update_account/${providerId}`, updatedData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const response = await axios.put(`http://localhost:7000/api/v1/update_account/${providerId}`, formData);
             if (response.data.success) {
                 toast.success('Profile updated successfully');
             }
+            window.location.href="/dashboard"
         } catch (error) {
             console.log("Internal server error", error)
             toast.error(error?.response?.data?.message || 'Update failed');

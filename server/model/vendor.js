@@ -8,6 +8,9 @@ const vendorSchema = new mongoose.Schema({
         required: [true, 'Name is required'],
         trim: true
     },
+    bhId: {
+        type: String,
+    },
     email: {
         type: String,
         required: [true, 'Email is required'],
@@ -25,6 +28,9 @@ const vendorSchema = new mongoose.Schema({
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters long']
     },
+    temp_password: {
+        type: String
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
@@ -32,15 +38,15 @@ const vendorSchema = new mongoose.Schema({
     address: {
         area: {
             type: String,
-          
+
         },
         street_address: {
             type: String,
-            
+
         },
         landmark: {
             type: String,
-          
+
         },
         location: {
             type: {
@@ -54,10 +60,14 @@ const vendorSchema = new mongoose.Schema({
         },
         pincode: {
             type: String,
-          
+
         }
     },
     workMode: {
+        type: Boolean,
+        default: false
+    },
+    isShownToUser: {
         type: Boolean,
         default: false
     },
@@ -69,25 +79,34 @@ const vendorSchema = new mongoose.Schema({
         default: false
     },
     payment_id: {
-        type: String,
-        default: null
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Recharge',
     },
     isActive: {
         type: Boolean,
         default: true
     },
     member_id: {
-        type: String,
-        required: [true, 'Member ID is required']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MembershipPlan',
     },
-    referral_ids: {
-        type: [mongoose.Schema.Types.ObjectId],
+    parentReferral_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    },
+
+    Child_referral_ids: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor',
         default: []
-    },
+    }],
     is_referral_applied: {
         type: Boolean,
         default: false
+    },
+    myReferral: {
+        type: String,
+        default: null
     },
     referral_code_which_applied: {
         type: String
@@ -96,8 +115,12 @@ const vendorSchema = new mongoose.Schema({
         type: String
     },
     level_id: {
-        type: String,
-        default: null
+        type: Number,
+        default: 0
+    },
+    recharge: {
+        type: Number,
+        default: 0
     },
     otp_: {
         type: String,
@@ -120,6 +143,7 @@ const vendorSchema = new mongoose.Schema({
         default: null,
         ref: 'partner',
     },
+
     is_top_member: {
         type: Boolean,
         default: false
@@ -149,6 +173,16 @@ const vendorSchema = new mongoose.Schema({
                 required: true
             }
         }
+    },
+    wallet: {
+        type: Number
+    },
+
+    aadharNumber: {
+        type: String,
+    },
+    panNumber: {
+        type: String,
     },
     Profile_id: {
         type: mongoose.Schema.Types.ObjectId,

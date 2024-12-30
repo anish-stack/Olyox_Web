@@ -62,6 +62,9 @@ const Header = () => {
                         <Link to={'/contact'} className="text-gray-600 hover:text-blue-600 transition-colors">
                             Contact
                         </Link>
+                        <Link to={'/bh'} className="bg-[#e4313d] text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
+                            Register
+                        </Link>
                         {/* Desktop Auth Button */}
                         <AuthButton />
                     </div>
@@ -70,9 +73,8 @@ const Header = () => {
 
             {/* Mobile Menu */}
             <div
-                className={`fixed inset-y-0 left-0 w-64 h-[100vh] bg-white shadow-lg transform ${
-                    isOpen ? 'translate-x-0' : '-translate-x-full'
-                } transition-transform duration-300 ease-in-out md:hidden z-50`}
+                className={`fixed inset-y-0 left-0 w-64 h-[100vh] bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : '-translate-x-full'
+                    } transition-transform duration-300 ease-in-out md:hidden z-50`}
             >
                 <div className="p-6 space-y-6 bg-white">
                     <button onClick={toggleMenu} className="text-gray-600">

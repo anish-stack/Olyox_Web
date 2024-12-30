@@ -39,8 +39,10 @@ const Otp = () => {
                 "http://localhost:7000/api/v1/verify_email",
                 formData
             );
-            console.log(response);
+
             toast.success(response.data.message || "OTP verified successfully!");
+            window.location.href = `/login`
+
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to verify OTP.");
         } finally {

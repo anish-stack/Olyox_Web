@@ -3,13 +3,13 @@ const MembershipPlan = require('../model/Member_ships_model');
 // Create a new membership plan
 exports.createMembershipPlan = async (req, res) => {
     try {
-        const { title, price, description, level, includes, active } = req.body;
+        const { title, price, description,validityDays, level, includes,whatIsThis, active } = req.body;
 
         if (!title || !price || !level || !includes) {
             return res.status(400).json({ success: false, message: 'Title, price, level, and includes are required' });
         }
 
-        const plan = await MembershipPlan.create({ title, price, description, level, includes, active });
+        const plan = await MembershipPlan.create({ title,validityDays,whatIsThis, price, description, level, includes, active });
         res.status(201).json({ success: true, message: 'Membership plan created successfully', data: plan });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to create membership plan', error: error.message });

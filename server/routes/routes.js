@@ -15,9 +15,13 @@ const upload = multer({
     }
 });
 
-const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword } = require('../controllers/vendor.controller');
+const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword } = require('../controllers/vendor.controller');
 const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory } = require('../controllers/category.controller');
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan } = require('../controllers/Member_ship.controller');
+const { DoRecharge, getMyRecharges, getApprovedRecharge } = require('../controllers/Recharge_controller');
+const Protect = require('../middlewares/Protect');
+const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId } = require('../controllers/Bh.controller');
+const { doReffer, getMyReferral } = require('../controllers/Refrreal');
 
 router.post('/register_vendor', upload.any(), registerVendor);
 // upload.fields([
@@ -37,11 +41,31 @@ router.post('/change_Vendor_Category', changeVendorCategory);
 router.post('/change_Vendor_Password', changeVendorPassword);
 router.delete('/delete_account', deleteVendorAccount);
 router.put('/update_account/:id', updateVendorDetails);
-router.get('/get_Single_Provider/:id',getSingleProvider);
+router.get('/get_Single_Provider/:id', getSingleProvider);
+
+
+router.post('/forget-password', forgetPassword);
+
 // router.put('/update_password/:id', updatePassword);
 
+//Recharge Crud ROutes
+router.post('/do-recharge', Protect, DoRecharge);
+router.get('/get-recharge', Protect, getMyRecharges);
+
+//Create Bh id 
+router.post('/create-bh-id', createBhId);
+router.post('/check-bh-id', checkBhId);
+
+router.put('/update/:id', updateBhId);
+router.post('/delete-id', deleteBhId);
+router.post('/toogle-id', toggleStatus);
 
 
+// do doReffer
+router.post('/do-Reffer',Protect,doReffer)
+router.get('/get-my-referral',Protect,getMyReferral)
+
+router.get('/get-data',getApprovedRecharge)
 
 
 
@@ -54,11 +78,11 @@ router.delete('/categories/:id', deleteCategory);
 
 
 // membership plan CRUD routes
-router.post('/membership-plans-create', createMembershipPlan); 
-router.get('/membership-plans', getAllMembershipPlans); 
-router.get('/membership-plans/:id', getMembershipPlanById); 
-router.put('/membership-plans/:id', updateMembershipPlan); 
-router.delete('/membership-plans/:id', deleteMembershipPlan); 
+router.post('/membership-plans-create', createMembershipPlan);
+router.get('/membership-plans', getAllMembershipPlans);
+router.get('/membership-plans/:id', getMembershipPlanById);
+router.put('/membership-plans/:id', updateMembershipPlan);
+router.delete('/membership-plans/:id', deleteMembershipPlan);
 
 
 
