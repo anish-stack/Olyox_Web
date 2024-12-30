@@ -53,7 +53,7 @@ router.post('/do-recharge', Protect, DoRecharge);
 router.get('/get-recharge', Protect, getMyRecharges);
 
 //Create Bh id 
-router.post('/create-bh-id', createBhId);
+router.get('/create-bh-id', createBhId);
 router.post('/check-bh-id', checkBhId);
 
 router.put('/update/:id', updateBhId);

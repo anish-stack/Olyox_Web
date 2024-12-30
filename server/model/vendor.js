@@ -86,6 +86,10 @@ const vendorSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    plan_status:{
+        type: Boolean,
+        default: false
+    },
     member_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'MembershipPlan',

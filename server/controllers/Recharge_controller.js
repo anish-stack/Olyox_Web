@@ -144,7 +144,7 @@ exports.getApprovedRecharge = async (req, res) => {
         if (!recharge_id) {
             return res.status(400).json({
                 success: false,
-                message: "Recharge ID is required."
+                message: "Recharge ID is required.",
             });
         }
 
@@ -153,7 +153,7 @@ exports.getApprovedRecharge = async (req, res) => {
         if (!rechargeData) {
             return res.status(404).json({
                 success: false,
-                message: "Recharge not found."
+                message: "Recharge not found.",
             });
         }
 
@@ -163,7 +163,7 @@ exports.getApprovedRecharge = async (req, res) => {
         if (!vendor) {
             return res.status(404).json({
                 success: false,
-                message: "Vendor associated with this recharge not found."
+                message: "Vendor associated with this recharge not found.",
             });
         }
 
@@ -174,7 +174,7 @@ exports.getApprovedRecharge = async (req, res) => {
         if (!rechargeVendor) {
             return res.status(404).json({
                 success: false,
-                message: "Vendor who completed the recharge not found."
+                message: "Vendor who completed the recharge not found.",
             });
         }
 
@@ -188,7 +188,7 @@ exports.getApprovedRecharge = async (req, res) => {
         if (isNaN(rechargeAmount)) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid recharge amount."
+                message: "Invalid recharge amount.",
             });
         }
 
@@ -196,11 +196,18 @@ exports.getApprovedRecharge = async (req, res) => {
         if (referringPerson) {
             referringPerson.wallet = referringPerson.wallet || 0;
 
-            const commission = Number(rechargeAmount) * (rechargeVendor.recharge > 1 ? SECOND_RECHARGE_COMMISONS : FIRST_RECHARGE_COMMISONS) / 100;
+            const commission =
+                (Number(rechargeAmount) *
+                    (rechargeVendor.recharge > 1
+                        ? SECOND_RECHARGE_COMMISONS
+                        : FIRST_RECHARGE_COMMISONS)) /
+                100;
             console.log("commission", commission);
             if (isNaN(commission)) {
                 console.error("Calculated commission is not a valid number:", commission);
-                return res.status(500).json({ message: "Error calculating commission." });
+                return res
+                    .status(500)
+                    .json({ message: "Error calculating commission." });
             }
 
             referringPerson.wallet += commission;
@@ -220,42 +227,44 @@ exports.getApprovedRecharge = async (req, res) => {
         const commissionPercentage = 2; // 2% commission
         const commissionToParent = (rechargeAmount * commissionPercentage) / 100;
 
+        console.log("referringPerson?._id", referringPerson?._id);
+
         const updatedParents = []; // Initialize updatedParents array
+        const filterOutReferId = parentsOfRechargeVendor.filter(
+            (item) => item._id.toString() !== referringPerson?._id.toString()
+        );
 
-        // Filter out the referring person from parentsOfRechargeVendor
-        const filterOutReferId = parentsOfRechargeVendor.filter((item) => item._id.toString() !== referringPerson?._id.toString());
-        console.log(parentsOfRechargeVendor.length)
-        // Process top 5 parent vendors
-        for (let i = 0; i < Math.min(filterOutReferId.length, 5); i++) {
-            const parentVendor = filterOutReferId[i];
+        console.log(
+            "Remaining parent vendor IDs (excluding referring person):",
+            filterOutReferId.map((vendor) => vendor._id)
+        );
 
-            if (parentVendor) {
-                parentVendor.wallet = parentVendor.wallet || 0;
 
-                parentVendor.wallet += commissionToParent;
+        const top5Parents = filterOutReferId.slice(-5);
+        const checkHereStauts = top5Parents.filter((item) => item.plan_status === true)
 
-                await parentVendor.save();
+        for (const parentVendor of checkHereStauts.reverse()) {
+            parentVendor.wallet = parentVendor.wallet || 0;
+            parentVendor.wallet += commissionToParent;
+            await parentVendor.save();
+            updatedParents.push(parentVendor);
 
-                // Track the updated parent vendor for response or further logging
-                updatedParents.push(parentVendor);
-                console.log(`Updated wallet for parent vendor ${parentVendor._id}: ${parentVendor.wallet}`);
-            } else {
-                console.log(`Parent vendor ${parentVendor._id} is already in the child referral list.`);
-            }
+            console.log(
+                `Updated wallet for parent vendor ${parentVendor._id}: ${parentVendor.wallet}`
+            );
         }
+        rechargeData.payment_approved = true
+        rechargeVendor.plan_status = true
 
-        // Log the remaining parent vendor IDs
-        console.log("Remaining parent vendor IDs (excluding referring person):", filterOutReferId.map(item => item._id));
-
-        // Log details
-        console.log('Updated Wallet Money:', referringPerson?.wallet || 0);
+        await rechargeData.save()
+        await rechargeVendor.save()
 
         res.status(200).json({
             success: true,
             message: "Recharge fetched and processed successfully.",
             data: rechargeData,
             referringPerson: referringPerson,
-            updatedParents: updatedParents
+            updatedParents: updatedParents,
         });
     } catch (error) {
         console.error("Error fetching approved recharge:", error);
