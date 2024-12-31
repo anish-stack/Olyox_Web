@@ -4,13 +4,15 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { FiUser, FiDollarSign, FiUsers, FiRefreshCw, FiEdit, FiLock, FiHelpCircle, FiGrid, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
 import LoginAlert from '../../Components/AlertPages/LoginAlert';
-import { Coins, LogOut, Outdent, Share, Share2Icon } from 'lucide-react';
+import { Coins, CoinsIcon, LogOut, Outdent, Share, Share2Icon, UserPlus } from 'lucide-react';
 import Recharge_Model from './Recharge_Model';
 import { formatDate } from './formData';
 import ReferralModal from './Refreal.model';
 
 function Dashboard() {
     const [allProvider, setAllProvider] = useState({});
+    const [allRefreal, setAllRefreal] = useState([]);
+
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false)
     const [isRefreal, setIsRefreal] = useState(false)
@@ -29,28 +31,13 @@ function Dashboard() {
     const handleClose = () => {
         setIsOpen(false)
     }
-    const handleOpenR = ()=>{
+    const handleOpenR = () => {
         setIsRefreal(true)
     }
-    const handleCloseR = ()=>{
+    const handleCloseR = () => {
         setIsRefreal(false)
-        }
-        const fetchReferrals = async () => {
-            setLoading(true);
-            setError('');
-            try {
-              const token = sessionStorage.getItem('token');
-              const response = await axios.get('http://localhost:7000/api/v1/get-my-referral', {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              setReferrals(response.data.data);
-              setFilteredReferrals(response.data.data);
-            } catch (err) {
-              setError(err.response?.data?.message || 'Failed to fetch referrals.');
-            } finally {
-              setLoading(false);
-            }
-          }; 
+    }
+
     const handleLogOut = () => {
         sessionStorage.clear()
         window.location.href = '/'
@@ -73,21 +60,32 @@ function Dashboard() {
         }
     };
 
-  
+    const fetchReferralsDetaisl = async () => {
+        try {
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+            console.log(data.data)
+            setAllRefreal(data.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
 
     useEffect(() => {
+        fetchReferralsDetaisl()
         fetchProvider();
-    }, []);
+    }, [allProvider?.myReferral]);
 
     const menuItems = [
         { icon: <FiRefreshCw className="w-6 h-6" />, fnd: handleOpen, title: 'Quick Recharge', description: 'Top up your account', color: 'from-blue-400 to-blue-600' },
         { icon: <FiEdit className="w-6 h-6" />, title: 'Update Profile', description: 'Modify your details', link: '/update-profile', color: 'from-purple-400 to-purple-600' },
         { icon: <FiLock className="w-6 h-6" />, title: 'Security', description: 'Change password', link: '/change-password', color: 'from-red-400 to-red-600' },
         { icon: <FiHelpCircle className="w-6 h-6" />, title: 'Support', description: 'Get help', link: '/contact', color: 'from-green-400 to-green-600' },
-        { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' },
+        // { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' },
         { icon: <Coins className="w-6 h-6" />, title: 'Recharge History', description: 'Check Your Past Recharge', link: '/Recharge-History', color: 'from-indigo-400 to-yellow-600' },
-        { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' }
+        { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' },
+        { icon: <UserPlus className="w-6 h-6" />, title: 'Refrreral History', description: ' Past and present Refrreral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' }
 
 
     ];
@@ -138,9 +136,12 @@ function Dashboard() {
                             </div>
                         </div>
 
-                        <div onClick={handleLogOut} className="flex items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
-                            <LogOut className="text-white" />
-                            <span className="text-white font-medium">Log Out</span>
+                        <div>
+
+                            <div onClick={handleLogOut} className="flex items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                                <LogOut className="text-white" />
+                                <span className="text-white font-medium">Log Out</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -153,7 +154,7 @@ function Dashboard() {
                         <div className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Total Earnings</p>
-                                <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.referralEarnings || '0'}</h3>
+                                <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.wallet || '0'}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiTrendingUp className="mr-1" />
                                     +12.5% from last month
@@ -166,10 +167,10 @@ function Dashboard() {
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                        <a href="/get-my-referral"  className="flex items-center cursor-pointer justify-between">
+                        <a href="/get-my-referral" className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Total Referrals</p>
-                                <h3 className="text-2xl font-bold text-gray-900">{allProvider?.referralCount || '0'}</h3>
+                                <h3 className="text-2xl font-bold text-gray-900">{allRefreal?.length || '0'}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiActivity className="mr-1" />
                                     +8.2% growth rate

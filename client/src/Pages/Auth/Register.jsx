@@ -15,6 +15,7 @@ const Register = () => {
         name: 'a',
         VehicleNumber: '',
         email: 'a#gmail.com',
+        reEmail: '',
         number: '7458966985',
         password: '123456789',
         category: '',
@@ -28,13 +29,16 @@ const Register = () => {
                 coordinates: []
             }
         },
-        aadharNumber: 'ssssssss',
-        panNumber: 'ssssssssss',
+        dob: null,
+        // aadharNumber: 'ssssssss',
+        // panNumber: 'ssssssssss',
         referral_code_which_applied: '',
         is_referral_applied: false,
         member_id: '',
         imageone: null,
         imageTwo: null,
+        imageThree: null,
+
     });
 
 
@@ -85,8 +89,29 @@ const Register = () => {
 
     const validateForm = () => {
         const newErrors = {};
+        const currentDate = new Date();
         if (!formData.name.trim()) newErrors.name = 'Please enter your name.';
-        if (!formData.email.trim()) newErrors.email = 'Please provide your email address.';
+        if (!formData.dob) {
+            newErrors.dob = 'Please enter your date of birth.';
+        } else {
+            const dobDate = new Date(formData.dob);
+            const age = currentDate.getFullYear() - dobDate.getFullYear();
+            const isBeforeBirthday = currentDate < new Date(dobDate.setFullYear(currentDate.getFullYear()));
+
+            if (age < 18 || (age === 18 && isBeforeBirthday)) {
+                newErrors.dob = 'You must be at least 18 years old.';
+            }
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = 'Please provide your email address.';
+        }
+        if (!formData.reEmail.trim()) {
+            newErrors.reEmail = 'Please provide your Re-Enter Email address.';
+        } else if (formData.email.trim() && formData.email !== formData.reEmail) {
+            newErrors.reEmail = 'Email does not match.';
+        }
+
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Please enter a valid email address (e.g., user@example.com).';
         if (!formData.number.trim()) newErrors.number = 'Please enter your phone number.';
         if (!/^\d{10}$/.test(formData.number)) newErrors.number = 'Phone number must be exactly 10 digits.';
@@ -187,7 +212,8 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // if (!validateForm()) return;
+        if (!validateForm()) return;
+        
 
         setSubmitting(true);
         const updatedData = new FormData();
@@ -202,7 +228,7 @@ const Register = () => {
                         updatedData.append(`address[${addressKey}]`, addressValue);
                     }
                 });
-            } else if (key === 'imageone' || key === 'imagetwo') {
+            } else if (key === 'aadharfront' || key === 'aadharback' || key === 'pancard') {
                 if (value) {
                     updatedData.append(key, value);
                 }
@@ -270,105 +296,94 @@ const Register = () => {
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-6">
                     {/* Name and Email Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
-                                    } px-3 py-2 border`}
-                            />
-                            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
-                                    } px-3 py-2 border`}
-                            />
-                            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-                        </div>
-                    </div>
-
-                    {/* Phone and Password Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="number" className="block text-sm font-medium text-gray-700">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="number"
-                                name="number"
-                                value={formData.number}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.number ? 'border-red-500' : 'border-gray-300'
-                                    } px-3 py-2 border`}
-                            />
-                            {errors.number && <p className="mt-1 text-sm text-red-600">{errors.number}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
-                                    } px-3 py-2 border`}
-                            />
-                            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-                        </div>
-                    </div>
-
-                    {/* Category and Vehicle Number Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
-                            <select
-                                id="category"
-                                name="category"
-                                value={formData.category}
-                                onChange={handleSelect}
-                                className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.category ? 'border-red-500' : 'border-gray-300'
-                                    } px-3 py-2 border`}
-                            >
-                                <option value="">Select a category</option>
-                                {categories.map((category, index) => (
-                                    <option key={index} value={category._id}>{category.title}</option>
-                                ))}
-                            </select>
-                            {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
-                        </div>
-
-                        {formData.category === '676ef9685c75082fcbc59c4f' && (
+                    <div className="bg-gray-50 px-3 pt-2">
+                        <h4 className="text-xl text-gray-900 font-bold">Basic Information</h4>
+                        <div className="grid py-5  px-3 grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="VehicleNumber" className="block text-sm font-medium text-gray-700">Vehicle Number</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
                                 <input
                                     type="text"
-                                    id="VehicleNumber"
-                                    name="VehicleNumber"
-                                    value={formData.VehicleNumber}
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+                                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
                                 />
+                                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                             </div>
-                        )}
+                            <div>
+                                <label htmlFor="dob" className="block text-sm font-medium text-gray-700">DOB</label>
+                                <input
+                                    type="date"
+                                    id="dob"
+                                    name="dob"
+                                    value={formData.dob}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.dob ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                />
+                                {errors.dob && <p className="mt-1 text-sm text-red-600">{errors.dob}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                />
+                                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="reemail" className="block text-sm font-medium text-gray-700">Re-Enter Email</label>
+                                <input
+                                    type="email"
+                                    id="reEmail"
+                                    name="reEmail"
+                                    value={formData.reEmail}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                />
+                                {errors.reEmail && <p className="mt-1 text-sm text-red-600">{errors.reEmail}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="number" className="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    id="number"
+                                    name="number"
+                                    value={formData.number}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.number ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                />
+                                {errors.number && <p className="mt-1 text-sm text-red-600">{errors.number}</p>}
+                            </div>
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                />
+                                {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Address Section */}
                     <div className="bg-gray-50 p-6 rounded-lg space-y-6">
-                        <h3 className="text-lg font-medium text-gray-900">Address Details</h3>
+                        <h4 className="text-xl text-gray-900 font-bold">Address Details</h4>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label htmlFor="address.area" className="block text-sm font-medium text-gray-700">Area</label>
@@ -453,32 +468,129 @@ const Register = () => {
                         </div>
                     </div>
 
-                    <div className="flex gap-3 justify-between mt-4">
-                        <div className="w-full">
-                            <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700">Aadhaar No</label>
-                            <input
-                                type="text"
-                                id="aadharNumber"
-                                name="aadharNumber"
-                                value={formData.aadharNumber}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
-                            />
+                    {/* Phone and Password Row */}
+                    <div className="bg-gray-50 p-3 rounded-lg space-y-6">
+                        <h4 className="text-xl font-bold text-gray-900">Other Important Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                            <div>
+                                <label htmlFor="member_id" className="block text-sm font-medium text-gray-700">
+                                    Membership Plan (Pay after registration from Dashboard)
+                                </label>
+                                <select
+                                    id="member_id"
+                                    name="member_id"
+                                    value={formData.member_id}
+                                    onChange={handleSelect}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.member_id ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                >
+                                    <option value="">Select a membership plan</option>
+                                    {memberships.map((plan, index) => (
+                                        <option key={index} value={plan._id}>  <span style={{ fontWeight: 'bold' }}>{plan.title}</span>
+                                            <span>/ Rs: <strong>{plan?.price}</strong></span>
+                                            <span> Plan Valid Upto <strong>{plan?.validityDays}</strong></span>
+                                            <span> {plan?.whatIsThis}</span></option>
+                                    ))}
+                                </select>
+                                {errors.member_id && <p className="mt-1 text-sm text-red-600">{errors.member_id}</p>}
+                            </div>
+
+                            <div>
+                                <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
+                                <select
+                                    id="category"
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleSelect}
+                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.category ? 'border-red-500' : 'border-gray-300'
+                                        } px-3 py-2 border`}
+                                >
+                                    <option value="">Select a category</option>
+                                    {categories.map((category, index) => (
+                                        <option key={index} value={category._id}>{category.title}</option>
+                                    ))}
+                                </select>
+                                {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
+                            </div>
+
                         </div>
 
-                        <div className="w-full">
-                            <label htmlFor="panNumber" className="block text-sm font-medium text-gray-700">Pan Card No</label>
-                            <input
-                                type="text"
-                                id="panNumber"
-                                name="panNumber"
-                                value={formData.panNumber}
-                                onChange={handleChange}
-                                className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500  px-3 py-2 border`}
-                            />
-                        </div>
+                        {/* Category and Vehicle Number Row */}
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
 
+
+                            {formData.category === '676ef9685c75082fcbc59c4f' && (
+                                <div>
+                                    <label htmlFor="VehicleNumber" className="block text-sm font-medium text-gray-700">Vehicle Number</label>
+                                    <input
+                                        type="text"
+                                        id="VehicleNumber"
+                                        name="VehicleNumber"
+                                        value={formData.VehicleNumber}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label htmlFor="aadharfront" className="block text-sm font-medium text-gray-700">Aadhaar Front</label>
+                                <input
+                                    type="file"
+                                    id="aadharfront"
+                                    name="aadharfront"
+                                    onChange={handleFileUpload}
+                                    accept="image/*"
+                                    className="mt-1 block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-indigo-50 file:text-indigo-700
+            hover:file:bg-indigo-100"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="aadharback" className="block text-sm font-medium text-gray-700">Aadhaar Back</label>
+                                <input
+                                    type="file"
+                                    id="aadharback"
+                                    name="aadharback"
+                                    onChange={handleFileUpload}
+                                    accept="image/*"
+                                    className="mt-1 block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-indigo-50 file:text-indigo-700
+            hover:file:bg-indigo-100"
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="pancard" className="block text-sm font-medium text-gray-700">Pan Card</label>
+                                <input
+                                    type="file"
+                                    id="pancard"
+                                    name="pancard"
+                                    onChange={handleFileUpload}
+                                    accept="image/*"
+                                    className="mt-1 block w-full text-sm text-gray-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-md file:border-0
+            file:text-sm file:font-semibold
+            file:bg-indigo-50 file:text-indigo-700
+            hover:file:bg-indigo-100"
+                                />
+                            </div>
+                        </div>
                     </div>
+
+
+
                     {/* Referral Section */}
                     {/* <div className="space-y-4">
                         <div className="flex items-center">
@@ -510,66 +622,8 @@ const Register = () => {
                         )}
                     </div> */}
 
-                    {/* Membership Plan */}
-                    <div>
-                        <label htmlFor="member_id" className="block text-sm font-medium text-gray-700">
-                            Membership Plan (Pay after registration from Dashboard)
-                        </label>
-                        <select
-                            id="member_id"
-                            name="member_id"
-                            value={formData.member_id}
-                            onChange={handleSelect}
-                            className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.member_id ? 'border-red-500' : 'border-gray-300'
-                                } px-3 py-2 border`}
-                        >
-                            <option value="">Select a membership plan</option>
-                            {memberships.map((plan, index) => (
-                                <option key={index} value={plan._id}>  <span style={{ fontWeight: 'bold' }}>{plan.title}</span>
-                                    <span>/ Rs: <strong>{plan?.price}</strong></span>
-                                    <span> Plan Valid Upto <strong>{plan?.validityDays}</strong></span>
-                                    <span> {plan?.whatIsThis}</span></option>
-                            ))}
-                        </select>
-                        {errors.member_id && <p className="mt-1 text-sm text-red-600">{errors.member_id}</p>}
-                    </div>
 
-                    {/* Image Upload Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label htmlFor="imageone" className="block text-sm font-medium text-gray-700">Aadhaar</label>
-                            <input
-                                type="file"
-                                id="imageone"
-                                name="imageone"
-                                onChange={handleFileUpload}
-                                accept="image/*"
-                                className="mt-1 block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-indigo-50 file:text-indigo-700
-                                    hover:file:bg-indigo-100"
-                            />
-                        </div>
 
-                        <div>
-                            <label htmlFor="imagetwo" className="block text-sm font-medium text-gray-700">Pan Card</label>
-                            <input
-                                type="file"
-                                id="imagetwo"
-                                name="imagetwo"
-                                onChange={handleFileUpload}
-                                accept="image/*"
-                                className="mt-1 block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-md file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-indigo-50 file:text-indigo-700
-                                    hover:file:bg-indigo-100"
-                            />
-                        </div>
-                    </div>
 
                     {/* Submit Button */}
                     <div className="pt-4">
