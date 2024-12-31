@@ -21,6 +21,7 @@ import Recharge_History from './Pages/Dashboard/Recharge_History.jsx'
 import Withdrawals from './Pages/Dashboard/Withdrawals.jsx'
 import BhVerification from './Pages/Auth/Bh.Verifcication.jsx'
 import Allreferral from './Pages/Dashboard/Allreferral.jsx'
+import AllReferral from './Pages/Dashboard/Allreferral.jsx'
 // import About from './Pages/About/About'
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
 
         <Route path='/Recharge-History' element={<Recharge_History />} />
         <Route path='/Withdrawals-History' element={<Withdrawals />} />
+        <Route path='/Refrreral-History' element={<AllReferral />} />
 
 
 

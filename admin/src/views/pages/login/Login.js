@@ -35,7 +35,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:7000/admin-login', formData);
+      const res = await axios.post('https://olyox.digital4now.in/admin-login', formData);
       // console.log('Response:', res.data);
 
       // const { token, user } = res.data;

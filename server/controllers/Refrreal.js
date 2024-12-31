@@ -14,6 +14,10 @@ exports.doReffer = async (req, res) => {
             return res.status(400).json({ message: "You have already referred this number" })
         }
 
+        const checkVendors = await vendor.findOne({ number: contactNumber })
+        if(checkVendors){
+            return res.status(400).json({ message: "Vendor already exists With This Number" })
+        }
         const createActiveReferral = new ActiveReferral({
             contactNumber: contactNumber,
             state: state,
@@ -57,7 +61,7 @@ exports.getMyReferral = async (req, res) => {
 
 exports.getAllReferal = async(req,res) => {
     try {
-        const referral = await ActiveReferral.find().populate('vendor_id')
+        const referral = await ActiveReferral.find().populate('vendor_id').sort({createdAt:-1})
         if (referral.length === 0) {
             return res.status(400).json({ message: "No referrals found" })
         }

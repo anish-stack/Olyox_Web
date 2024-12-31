@@ -1,4 +1,6 @@
 const Vendor_Model = require('../model/vendor.js');
+const ActiveReferral_Model = require('../model/activereferal.js');
+
 const UploadService = require('../service/cloudinary.service.js');
 const OtpService = require('../service/Otp_Send.Service.js');
 const SendEmailService = require('../service/SendEmail.Service.js');
@@ -124,6 +126,8 @@ exports.registerVendor = async (req, res) => {
             return `BH${randomNum}`;
         }
 
+        const emailService = new SendEmailService();
+
         const genreateReferral = generateBhId()
         const insertBh = new BhIdSchema({
             BhId: genreateReferral,
@@ -138,9 +142,6 @@ exports.registerVendor = async (req, res) => {
             checkReferralFromBh = await BhIdSchema.findOne({ BhId: referral_code_which_applied });
         }
 
-
-
-        // Save vendor to the database
         const vendor = new Vendor_Model({
             name,
             email,
@@ -205,6 +206,21 @@ exports.registerVendor = async (req, res) => {
             await checkReferralFromBh.save();
         }
 
+        const find = await ActiveReferral_Model.findOne({ contactNumber: number })
+
+        if (find) {
+            find.isRegistered = true
+            await find.save()
+        }
+
+
+        const emailData = {
+            to: email,
+            text: `Your OTP is ${otp}`,
+        };
+        emailData.subject = 'Verify your email';
+        await emailService.sendEmail(emailData);
+
         await insertBh.save();
         await vendor.save();
 
@@ -226,6 +242,9 @@ exports.registerVendor = async (req, res) => {
     }
 };
 
+
+
+
 exports.verifyVendorEmail = async (req, res) => {
     try {
         const { email, otp, type } = req.body;
@@ -239,7 +258,7 @@ exports.verifyVendorEmail = async (req, res) => {
         }
 
         // Check if vendor exists
-        const vendor = await Vendor_Model.findOne({ email });
+        const vendor = await Vendor_Model.findOne({ email }).populate('member_id', 'category');
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -274,6 +293,35 @@ exports.verifyVendorEmail = async (req, res) => {
             vendor.isEmailVerified = true;
             vendor.otp_ = null;
             vendor.otp_expire_time = null;
+            const emailService = new SendEmailService();
+
+            const emailData = {
+                to: email,
+                text: `        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="color: #4CAF50; text-align: center;">Welcome to Olyox Pvt Ltd!</h2>
+            <p>Dear <strong>${vendor.name || 'Vendor'}</strong>,</p>
+            <p>Congratulations on completing your onboarding process with us!</p>
+            <p><strong>Here are your details:</strong></p>
+            <ul style="list-style: none; padding: 0;">
+                <li><strong>Vendor BH ID:</strong> ${vendor.myReferral}</li>
+                <li><strong>Plan:</strong> ${vendor.member_id?.title || 'Not Assigned'}</li>
+                <li><strong>Category:</strong> ${vendor.category?.title || 'Not Specified'}</li>
+                <li><strong>Mobile Number:</strong> ${vendor.number || 'Not Provided'}</li>
+            </ul>
+            <p style="color: #e74c3c;"><strong>Note:</strong> Please ensure to recharge your ID from your dashboard to continue enjoying our services.</p>
+            <p style="text-align: center;">
+                <a href="${process.env.FrontEndUrl}/login" 
+                   style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #4CAF50; text-decoration: none; border-radius: 5px;">
+                   Go to Dashboard
+                </a>
+            </p>
+                     <p>Best Regards,<br>Olyox Pvt Ltd</p>
+
+        </div>
+`,
+            };
+            emailData.subject = 'onboarding complete';
+            await emailService.sendEmail(emailData);
 
             await vendor.save();
 

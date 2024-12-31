@@ -9,7 +9,7 @@ const BhVerification = () => {
     const checkBhId = async () => {
         try {
             setError(null);
-            const { data } = await axios.post('http://localhost:7000/api/v1/check-bh-id', { bh });
+            const { data } = await axios.post('https://olyox.digital4now.in/api/v1/check-bh-id', { bh });
             setResponse(data);
             setTimeout(() => {
                 window.location.href = `/register?bh_id=${bh}`

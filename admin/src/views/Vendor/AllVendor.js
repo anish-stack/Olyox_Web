@@ -30,7 +30,7 @@ function AllVendor() {
     const handleFetchBanner = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:7000/api/v1/all_vendor');
+            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/all_vendor');
             const allData = data.data;
             setCategory(allData.reverse() || []);
         } catch (error) {
@@ -45,7 +45,7 @@ function AllVendor() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`http://localhost:7000/api/v1/update_vendor_status/${id}`, {
+            const res = await axios.put(`https://olyox.digital4now.in/api/v1/update_vendor_status/${id}`, {
                 isActive: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -61,7 +61,7 @@ function AllVendor() {
     const handleDeleteBanner = async (email) => {
         setLoading(true);
         try {
-            const res = await axios.delete('http://localhost:7000/api/v1/delete_account', {
+            const res = await axios.delete('https://olyox.digital4now.in/api/v1/delete_account', {
                 data: { email },
             });
             toast.success(res?.data?.message);
