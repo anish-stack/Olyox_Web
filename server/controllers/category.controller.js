@@ -80,3 +80,33 @@ exports.deleteCategory = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to delete category', error: error.message });
     }
 };
+
+exports.updateCategoryToggle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        const updatedCategory = await Category.findById(id);
+        if (!updatedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Category not found',
+                error: 'Category not found'
+            })
+        }
+        updatedCategory.isActive = isActive;
+        await updatedCategory.save();
+        console.log("object",updatedCategory)
+        res.status(200).json({
+            success: true,
+            message: 'Category status updated successfully',
+            data: updatedCategory
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update category toggle',
+            error: error.message
+        })
+    }
+}

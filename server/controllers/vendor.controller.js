@@ -705,3 +705,56 @@ exports.forgetPassword = async (req, res) => {
         });
     }
 };
+
+exports.getAllVendor = async (req, res) => {
+    try {
+        const allVednor = await Vendor_Model.find().populate('Child_referral_ids').populate('category').populate('member_id').populate('payment_id');;
+        if (!allVednor) {
+            return res.status(400).json({
+                success: false,
+                message: 'No vendor found',
+                error: 'No vendor found',
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            data: allVednor
+        })
+    } catch (error) {
+        console.error('Error in forgetPassword:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred. Please try again later.',
+        });
+    }
+}
+
+exports.updateVendorIsActive = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        const updatedCategory = await Vendor_Model.findById(id);
+        if (!updatedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found',
+                error: 'Vendor not found'
+            })
+        }
+        updatedCategory.isActive = isActive;
+        await updatedCategory.save();
+        // console.log("object",updatedCategory)
+        res.status(200).json({
+            success: true,
+            message: 'Vendor Active status updated successfully',
+            data: updatedCategory
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update vendor toggle',
+            error: error.message
+        })
+    }
+}

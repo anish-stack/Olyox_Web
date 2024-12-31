@@ -34,8 +34,15 @@ const RechargeSchema = new Schema({
     isRechargeEnd: {
         type: Boolean,
     },
+    cancelReason:{
+        type:String
+    },
     payment_approved_date: {
         type: Date,
+    },
+    isCancelPayment:{
+        type:Boolean,
+        default:false
     }
 },{timestamps:true});
 

@@ -55,6 +55,28 @@ exports.getMyReferral = async (req, res) => {
     }
 }
 
+exports.getAllReferal = async(req,res) => {
+    try {
+        const referral = await ActiveReferral.find().populate('vendor_id')
+        if (referral.length === 0) {
+            return res.status(400).json({ message: "No referrals found" })
+        }
+        res.status(200).json({
+            message: "Referrals found successfully",
+            success: true,
+            data: referral
+        })
+
+    } catch (error) {
+        console.log(error?.message)
+        res.status(501).json({
+            message: "Referrals not found ",
+            success: false,
+            error: error?.message
+        })
+    }
+}
+
 exports.GetRefrealDetailsBy = async (req, res) => {
     try {
         const { id } = req.query

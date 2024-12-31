@@ -13,21 +13,21 @@ const redisClient = redis.createClient({
     url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
 });
 
-(async () => {
-    redisClient.on("error", (err) => {
-        console.log(err)
-    });
+// (async () => {
+//     redisClient.on("error", (err) => {
+//         console.log(err)
+//     });
 
-    redisClient.on("ready", () => console.log("Redis is ready"));
+//     redisClient.on("ready", () => console.log("Redis is ready"));
 
-    try {
-        await redisClient.connect();
-        await redisClient.ping();
-        app.locals.redis = redisClient;
-    } catch (err) {
-        console.log(err)
-    }
-})();
+//     try {
+//         await redisClient.connect();
+//         await redisClient.ping();
+//         app.locals.redis = redisClient;
+//     } catch (err) {
+//         console.log(err)
+//     }
+// })();
 
 
 app.use(cors());
@@ -70,6 +70,21 @@ app.get("/Flush-all-Redis-Cached", async (req, res) => {
 
 
 app.use("/api/v1", router);
+
+app.post('/admin-login', (req, res) => {
+    console.log(req.body)
+    const { email, password } = req.body;
+    const defaultEmail = process.env.ADMIN_EMAIL || "admin@gmail.com"
+    const defaultPassword = process.env.ADMIN_PASSWORD || "olyox@admin";
+
+    console.log(defaultEmail)
+    if (email === defaultEmail && password === defaultPassword) {
+
+        res.json({ message: 'Login successful', login: true })
+    } else {
+        res.status(401).json({ message: 'Invalid credentials' })
+    }
+})
 
 
 

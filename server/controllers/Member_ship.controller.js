@@ -80,3 +80,33 @@ exports.deleteMembershipPlan = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to delete membership plan', error: error.message });
     }
 };
+
+exports.updateMembershipStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { active } = req.body;
+        const updatedCategory = await MembershipPlan.findById(id);
+        if (!updatedCategory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Membership is not found',
+                error: 'Membership is not found'
+            })
+        }
+        updatedCategory.active = active;
+        await updatedCategory.save();
+        console.log("object",updatedCategory)
+        res.status(200).json({
+            success: true,
+            message: 'Membership status updated successfully',
+            data: updatedCategory
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update membership toggle',
+            error: error.message
+        })
+    }
+}

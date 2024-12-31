@@ -276,3 +276,80 @@ exports.getApprovedRecharge = async (req, res) => {
     }
 };
 
+exports.getAllRecharge = async (req, res) => {
+    try {
+        const rechargeData = await Recharge_Model.find().populate('member_id').populate('vendor_id')
+        if (!rechargeData) {
+            return res.status(400).json({
+                success: false,
+                message: "No recharge found",
+                error: 'No recharge found'
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: "Recharge fetched successfully.",
+            data: rechargeData
+        });
+    } catch (error) {
+        console.error("Error fetching approved recharge:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching the recharge.",
+            error: error.message || "Unexpected error occurred.",
+        });
+    }
+}
+
+exports.cancelRecharge = async (req, res) => {
+    try {
+        const recharge_id = req.query?._id;
+        const { cancelReason, isCancelPayment } = req.body;
+
+        // Validate recharge ID
+        if (!recharge_id) {
+            return res.status(400).json({
+                success: false,
+                message: "Recharge ID is required.",
+            });
+        }
+
+        // Fetch recharge data and populate the vendor details
+        const rechargeData = await Recharge_Model.findById(recharge_id).populate('vendor_id');
+        if (!rechargeData) {
+            return res.status(404).json({
+                success: false,
+                message: "Recharge not found.",
+            });
+        }
+        // Check if recharge is already cancelled
+        if (rechargeData.isCancelPayment) {
+            return res.status(400).json({
+                success: false,
+                message: "Recharge is already cancelled.",
+                error: "Recharge is already cancelled.",
+            });
+        }
+        // Check if recharge is already completed
+        if (rechargeData.payment_approved) {
+            return res.status(400).json({
+                success: false,
+                message: "Recharge is already completed.",
+                error: "Recharge is already completed.",
+            });
+        }
+
+        rechargeData.isCancelPayment = isCancelPayment
+        rechargeData.cancelReason = cancelReason
+        await rechargeData.save()
+        res.json({
+            success: true,
+            message: "Recharge cancelled successfully.",
+            });
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Server error. Please try again later.", error: error.message });
+    }
+}
