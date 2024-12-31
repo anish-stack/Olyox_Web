@@ -23,7 +23,7 @@ function AddCategory() {
 
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:7000/api/v1/categories_create', formData);
+            const res = await axios.post('https://olyox.digital4now.in/api/v1/categories_create', formData);
             toast.success(res.data.message);
             // Reset the form
             setFormData({

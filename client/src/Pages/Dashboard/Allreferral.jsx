@@ -18,7 +18,7 @@ const AllReferral = () => {
     setError('');
     try {
       const token = sessionStorage.getItem('token');
-      const response = await axios.get('http://localhost:7000/api/v1/get-my-referral', {
+      const response = await axios.get('https://olyox.digital4now.in/api/v1/get-my-referral', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReferrals(response.data.data);
@@ -172,25 +172,25 @@ const AllReferral = () => {
                     <UserX className="w-5 h-5 text-red-500" />
                   )}
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center text-gray-600">
                     <span className="font-medium w-32">Contact:</span>
                     <span>{referral.contactNumber}</span>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-600">
                     <span className="font-medium w-32">State:</span>
                     <span>{referral.state}</span>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-600">
                     <span className="font-medium w-32">Recharge:</span>
                     <span className={referral.isRecharge ? 'text-green-600' : 'text-red-600'}>
-                      {referral.isRecharge ? 'Yes' : 'No'}
+                      {referral.isRecharge ? 'First recharge Completed' : 'First recharge Not Completed'}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center text-gray-600">
                     <span className="font-medium w-32">Created:</span>
                     <span>{new Date(referral.createdAt).toLocaleDateString()}</span>
@@ -202,6 +202,14 @@ const AllReferral = () => {
                     <p className="text-yellow-700 text-sm">
                       This referral is not registered yet.
                     </p>
+                  </div>
+                )}
+                {referral.isRegistered && !referral.isRecharge && (
+                  <div className="mt-4 py-2 px-3 bg-green-200 rounded-lg">
+                    <p className="text-gray-900 text-sm">
+                      This referral has registered but has not completed their first recharge yet.
+                    </p>
+
                   </div>
                 )}
               </div>
@@ -218,11 +226,10 @@ const AllReferral = () => {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className={`px-4 py-2 rounded-lg transition-colors ${currentPage === page
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
               >
                 {page}
               </button>

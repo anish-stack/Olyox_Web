@@ -2,6 +2,7 @@ const Recharge_Model = require('../model/Recharge.model')
 const VendorModel = require('../model/vendor')
 const PlansModel = require('../model/Member_ships_model')
 const SendEmailService = require('../service/SendEmail.Service')
+const ActiveReferral_Model = require('../model/activereferal.js');
 
 const FIRST_RECHARGE_COMMISONS = 7
 const SECOND_RECHARGE_COMMISONS = 2
@@ -62,6 +63,12 @@ exports.DoRecharge = async (req, res) => {
             end_date: endDate
         });
 
+        const find = await ActiveReferral_Model.findOne({ contactNumber: checkVendor.number })
+
+        if (checkVendor.recharge === 1) {
+            find.isRecharge = true
+        }
+        await find.save()
         checkVendor.payment_id = rechargeData?._id
         checkVendor.recharge += 1
         checkVendor.member_id = checkPlanIsValidOrNot?._id
@@ -71,7 +78,7 @@ exports.DoRecharge = async (req, res) => {
 
         const emailService = new SendEmailService();
         const emailData = {
-            to: process.env.ADMIN_EMAIL,
+            to: process.env.ADMIN_OTHER_EMAIL,
             text: `<div style="font-family: Arial, sans-serif; line-height: 1.5; color: black;">
                     <h2 style="color: red; text-align: center;">Payment Notification</h2>
                     <p>Dear Admin,</p>
@@ -93,7 +100,7 @@ exports.DoRecharge = async (req, res) => {
         };
 
         emailData.subject = 'Payment Received Notification';
-        // await emailService.sendEmail(emailData);
+        await emailService.sendEmail(emailData);
 
         return res.status(200).json({
             message: "Recharge successful! Your payment will be approved within 30 minutes. Thank you for your patience!",
@@ -278,7 +285,7 @@ exports.getApprovedRecharge = async (req, res) => {
 
 exports.getAllRecharge = async (req, res) => {
     try {
-        const rechargeData = await Recharge_Model.find().populate('member_id').populate('vendor_id')
+        const rechargeData = await Recharge_Model.find().populate('member_id').populate('vendor_id').sort({ createdAt: -1 })
         if (!rechargeData) {
             return res.status(400).json({
                 success: false,
@@ -345,7 +352,7 @@ exports.cancelRecharge = async (req, res) => {
         res.json({
             success: true,
             message: "Recharge cancelled successfully.",
-            });
+        });
 
 
     } catch (error) {

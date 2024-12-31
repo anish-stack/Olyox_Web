@@ -49,7 +49,7 @@ function Dashboard() {
     const fetchProvider = async () => {
         try {
             setIsLoading(true);
-            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`);
+            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${providerId}`);
             console.log(data)
             setAllProvider(data.data);
         } catch (error) {
@@ -62,7 +62,7 @@ function Dashboard() {
 
     const fetchReferralsDetaisl = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:7000/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
             console.log(data.data)
             setAllRefreal(data.data)
         } catch (error) {
