@@ -24,7 +24,7 @@ function EditMember() {
   useEffect(() => {
     const fetchMembershipPlan = async () => {
       try {
-        const res = await axios.get(`https://olyox.digital4now.in/api/v1/membership-plans/${id}`);
+        const res = await axios.get(`http://localhost:7000/api/v1/membership-plans/${id}`);
         setFormData({
           title: res.data.data.title,
           price: res.data.data.price,
@@ -61,7 +61,7 @@ function EditMember() {
 
     setLoading(true);
     try {
-      const res = await axios.put(`https://olyox.digital4now.in/api/v1/membership-plans/${id}`, formDataToSend);
+      const res = await axios.put(`http://localhost:7000/api/v1/membership-plans/${id}`, formDataToSend);
       toast.success(res.data.message);
       // history.push('/membership-plans'); // Redirect to the membership plans list page
     } catch (error) {
@@ -111,51 +111,53 @@ function EditMember() {
               onChange={handleChange}
             />
           </CCol>
-          <CCol md={12} className="mt-3">
-            <CFormLabel htmlFor="validityDays">Validity (in days)</CFormLabel>
-            <CFormInput
-              id="validityDays"
-              name="validityDays"
-              type="number"
-              placeholder="Enter validity in days"
-              value={formData.validityDays}
-              onChange={handleChange}
-            />
-          </CCol>
-          <CCol md={12} className="mt-3">
-            <CFormLabel htmlFor="level">Level</CFormLabel>
-            <CFormSelect
-              id="level"
-              name="level"
-              value={formData.level}
-              onChange={(e) => setFormData({ ...formData, level: Number(e.target.value) })}
-            >
-              <option value="">Select Level</option>
-              <option value="1">Basic</option>
-              <option value="2">Premium</option>
-              <option value="3">VIP</option>
-            </CFormSelect>
-          </CCol>
-          <CCol md={12} className="mt-3">
-            <CFormLabel htmlFor="includes">Includes (use comma to separate)</CFormLabel>
-            <CFormTextarea
-              id="includes"
-              name="includes"
-              placeholder="Enter included features"
-              value={formData.includes}
-              onChange={handleChange}
-            />
-          </CCol>
-          <CCol md={12} className="mt-3">
-            <CFormLabel htmlFor="whatIsThis">What is this?</CFormLabel>
-            <CFormTextarea
-              id="whatIsThis"
-              name="whatIsThis"
-              placeholder="Enter details about the plan"
-              value={formData.whatIsThis}
-              onChange={handleChange}
-            />
-          </CCol>
+      <CCol md={12} className="mt-3">
+                   <CFormLabel htmlFor="validityDays">Validity Of Plan</CFormLabel>
+                   <CFormInput
+                     id="validityDays"
+                     name="validityDays"
+                     type="number"
+                     placeholder="Enter validity in days"
+                     value={formData.validityDays}
+                     onChange={handleChange}
+                   />
+                 </CCol>
+                 <CCol md={12} className="mt-3">
+                   <CFormLabel htmlFor="whatIsThis">What is This (day,week,Month,year)</CFormLabel>
+                   <CFormSelect
+                     id="whatIsThis"
+                     name="whatIsThis"
+                     value={formData.whatIsThis}
+                     onChange={(e) => setFormData({ ...formData, whatIsThis:e.target.value })}
+                   >
+                     <option value="">Select</option>
+                     <option value="Day">Day</option>
+                     <option value="Week">Week</option>
+                     <option value="Month">Month</option>
+                     <option value="Year">Year</option>
+     
+                   </CFormSelect>
+                 </CCol>
+                 <CCol md={12} className="mt-3">
+                   <CFormLabel htmlFor="includes">Includes(use comma to separate)</CFormLabel>
+                   <CFormTextarea
+                     id="includes"
+                     name="includes"
+                     placeholder="Enter included features"
+                     value={formData.includes}
+                     onChange={handleChange}
+                   />
+                 </CCol>
+                 <CCol md={12} className="mt-3">
+                   <CFormLabel htmlFor="Level">Level</CFormLabel>
+                   <CFormTextarea
+                     id="level"
+                     name="level"
+                     placeholder="Enter level of the plan"
+                     value={formData.level}
+                     onChange={handleChange}
+                   />
+                 </CCol>
           <CCol xs={12} className="mt-4">
             <CButton color="primary" type="submit" disabled={loading}>
               {loading ? 'Please Wait...' : 'Submit'}

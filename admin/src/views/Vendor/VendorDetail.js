@@ -11,7 +11,7 @@ function VendorDetail() {
     const fetchVendor = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${id}`);
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${id}`);
             setVendor(data.data);
         } catch (error) {
             console.error("Internal server error:", error);

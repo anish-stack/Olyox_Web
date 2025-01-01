@@ -12,20 +12,20 @@ const Register = () => {
 
 
     const [formData, setFormData] = useState({
-        name: 'a',
-        VehicleNumber: '',
-        email: 'a#gmail.com',
+        name: '',
+        // VehicleNumber: '',
+        email: '',
         reEmail: '',
-        number: '7458966985',
-        password: '123456789',
+        number: '',
+        password: '',
         category: '',
         address: {
-            area: 'ss',
+            area: '',
             street_address: '',
-            landmark: 'sss',
-            pincode: 'sss',
+            landmark: '',
+            pincode: '',
             location: {
-                type: 'Point',
+                type: '',
                 coordinates: []
             }
         },
@@ -47,7 +47,7 @@ const Register = () => {
     const checkBhId = async () => {
         try {
 
-            const { data } = await axios.post('https://olyox.digital4now.in/api/v1/check-bh-id', { bh: bh_id });
+            const { data } = await axios.post('http://localhost:7000/api/v1/check-bh-id', { bh: bh_id });
             const status = data.success
             if (status) {
                 setIsverify(true)
@@ -119,7 +119,6 @@ const Register = () => {
         if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters long.';
         if (!formData.category) newErrors.category = 'Please select a category.';
         if (!formData.address.pincode.trim()) newErrors.pincode = 'Please enter your area pincode.';
-        if (!formData.member_id) newErrors.member_id = 'Please select a membership plan.';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -192,7 +191,7 @@ const Register = () => {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/categories_get');
+            const { data } = await axios.get('http://localhost:7000/api/v1/categories_get');
             setCategories(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -203,7 +202,7 @@ const Register = () => {
 
     const fetchMembershipPlan = async () => {
         try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/membership-plans');
+            const { data } = await axios.get('http://localhost:7000/api/v1/membership-plans');
             setMemberships(data.data);
         } catch (err) {
             console.error('Error fetching membership plans:', err);
@@ -213,7 +212,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-        
+
 
         setSubmitting(true);
         const updatedData = new FormData();
@@ -238,7 +237,7 @@ const Register = () => {
         });
 
         try {
-            const response = await axios.post('https://olyox.digital4now.in/api/v1/register_vendor', updatedData, {
+            const response = await axios.post('http://localhost:7000/api/v1/register_vendor', updatedData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             console.log('Registration successful:', response.data);
@@ -300,7 +299,7 @@ const Register = () => {
                         <h4 className="text-xl text-gray-900 font-bold">Basic Information</h4>
                         <div className="grid py-5  px-3 grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name as Per Aadhaar Card</label>
                                 <input
                                     type="text"
                                     id="name"
@@ -471,10 +470,10 @@ const Register = () => {
                     {/* Phone and Password Row */}
                     <div className="bg-gray-50 p-3 rounded-lg space-y-6">
                         <h4 className="text-xl font-bold text-gray-900">Other Important Details</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
 
 
-                            <div>
+                            {/* <div>
                                 <label htmlFor="member_id" className="block text-sm font-medium text-gray-700">
                                     Membership Plan (Pay after registration from Dashboard)
                                 </label>
@@ -495,7 +494,7 @@ const Register = () => {
                                     ))}
                                 </select>
                                 {errors.member_id && <p className="mt-1 text-sm text-red-600">{errors.member_id}</p>}
-                            </div>
+                            </div> */}
 
                             <div>
                                 <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
@@ -521,19 +520,19 @@ const Register = () => {
                         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
 
 
-                            {formData.category === '676ef9685c75082fcbc59c4f' && (
-                                <div>
-                                    <label htmlFor="VehicleNumber" className="block text-sm font-medium text-gray-700">Vehicle Number</label>
-                                    <input
-                                        type="text"
-                                        id="VehicleNumber"
-                                        name="VehicleNumber"
-                                        value={formData.VehicleNumber}
-                                        onChange={handleChange}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
-                                    />
-                                </div>
-                            )}
+                            {/* {formData.category === '676ef9685c75082fcbc59c4f' && (
+                                    <div>
+                                        <label htmlFor="VehicleNumber" className="block text-sm font-medium text-gray-700">Vehicle Number</label>
+                                        <input
+                                            type="text"
+                                            id="VehicleNumber"
+                                            name="VehicleNumber"
+                                            value={formData.VehicleNumber}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+                                        />
+                                    </div>
+                                )} */}
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>

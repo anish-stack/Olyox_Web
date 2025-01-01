@@ -1,5 +1,6 @@
 const BhModel = require('../model/Partner.model');
 const crypto = require('crypto');
+const vendor = require('../model/vendor');
 
 function generateBhId() {
     const randomNum = crypto.randomInt(100000, 999999);
@@ -126,7 +127,6 @@ exports.toggleStatus = async (req, res) => {
 exports.checkBhId = async (req, res) => {
     try {
         const { bh } = req.body;
-
         // Check if BH ID exists
         const bhId = await BhModel.findOne({ BhId: bh });
         if (!bhId) {
@@ -138,11 +138,29 @@ exports.checkBhId = async (req, res) => {
 
         // Check if BH ID is active
         if (bhId.isActive) {
-            return res.status(200).json({
-                success: true,
-                message: 'BH ID found and is active',
-                data: bhId,
-            });
+           
+            const findDetails = await vendor.findOne({ myReferral: bhId.BhId })
+
+            if (findDetails.isActive === false) {
+                return res.status(200).json({
+                    success: false,
+                    message: 'This BH ID has been blocked by the admin due to suspicious activity. Please contact support for assistance.',
+                });
+            }
+            
+            if (findDetails) {
+                return res.status(200).json({
+                    success: true,
+                    message: `BH ID found With Name ${findDetails.name} and is active`,
+                    data: findDetails.name,
+                });
+            }else{
+                return res.status(200).json({
+                    success: false,
+                    message: 'BH ID is not active',
+                });
+            }
+
         } else {
             return res.status(200).json({
                 success: false,

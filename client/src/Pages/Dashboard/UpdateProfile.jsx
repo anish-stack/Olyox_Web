@@ -29,7 +29,7 @@ function UpdateProfile() {
 
     const fetchProvider = async () => {
         try {
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${providerId}`,{
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`,{
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -132,7 +132,7 @@ function UpdateProfile() {
         // });
 
         try {
-            const response = await axios.put(`https://olyox.digital4now.in/api/v1/update_account/${providerId}`, formData);
+            const response = await axios.put(`http://localhost:7000/api/v1/update_account/${providerId}`, formData);
             if (response.data.success) {
                 toast.success('Profile updated successfully');
             }
@@ -206,7 +206,7 @@ function UpdateProfile() {
 
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
                     <div className=" grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {renderInput('Full Name', 'name', 'text', 'Enter your full name', FiUser)}
+                        {/* {renderInput('Full Name', 'name', 'text', 'Enter your full name', FiUser)} */}
                         {renderInput('Email Address', 'email', 'email', 'Enter your email', FiMail)}
                         {renderInput('Phone Number', 'number', 'tel', 'Enter your phone number', FiPhone)}
                         {category === '676ef9685c75082fcbc59c4f' && (

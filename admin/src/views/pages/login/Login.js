@@ -15,7 +15,7 @@ import {
   CRow,
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
-import { cilLockLocked, cilUser } from '@coreui/icons';
+import { cilLockLocked, cilUser,  } from '@coreui/icons';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -24,6 +24,7 @@ const Login = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -35,23 +36,12 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('https://olyox.digital4now.in/admin-login', formData);
-      // console.log('Response:', res.data);
-
-      // const { token, user } = res.data;
-      // const role = user.role;
-
-      // if (role !== 'admin') {
-      //   toast.error('You are not an admin');
-      //   return;
-      // }
-
-      const {login} = res.data;
+      const res = await axios.post('http://localhost:7000/admin-login', formData);
+      const { login } = res.data;
 
       sessionStorage.setItem('login', login);
       toast.success('Login Successfully');
-      window.location.href = '/'
-      // navigate('/#/dashboard'); // Redirect to the admin dashboard
+      window.location.href = '/';
     } catch (error) {
       console.error('Login Error:', error);
       toast.error(
@@ -90,13 +80,19 @@ const Login = () => {
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Password"
                         autoComplete="current-password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
                       />
+                      <CInputGroupText
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <p>{showPassword ? 'hide' : 'show'}</p>
+                      </CInputGroupText>
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>

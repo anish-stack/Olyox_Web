@@ -28,7 +28,7 @@ const Hero = () => {
               Experience seamless services across rides, hotels, meals, and transport - all in one place with Olyox.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to={'/login'} style={{ color: '#DA2D29' }} className="bg-primary text-white px-8 py-4 rounded-full text-lg hover:bg-primary-dark transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-primary/30">
+              <Link to={'/bh'} style={{ color: '#DA2D29' }} className="bg-primary text-white px-8 py-4 rounded-full text-lg hover:bg-primary-dark transition-all transform hover:-translate-y-1 shadow-lg hover:shadow-primary/30">
                 Get Started
               </Link>
               <Link to={'/about'} className="border-2 border-primary text-primary px-8 py-4 rounded-full text-lg hover:bg-primary transition-all transform hover:-translate-y-1">
@@ -64,7 +64,7 @@ const Hero = () => {
               <img
                 src={hero}
                 alt="Olyox Services"
-                className="rounded-2xl shadow-lg"
+                className="rounded-2xl "
               />
 
               {/* Floating Cards */}
@@ -76,7 +76,7 @@ const Hero = () => {
                   repeat: Infinity,
                   repeatType: "reverse"
                 }}
-                className="absolute -left-16 top-0 bg-white p-4 rounded-xl shadow-lg hidden md:block"
+                className="absolute -left-16 top-0 bg-white p-4 rounded-xl  hidden md:block"
               >
                 {/* <img src="/ride-icon.svg" alt="Ride Service" className="w-12 h-12 mb-2" /> */}
                 <span className=' text-4xl'>🚗</span>

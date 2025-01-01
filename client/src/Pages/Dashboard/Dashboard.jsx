@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { FiUser, FiDollarSign, FiUsers, FiRefreshCw, FiEdit, FiLock, FiHelpCircle, FiGrid, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
 import LoginAlert from '../../Components/AlertPages/LoginAlert';
-import { Coins, CoinsIcon, LogOut, Outdent, Share, Share2Icon, UserPlus } from 'lucide-react';
+import { Clock, Coins, CoinsIcon, LogOut, Outdent, Share, Share2Icon, UserPlus } from 'lucide-react';
 import Recharge_Model from './Recharge_Model';
 import { formatDate } from './formData';
 import ReferralModal from './Refreal.model';
@@ -49,7 +49,7 @@ function Dashboard() {
     const fetchProvider = async () => {
         try {
             setIsLoading(true);
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${providerId}`);
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`);
             console.log(data)
             setAllProvider(data.data);
         } catch (error) {
@@ -62,7 +62,7 @@ function Dashboard() {
 
     const fetchReferralsDetaisl = async () => {
         try {
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+            const { data } = await axios.get(`http://localhost:7000/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
             console.log(data.data)
             setAllRefreal(data.data)
         } catch (error) {
@@ -129,11 +129,22 @@ function Dashboard() {
                                         Referral Code: {allProvider?.myReferral || 'N/A'}
                                     </span>
                                 </div>
+
                                 <div onClick={() => message(allProvider?.myReferral)} className="flex items-center space-x-2">
                                     <span className="text-white text-xs font-medium">Share</span>
                                     <Share2Icon className="text-white text-lg" />
                                 </div>
                             </div>
+                            <div className="flex mt-2 items-center bg-red-5600 p-3 rounded-md shadow-sm">
+                                <Clock className="text-white text-xl mr-3" />
+                                <div>
+                                    <span className="text-white font-medium">Plan Status:</span>
+                                    <span className={`ml-2 font-semibold ${allProvider?.plan_status ? 'text-green-300' : 'text-yellow-300'}`}>
+                                        {allProvider?.plan_status ? 'Active' : 'De-Active'}
+                                    </span>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div>
