@@ -21,9 +21,14 @@ const Header = () => {
                 Dashboard
             </Link>
         ) : (
-            <Link to={'/login'} className="bg-[#DA2D29] text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
-                Login
+          <div className='space-x-2'>
+            <Link to={'/bh'} className="bg-[#DA2D29]  md:hidden text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
+                Register
             </Link>
+              <Link to={'/login'} className="bg-[#DA2D29] text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
+              Login
+          </Link>
+          </div>
         );
     };
 
@@ -34,7 +39,7 @@ const Header = () => {
                     {/* Logo */}
                     <Link to={'/'} className="flex items-center">
                         <img src={logo} alt="Olyox" className="h-12" />
-                        <span className="ml-2 text-2xl font-bold text-[#D62C27]">
+                        <span className="ml-2 hidden md:block text-2xl font-bold text-[#D62C27]">
                             Olyox
                         </span>
                     </Link>
@@ -53,6 +58,9 @@ const Header = () => {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
+                        <Link to={'/'} className="text-gray-600 hover:text-blue-600 transition-colors">
+                            Home
+                        </Link>
                         <Link to={'/service'} className="text-gray-600 hover:text-blue-600 transition-colors">
                             Services
                         </Link>
@@ -80,9 +88,13 @@ const Header = () => {
                     <button onClick={toggleMenu} className="text-gray-600">
                         <X size={28} />
                     </button>
+                    <Link to={'/'} className="text-gray-600 block hover:text-blue-600 transition-colors">
+                        Home
+                    </Link>
                     <Link to={'/service'} onClick={toggleMenu} className="block text-gray-600 hover:text-blue-600 transition-colors">
                         Services
                     </Link>
+                 
                     <Link to={'/about'} onClick={toggleMenu} className="block text-gray-600 hover:text-blue-600 transition-colors">
                         About
                     </Link>

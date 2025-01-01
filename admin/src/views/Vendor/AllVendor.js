@@ -123,7 +123,7 @@ function AllVendor() {
             ) : (
                 <Table
                     heading="All Vendors"
-                    btnText="Add Vendor"
+                    // btnText="Add Vendor"
                     btnURL="/vendor/add-vendor"
                     tableHeading={heading}
                     tableContent={currentData.map((item, index) => (

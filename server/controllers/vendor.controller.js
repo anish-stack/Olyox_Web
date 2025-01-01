@@ -1,6 +1,5 @@
 const Vendor_Model = require('../model/vendor.js');
 const ActiveReferral_Model = require('../model/activereferal.js');
-
 const UploadService = require('../service/cloudinary.service.js');
 const OtpService = require('../service/Otp_Send.Service.js');
 const SendEmailService = require('../service/SendEmail.Service.js');
@@ -8,6 +7,7 @@ const crypto = require('crypto');
 const sendToken = require('../utils/SendToken.js');
 const bcrypt = require('bcrypt');
 const BhIdSchema = require('../model/Partner.model.js');
+const { CronJob } = require('cron');
 // Register a vendor and send a verification email
 
 exports.registerVendor = async (req, res) => {
@@ -17,7 +17,7 @@ exports.registerVendor = async (req, res) => {
             name, VehicleNumber, email, number, password, category,
             aadharNumber,
             panNumber,
-            address, referral_code_which_applied, is_referral_applied = false, member_id
+            address, referral_code_which_applied, is_referral_applied = false
         } = req.body;
 
         const files = req.files || [];
@@ -175,7 +175,7 @@ exports.registerVendor = async (req, res) => {
             dob,
             order_id: genreateOrder,
             otp_expire_time: expiryTime,
-            member_id,
+
         });
 
 
@@ -452,6 +452,13 @@ exports.loginVendor = async (req, res) => {
         if (!isPasswordMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
+        if (vendor.isActive === false) {
+            return res.status(401).json({
+                success: false,
+                message: 'Your account has been blocked due to suspicious activity. Please contact the admin for further assistance.'
+            });
+        }
+
         await sendToken(vendor, res, 200)
     } catch (error) {
         console.error('Error logging in vendor:', error);
@@ -806,3 +813,5 @@ exports.updateVendorIsActive = async (req, res) => {
         })
     }
 }
+
+

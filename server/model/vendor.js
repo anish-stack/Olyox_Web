@@ -86,7 +86,7 @@ const vendorSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    plan_status:{
+    plan_status: {
         type: Boolean,
         default: false
     },
@@ -180,17 +180,17 @@ const vendorSchema = new mongoose.Schema({
         documentThird: {
             image: {
                 type: String,
-                
+
             },
             public_id: {
                 type: String,
-                
+
             }
         }
-        
+
     },
-    dob:{
-        type:Date,
+    dob: {
+        type: Date,
     },
     wallet: {
         type: Number

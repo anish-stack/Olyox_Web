@@ -11,7 +11,7 @@ function AddMembership() {
     price: '',
     description: '',
     validityDays: '',
-    level: '', // Default empty, will be a number
+    level: '', 
     includes: '',
     whatIsThis: '',
     active: true,
@@ -23,10 +23,6 @@ function AddMembership() {
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
   };
 
-  // Handle checkbox toggle for 'active'
-  // const handleActiveChange = (e) => {
-  //     setFormData((prevFormData) => ({ ...prevFormData, active: e.target.checked }));
-  // };
 
   // Submit the form
   const handleSubmit = async (e) => {
@@ -102,7 +98,7 @@ function AddMembership() {
               />
             </CCol>
             <CCol md={12} className="mt-3">
-              <CFormLabel htmlFor="validityDays">Validity (in days)</CFormLabel>
+              <CFormLabel htmlFor="validityDays">Validity Of Plan</CFormLabel>
               <CFormInput
                 id="validityDays"
                 name="validityDays"
@@ -113,17 +109,19 @@ function AddMembership() {
               />
             </CCol>
             <CCol md={12} className="mt-3">
-              <CFormLabel htmlFor="level">Level</CFormLabel>
+              <CFormLabel htmlFor="whatIsThis">What is This (day,week,Month,year)</CFormLabel>
               <CFormSelect
-                id="level"
-                name="level"
-                value={formData.level}
-                onChange={(e) => setFormData({ ...formData, level: Number(e.target.value) })}
+                id="whatIsThis"
+                name="whatIsThis"
+                value={formData.whatIsThis}
+                onChange={(e) => setFormData({ ...formData, whatIsThis:e.target.value })}
               >
-                <option value="">Select Level</option>
-                <option value="1">Basic</option>
-                <option value="2">Premium</option>
-                <option value="3">VIP</option>
+                <option value="">Select</option>
+                <option value="Day">Day</option>
+                <option value="Week">Week</option>
+                <option value="Month">Month</option>
+                <option value="Year">Year</option>
+
               </CFormSelect>
             </CCol>
             <CCol md={12} className="mt-3">
@@ -137,12 +135,12 @@ function AddMembership() {
               />
             </CCol>
             <CCol md={12} className="mt-3">
-              <CFormLabel htmlFor="whatIsThis">What is this?</CFormLabel>
+              <CFormLabel htmlFor="Level">Level</CFormLabel>
               <CFormTextarea
-                id="whatIsThis"
-                name="whatIsThis"
-                placeholder="Enter details about the plan"
-                value={formData.whatIsThis}
+                id="level"
+                name="level"
+                placeholder="Enter level of the plan"
+                value={formData.level}
                 onChange={handleChange}
               />
             </CCol>

@@ -92,7 +92,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-gray-900">
                         {showQR ? 'Complete Payment' : 'Recharge Plans'}
@@ -107,7 +107,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
                 <div className="p-6">
                     {!showQR ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {memberships.map((plan) => (
                                 <div
                                     key={plan._id}
@@ -125,17 +125,17 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
                                     )}
                                     <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
                                     <div className="text-2xl font-bold text-red-600 mb-4">
-                                        ₹{plan.price}
+                                        ₹{plan.price} <span className="text-base text-gray-800">+ 18% Gst Extra</span>
                                     </div>
                                     <p className="text-gray-600 mb-4">{plan.description}</p>
-                                    <div className="space-y-2 mb-6">
+                                    {/* <div className="space-y-2 mb-6">
                                         {plan.includes.map((feature, index) => (
                                             <div key={index} className="flex items-center text-gray-600">
                                                 <Check className="w-4 h-4 text-green-500 mr-2" />
                                                 <span>{feature}</span>
                                             </div>
                                         ))}
-                                    </div>
+                                    </div> */}
                                     <div className="text-sm text-gray-500 mb-4">
                                         Valid for {plan.validityDays} {plan.whatIsThis}
                                     </div>
@@ -143,7 +143,9 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
                                         onClick={() => handlePlanSelect(plan._id)}
                                         className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
                                     >
-                                        Select Plan
+                                        <div>
+                                            <h2>Select Plan and Pay {plan.price ? `₹${(plan.price * 1.18).toFixed(2)}` : 'Price not available'}</h2>
+                                        </div>
                                     </button>
                                 </div>
                             ))}

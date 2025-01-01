@@ -3,7 +3,8 @@ const VendorModel = require('../model/vendor')
 const PlansModel = require('../model/Member_ships_model')
 const SendEmailService = require('../service/SendEmail.Service')
 const ActiveReferral_Model = require('../model/activereferal.js');
-
+const cron = require('node-cron');
+const CronJobLog = require('../model/CronJobLogSchema.js');
 const FIRST_RECHARGE_COMMISONS = 7
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
@@ -64,13 +65,16 @@ exports.DoRecharge = async (req, res) => {
         });
 
         const find = await ActiveReferral_Model.findOne({ contactNumber: checkVendor.number })
+       if(find){
 
-        if (checkVendor.recharge === 1) {
-            find.isRecharge = true
-        }
-        await find.save()
+           if (checkVendor.recharge === 1) {
+               find.isRecharge = true
+               await find.save()
+           }
+       }
         checkVendor.payment_id = rechargeData?._id
         checkVendor.recharge += 1
+        checkVendor.plan_status = true
         checkVendor.member_id = checkPlanIsValidOrNot?._id
 
         await checkVendor.save()
@@ -360,3 +364,69 @@ exports.cancelRecharge = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error. Please try again later.", error: error.message });
     }
 }
+
+
+        
+cron.schedule('0 0 * * *', async () => {
+    try {
+      console.log('Cron job started to check recharge end dates.');
+  
+      const expiredRecharges = await Recharge_Model.find({
+        end_date: { $lt: new Date() },
+      });
+  
+      if (expiredRecharges.length === 0) {
+        console.log('No expired recharges found.');
+        await CronJobLog.create({
+          jobName: 'Check Recharge Expiry',
+          status: 'success',
+          details: 'No expired recharges found.',
+        });
+        return;
+      }
+  
+      const vendorsUpdated = [];
+  
+      for (const recharge of expiredRecharges) {
+        const { vendor_id, member_id, end_date } = recharge;
+  
+        // Update the vendor's plan status and end date
+        await VendorModel.findByIdAndUpdate(
+          vendor_id,
+          {
+            plan_status: false
+            
+          },
+          { new: true }
+        );
+  
+        // Push the vendor info along with the plan_id to vendorsUpdated
+        vendorsUpdated.push({
+          vendorId: vendor_id,
+          planId: member_id,
+          endDate: end_date,
+        });
+  
+        console.log(`Updated vendor ID ${vendor_id} with plan ID ${plan_id}: plan_status set to false.`);
+      }
+  
+      // Save the cron job log with affected vendors and their plan IDs
+      await CronJobLog.create({
+        jobName: 'Check Recharge Expiry',
+        status: 'success',
+        details: `Processed ${expiredRecharges.length} expired recharges.`,
+        vendorsAffected: vendorsUpdated,
+      });
+  
+      console.log('Cron job completed successfully.');
+    } catch (error) {
+      console.error('Error during cron job execution:', error);
+  
+      // Log the error details
+      await CronJobLog.create({
+        jobName: 'Check Recharge Expiry',
+        status: 'error',
+        details: error.message || 'Unknown error occurred.',
+      });
+    }
+  });

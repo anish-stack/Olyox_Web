@@ -206,7 +206,7 @@ function UpdateProfile() {
 
                 <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
                     <div className=" grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {renderInput('Full Name', 'name', 'text', 'Enter your full name', FiUser)}
+                        {/* {renderInput('Full Name', 'name', 'text', 'Enter your full name', FiUser)} */}
                         {renderInput('Email Address', 'email', 'email', 'Enter your email', FiMail)}
                         {renderInput('Phone Number', 'number', 'tel', 'Enter your phone number', FiPhone)}
                         {category === '676ef9685c75082fcbc59c4f' && (

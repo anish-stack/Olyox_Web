@@ -6,23 +6,19 @@ const contactDetails = [
   {
     icon: <MapPin className="w-6 h-6" />,
     title: "Visit Us",
-    details: ["123 Business Street", "Tech City, TC 12345", "India"]
+    details: ["OLYOX Pvt. Ltd. Habitat Arcade S.No. 49, ", "Sector 99 A, Dwarka Expresway, Gurugram 122505"]
   },
   {
     icon: <Phone className="w-6 h-6" />,
     title: "Call Us",
-    details: ["+91 123 456 7890", "+91 987 654 3210"]
+    details: ["011-4123-6789"]
   },
   {
     icon: <Mail className="w-6 h-6" />,
     title: "Email Us",
-    details: ["contact@olyox.com", "support@olyox.com"]
+    details: ["helpcenter@olyox.com"]
   },
-  {
-    icon: <Clock className="w-6 h-6" />,
-    title: "Working Hours",
-    details: ["Monday - Friday: 9AM - 6PM", "Saturday: 9AM - 2PM"]
-  }
+
 ];
 
 const ContactInfo = () => {
@@ -35,6 +31,9 @@ const ContactInfo = () => {
         className="bg-white rounded-2xl shadow-xl p-8"
       >
         <h2 className="text-3xl font-bold mb-8">Contact Information</h2>
+        <p className='mb-3'>At OLYOX Pvt. Ltd., our Help Center is your go-to resource for comprehensive assistance. Our dedicated support team is committed to addressing your queries promptly and efficiently, ensuring a seamless experience. Whether it's technical assistance or general inquiries, trust OLYOX Help Center for reliable guidance and support around the clock.
+
+</p>
         <div className="space-y-8">
           {contactDetails.map((item, index) => (
             <motion.div
