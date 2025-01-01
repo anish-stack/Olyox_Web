@@ -18,7 +18,7 @@ const AllReferral = () => {
     setError('');
     try {
       const token = sessionStorage.getItem('token');
-      const response = await axios.get('http://localhost:7000/api/v1/get-my-referral', {
+      const response = await axios.get('https://olyox.digital4now.in/api/v1/get-my-referral', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReferrals(response.data.data);
