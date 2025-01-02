@@ -94,6 +94,52 @@ function VendorDetail() {
                             Documents
                         </button>
                     </li>
+                    <li className="nav-item">
+                        <button 
+                            className={`nav-link ${activeTab === 'Category' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('Category')}
+                        >
+                            <i className="fas fa-file-alt me-2"></i>
+                            Category Earning
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button 
+                            className={`nav-link ${activeTab === 'Recharge' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('Recharge')}
+                        >
+                            <i className="fas fa-file-alt me-2"></i>
+                            Recharge History
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button 
+                            className={`nav-link ${activeTab === 'Withdrawal' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('Withdrawal')}
+                        >
+                            <i className="fas fa-file-alt me-1"></i>
+                            Withdrawal History
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button 
+                            className={`nav-link ${activeTab === 'Refferal-earning' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('Refferal-earning')}
+                        >
+                            <i className="fas fa-file-alt me-2"></i>
+                            Refferal Earning
+                        </button>
+                    </li>
+                    <li className="nav-item">
+                        <button 
+                            className={`nav-link ${activeTab === 'Refferal' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('Refferal')}
+                        >
+                            <i className="fas fa-file-alt me-2"></i>
+                            Refferal History
+                        </button>
+                    </li>
+                    
                 </ul>
 
                 {/* Content Area */}
@@ -247,6 +293,32 @@ function VendorDetail() {
                                     </div>
                                 </div>
                             </div>
+                        )}
+
+                        {activeTab === 'Category' && (
+                            <>
+                            <h2>Category Earning</h2>
+                            </>
+                        )}
+                        {activeTab === 'Recharge' && (
+                            <>
+                            <h2>Recharge History</h2>
+                            </>
+                        )}
+                        {activeTab === 'Refferal' && (
+                            <>
+                            <h2>Refferal History</h2>
+                            </>
+                        )}
+                        {activeTab === 'Refferal-earning' && (
+                            <>
+                            <h2>Refferal Earning</h2>
+                            </>
+                        )}
+                        {activeTab === 'Withdrawal' && (
+                            <>
+                            <h2>Withdrawal History</h2>
+                            </>
                         )}
                     </div>
                 </div>

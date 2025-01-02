@@ -101,7 +101,7 @@ function AllRecharge() {
 
     const heading = [
         'S.No',
-        'Recharge ID',
+        'BH ID',
         'MemberShip Name',
         'Vendor Name',
         'End Date',
@@ -131,7 +131,7 @@ function AllRecharge() {
                         currentData.map((item, index) => (
                             <CTableRow key={item._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                                <CTableDataCell>{item._id}</CTableDataCell>
+                                <CTableDataCell>{item?.vendor_id?.myReferral}</CTableDataCell>
                                 <CTableDataCell>{item?.member_id?.title}</CTableDataCell>
                                 <CTableDataCell>
                                     <a href={`#/vendor/vendor_detail/${item?.vendor_id?._id}`}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import about from './about.png'
+import about from './girlleft.png'
 import { Link } from 'react-router-dom';
 
 function AboutComponent() {
@@ -40,7 +40,7 @@ function AboutComponent() {
                         <img
                             src={about}
                             alt="Our Mission"
-                            className="rounded-2xl shadow-2xl w-72"
+                            className="rounded-2xl w-full"
                         />
                         <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl -z-10"></div>
                     </motion.div>

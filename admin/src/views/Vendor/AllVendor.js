@@ -108,7 +108,7 @@ function AllVendor() {
         setShowModal(true);
     };
 
-    const heading = ['S.No', 'Name', 'Email', 'Number', 'Category', 'Membership', 'Referral Id', 'Wallet', 'Address', 'Total Referrals', 'Referrals', 'Documents', 'Is Active', 'Action'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Active/Block', 'Action', 'View Detail'];
 
     return (
         <>
@@ -132,26 +132,26 @@ function AllVendor() {
                             <CTableDataCell>
                                 <a href={`#/vendor/vendor_detail/${item._id}`}>{item.name}</a>
                             </CTableDataCell>
+                            <CTableDataCell>{item?.myReferral}</CTableDataCell>
                             <CTableDataCell>{item.email}</CTableDataCell>
                             <CTableDataCell>{item.number}</CTableDataCell>
-                            <CTableDataCell>{item?.category?.title}</CTableDataCell>
-                            <CTableDataCell>{item?.member_id?.title}</CTableDataCell>
-                            <CTableDataCell>{item?.myReferral}</CTableDataCell>
-                            <CTableDataCell>{item?.wallet ? `Rs.${item.wallet}` : 'Rs.0'}</CTableDataCell>
-                            <CTableDataCell>
+                            {/* <CTableDataCell>{item?.category?.title}</CTableDataCell> */}
+                            {/* <CTableDataCell>{item?.member_id?.title}</CTableDataCell> */}
+                            {/* <CTableDataCell>{item?.wallet ? `Rs.${item.wallet}` : 'Rs.0'}</CTableDataCell> */}
+                            {/* <CTableDataCell>
                                 <CButton color="info" onClick={() => handleModalOpen(item.address, 'Address')}>
                                     View Address
                                 </CButton>
-                            </CTableDataCell>
-                            <CTableDataCell>{item.Child_referral_ids.length}</CTableDataCell>
-                            <CTableDataCell>
+                            </CTableDataCell> */}
+                            {/* <CTableDataCell>{item.Child_referral_ids.length}</CTableDataCell> */}
+                            {/* <CTableDataCell>
                                 <CButton
                                     color="primary"
                                     onClick={() => handleModalOpen(item.Child_referral_ids, 'Referrals')}
                                 >
                                     View Referrals
                                 </CButton>
-                            </CTableDataCell>
+                            </CTableDataCell> */}
                             <CTableDataCell>
                                 <CButton
                                     color="warning"
@@ -176,6 +176,11 @@ function AllVendor() {
                                         <i className="ri-delete-bin-fill"></i>
                                     </div>
                                 </div>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <CButton color="info">
+                                <a style={{color:'white'}} href={`#/vendor/vendor_detail/${item._id}`}>View</a>
+                                </CButton>
                             </CTableDataCell>
                         </CTableRow>
                     ))}

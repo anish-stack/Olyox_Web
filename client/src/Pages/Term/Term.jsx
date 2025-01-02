@@ -46,8 +46,9 @@ function Term() {
         </p>
 
         <h2 className="text-2xl font-semibold text-gray-800 mt-6 mb-4">Refund Policy</h2>
-        <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2">1. Refund Eligibility and Timeline:</h3>
-        <p className="text-gray-600 mb-4">
+        <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2">No refund policy</h3>
+        {/* <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2">1. Refund Eligibility and Timeline:</h3> */}
+        {/* <p className="text-gray-600 mb-4">
           Olyox operates with a strict seven (7) days refund policy from the date of payment receipt. Customers have seven calendar days to request a refund for eligible services.
         </p>
 
@@ -79,7 +80,7 @@ function Term() {
         <h3 className="text-xl font-semibold text-gray-800 mt-4 mb-2">7. Policy Updates:</h3>
         <p className="text-gray-600 mb-4">
           Olyox reserves the right to modify this policy without notice. Changes will be effective immediately upon posting.
-        </p>
+        </p> */}
 
         <p className="text-gray-600 mt-6">
           By agreeing to utilize Olyox's services, customers acknowledge and comply with these terms.

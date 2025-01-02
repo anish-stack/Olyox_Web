@@ -164,7 +164,7 @@ function Dashboard() {
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div className="flex items-center cursor-pointer justify-between">
                             <div>
-                                <p className="text-sm text-gray-500 mb-1">Total Earnings</p>
+                                <p className="text-sm text-gray-500 mb-1">Rafferal Earnings</p>
                                 <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.wallet || '0'}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiTrendingUp className="mr-1" />
