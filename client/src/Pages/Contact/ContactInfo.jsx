@@ -18,7 +18,11 @@ const contactDetails = [
     title: "Email Us",
     details: ["helpcenter@olyox.com"]
   },
-
+  {
+    icon: <Clock className="w-6 h-6" />,
+    title: "Working Hours",
+    details: ["Monday - Friday: 10:00 AM - 6:00 PM", "Saturday: 10:00 AM - 2:00PM"]
+  }
 ];
 
 const ContactInfo = () => {

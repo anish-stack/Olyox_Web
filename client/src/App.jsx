@@ -22,6 +22,7 @@ import Withdrawals from './Pages/Dashboard/Withdrawals.jsx'
 import BhVerification from './Pages/Auth/Bh.Verifcication.jsx'
 import Allreferral from './Pages/Dashboard/Allreferral.jsx'
 import AllReferral from './Pages/Dashboard/Allreferral.jsx'
+import DoneRefer from './Pages/Dashboard/DoneRefer.jsx'
 // import About from './Pages/About/About'
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
         <Route path='/change-category' element={<UpdateCategory />} />
         <Route path='/change-password' element={<UpdatePassword />} />
         <Route path='/term' element={<Term />} />
-        <Route path='/get-my-referral' element={<Allreferral />} />
+        <Route path='/get-my-referral/:id' element={<DoneRefer />} />
 
         
         <Route path='/Bh' element={<BhVerification />} />

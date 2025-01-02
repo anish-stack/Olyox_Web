@@ -1,41 +1,57 @@
 const Withdraw = require('../model/Withdraw.history.model'); // Import the Withdraw model
 const Vendor = require('../model/vendor');
 
-
 exports.createWithdrawal = async (req, res) => {
     try {
-        const user = req.user.id?._id
-        console.log(user)
+        const userId = req.user.id; // Assuming req.user.id contains the vendor ID
+
         const { amount, method, BankDetails, upi_details } = req.body;
-        console.log("req.body", req.body)
+        console.log('Request Body:', req.body);
+
         // Check for required fields
         if (!amount || !method) {
-            return res.status(400).json({ success: false, message: 'All fields are required.' });
+            return res.status(400).json({ success: false, message: 'Amount and method are required.' });
         }
+
+        // Parse and validate amount
+        const parsedAmount = parseFloat(amount);
+        if (isNaN(parsedAmount) || parsedAmount <= 0) {
+            return res.status(400).json({ success: false, message: 'Amount must be a valid positive number.' });
+        }
+        console.log(parsedAmount)
 
         // Validate withdrawal method
         if (!['Bank Transfer', 'UPI'].includes(method)) {
-            return res.status(400).json({ success: false, message: 'Invalid withdrawal method.' });
+            return res.status(400).json({ success: false, message: 'Invalid withdrawal method. Choose Bank Transfer or UPI.' });
         }
 
         // Fetch vendor details
-        const vendor = await Vendor.findById(user);
+        const vendor = await Vendor.findById(userId);
         if (!vendor) {
             return res.status(404).json({ success: false, message: 'Vendor not found.' });
         }
 
         // Validate amount against vendor's wallet balance
-        if (amount > vendor.wallet) {
+        if (parsedAmount > vendor.wallet) {
             return res.status(400).json({ success: false, message: 'Insufficient wallet balance.' });
         }
 
+        // Validate method-specific details
+        if (method === 'Bank Transfer' && (!BankDetails || !BankDetails.accountNo || !BankDetails.ifsc_code || !BankDetails.bankName)) {
+            return res.status(400).json({ success: false, message: 'Complete bank details are required for Bank Transfer.' });
+        }
+
+        if (method === 'UPI' && (!upi_details || !upi_details.upi_id)) {
+            return res.status(400).json({ success: false, message: 'Valid UPI details are required for UPI withdrawal.' });
+        }
+
         // Deduct the amount from vendor's wallet
-        vendor.wallet -= amount;
+        vendor.wallet -= parsedAmount;
 
         // Create withdrawal request
         const newWithdrawal = new Withdraw({
-            vendor_id: user,
-            amount,
+            vendor_id: userId,
+            amount: parsedAmount,
             method,
             BankDetails: method === 'Bank Transfer' ? BankDetails : undefined,
             upi_details: method === 'UPI' ? upi_details : undefined,
@@ -52,10 +68,11 @@ exports.createWithdrawal = async (req, res) => {
             withdrawal: newWithdrawal,
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error creating withdrawal:', error);
         res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };
+
 
 
 
@@ -245,7 +262,7 @@ exports.getAllWithdrawals = async (req, res) => {
         const { status } = req.query; // Optional filter by status
 
         const query = status ? { status } : {};
-        const withdrawals = await Withdraw.find(query).populate('vendor_id', 'name email');
+        const withdrawals = await Withdraw.find(query).populate('vendor_id', 'name email myReferral').sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -302,5 +319,32 @@ exports.getPendingWithdrawals = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error while fetching pending withdrawals.' });
+    }
+};
+
+
+
+exports.getWithdrawalQueryById = async (req, res) => {
+    try {
+        const user = req.query.id
+
+        const withdrawal = await Withdraw.find({ vendor_id: user })
+            .populate('vendor_id')
+            .sort({ createdAt: -1 });
+
+
+        // If withdrawal is not found
+        if (!withdrawal) {
+            return res.status(404).json({ success: false, message: 'Withdrawal not found.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Withdrawal details fetched successfully.',
+            withdrawal,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };

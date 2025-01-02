@@ -33,6 +33,7 @@ function AllWithdraw() {
         try {
             // Change to the withdrawal endpoint
             const { data } = await axios.get('https://olyox.digital4now.in/api/v1/withdrawals');
+
             setWithdrawals(data.withdrawals || []); // Ensure you handle the correct data
         } catch (error) {
             console.error('Error fetching withdrawals:', error);
@@ -107,7 +108,7 @@ function AllWithdraw() {
 
     const heading = [
         'S.No',
-        'Withdrawal ID',
+        'BHID',
         'Vendor Name',
         'Amount',
         'Payment Method',
@@ -137,7 +138,7 @@ function AllWithdraw() {
                     tableContent={withdrawals.map((item, index) => (
                         <CTableRow key={item._id}>
                             <CTableDataCell>{index + 1}</CTableDataCell>
-                            <CTableDataCell>{item._id}</CTableDataCell>
+                            <CTableDataCell>{item?.vendor_id?.myReferral}</CTableDataCell>
                             <CTableDataCell>
                                 <a href={`#/vendor/vendor_detail/${item.vendor_id?._id}`}>
                                     {item.vendor_id?.name}

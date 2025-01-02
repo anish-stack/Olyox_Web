@@ -104,6 +104,36 @@ const vendorSchema = new mongoose.Schema({
         ref: 'Vendor',
         default: []
     }],
+    Level1: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
+    Level2: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
+    Level3: [{
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
+    Level4: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
+    Level5: [{
+        type: mongoose.Schema.Types.ObjectId,
+
+        ref: 'Vendor',
+    }],
+    Level6: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
+    Level7: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    }],
     is_referral_applied: {
         type: Boolean,
         default: false
@@ -160,30 +190,31 @@ const vendorSchema = new mongoose.Schema({
         documentFirst: {
             image: {
                 type: String,
-                required: true
+                default: 'https://placehold.co/600x400?text=Aadhaar+Front'
             },
             public_id: {
                 type: String,
-                required: true
+
             }
         },
         documentSecond: {
             image: {
                 type: String,
-                required: true
+                default: 'https://placehold.co/600x400?text=Aadhaar+back'
             },
             public_id: {
                 type: String,
-                required: true
+
             }
         },
         documentThird: {
             image: {
                 type: String,
-
+                default: 'https://placehold.co/600x400?text=pancard'
             },
             public_id: {
                 type: String,
+                default: 'https://placehold.co/600x400?text=pancard'
 
             }
         }
@@ -191,6 +222,13 @@ const vendorSchema = new mongoose.Schema({
     },
     dob: {
         type: Date,
+    },
+    higherLevel: {
+        type: Number
+    },
+    documentVerify: {
+        type: Boolean,
+
     },
     wallet: {
         type: Number

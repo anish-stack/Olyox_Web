@@ -50,7 +50,9 @@ function Dashboard() {
         try {
             setIsLoading(true);
             const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${providerId}`);
-            console.log(data)
+            const levelLengths = Array.from({ length: 7 }, (_, i) => data.data?.[`Level${i + 1}`]?.length);
+            const totalLength = levelLengths.reduce((sum, length) => sum + length, 0);
+            setAllRefreal(totalLength)
             setAllProvider(data.data);
         } catch (error) {
             console.log("Internal server error", error);
@@ -60,22 +62,22 @@ function Dashboard() {
         }
     };
 
-    const fetchReferralsDetaisl = async () => {
-        try {
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
-            console.log(data.data)
-            setAllRefreal(data.data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const fetchReferralsDetaisl = async () => {
+    //     try {
+    //         const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+    //         console.log(data.data)
+    //         setAllRefreal(data.data)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
 
 
     useEffect(() => {
-        fetchReferralsDetaisl()
+        // fetchReferralsDetaisl()
         fetchProvider();
-    }, [allProvider?.myReferral]);
+    }, [allProvider]);
 
     const menuItems = [
         { icon: <FiRefreshCw className="w-6 h-6" />, fnd: handleOpen, title: 'Quick Recharge', description: 'Top up your account', color: 'from-blue-400 to-blue-600' },
@@ -85,7 +87,7 @@ function Dashboard() {
         // { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' },
         { icon: <Coins className="w-6 h-6" />, title: 'Recharge History', description: 'Check Your Past Recharge', link: '/Recharge-History', color: 'from-indigo-400 to-yellow-600' },
         { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' },
-        { icon: <UserPlus className="w-6 h-6" />, title: 'Refrreral History', description: ' Past and present Refrreral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' }
+        { icon: <UserPlus className="w-6 h-6" />, title: 'Referral History', description: ' Past and present Referral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' }
 
 
     ];
@@ -164,7 +166,7 @@ function Dashboard() {
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div className="flex items-center cursor-pointer justify-between">
                             <div>
-                                <p className="text-sm text-gray-500 mb-1">Rafferal Earnings</p>
+                                <p className="text-sm text-gray-500 mb-1">Referral Earnings</p>
                                 <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.wallet || '0'}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiTrendingUp className="mr-1" />
@@ -178,10 +180,10 @@ function Dashboard() {
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                        <a href="/get-my-referral" className="flex items-center cursor-pointer justify-between">
+                        <a href={`/get-my-referral/${providerId}`} className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Total Referrals</p>
-                                <h3 className="text-2xl font-bold text-gray-900">{allRefreal?.length || '0'}</h3>
+                                <h3 className="text-2xl font-bold text-gray-900">{allRefreal || '0'}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiActivity className="mr-1" />
                                     +8.2% growth rate

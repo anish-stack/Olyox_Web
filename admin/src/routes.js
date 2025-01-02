@@ -12,6 +12,10 @@ import VendorDetail from './views/Vendor/VendorDetail'
 import AllRecharge from './views/Recharge/AllRecharge'
 import AllWithdraw from './views/Withdraw/AllWithdraw'
 import AllActiveRefferal from './views/ActiveRefferal/AllActiveRefferal'
+import AllEnquiry from './views/enquiry/AllEnquiry'
+import Roles from './views/Rols/Roles'
+import Dutyist from './views/DutyList/Duty.list'
+import AllUser from './views/All user/AllUser'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -133,6 +137,17 @@ const routes = [
   { path: '/vendor/edit-vendor/:id', name: 'Edit Category', element: EditVendor },
   { path: '/vendor/all_vendor', name: 'All Category', element: AllVendor },
   { path: '/vendor/vendor_detail/:id', name: 'All Category', element: VendorDetail },
+
+    
+  // vendor qnwuire here 
+  { path: '/enquiry/all-enuqiry', name: 'Enquiry', element: AllEnquiry },
+
+  { path: '/Sub/all-sub', name: 'Roles Of Sub Admin', element: Roles },
+
+  { path: 'Duty/all-Duty', name: 'Duty List', element: Dutyist },
+  { path: '/All/all-Users', name: 'Users', element: AllUser },
+
+
 
    // recharge routes here 
    { path: '/recharge', name: 'Recharge', element: Cards, exact: true },
