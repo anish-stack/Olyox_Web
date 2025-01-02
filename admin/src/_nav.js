@@ -45,31 +45,31 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Enquiry',
-    to: '/refferal/all-refferal',
+    to: '/enquiry/all-enuqiry',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Refferal',
+    name: 'Referral',
     to: '/refferal/all-refferal',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Duty List',
-    to: '/refferal/all-refferal',
+    to: '/Duty/all-Duty',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'All Users',
-    to: '/refferal/all-refferal',
+    to: '/All/all-Users',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Sub Admin',
-    to: '/refferal/all-refferal',
+    to: '/Sub/all-sub',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   // {

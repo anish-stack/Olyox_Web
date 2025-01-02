@@ -16,14 +16,15 @@ const upload = multer({
 });
 
 
-const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive } = require('../controllers/vendor.controller');
+const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive, verifyDocument } = require('../controllers/vendor.controller');
 const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory, updateCategoryToggle } = require('../controllers/category.controller');
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan, updateMembershipStatus } = require('../controllers/Member_ship.controller');
-const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelRecharge } = require('../controllers/Recharge_controller');
+const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelRecharge, getAllOfAnyIdRecharge } = require('../controllers/Recharge_controller');
 const Protect = require('../middlewares/Protect');
 const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId } = require('../controllers/Bh.controller');
 const { doReffer, getMyReferral, GetRefrealDetailsBy, getAllReferal } = require('../controllers/Refrreal');
-const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals } = require('../controllers/Withdraw.controller');
+const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals, getWithdrawalQueryById } = require('../controllers/Withdraw.controller');
+const { createEnquiry, getAllEnquiries, getEnquiryById, updateEnquiry, deleteEnquiry } = require('../controllers/Enquiry.controller');
 
 router.post('/register_vendor', upload.any(), registerVendor);
 // upload.fields([
@@ -35,6 +36,7 @@ router.post('/register_vendor', upload.any(), registerVendor);
 //     }
 //     next();
 // });
+router.post('/verify_document', verifyDocument);
 router.post('/verify_email', verifyVendorEmail);
 router.post('/resend_Otp', resendOtp);
 router.post('/login', loginVendor);
@@ -58,6 +60,8 @@ router.get('/get-recharge', Protect, getMyRecharges);
 router.get('/get-all-recharge',getAllRecharge)
 router.put('/cancel_recharge',cancelRecharge)
 router.get('/approve_recharge', getApprovedRecharge)
+router.get('/get-all-admin-recharge', getAllOfAnyIdRecharge)
+
 
 
 // Vendor: Create a withdrawal request
@@ -66,6 +70,9 @@ router.put('/approve-withdrawal/:id', approveWithdrawal);
 router.put('/reject-withdrawal/:id', rejectWithdrawal);
 router.put('/cancel-withdrawal/:id', cancelWithdrawal);
 router.get('/withdrawals', getAllWithdrawals);
+router.get('/admin-withdrawals', getWithdrawalQueryById);
+
+
 router.get('/withdrawal',Protect, getWithdrawalById);
 router.get('/pending-withdrawal', getPendingWithdrawals)
 
@@ -87,6 +94,12 @@ router.get('/get-all-referral', getAllReferal)
 router.get('/get-refer-data', GetRefrealDetailsBy)
 
 
+//  routes for enquiry
+router.post('/enquiries', createEnquiry);  // Create an enquiry
+router.get('/enquiries', getAllEnquiries);  // Get all enquiries
+router.get('/enquiries/:id', getEnquiryById);  // Get a specific enquiry by ID
+router.put('/enquiries/:id', updateEnquiry);  // Update an enquiry
+router.delete('/enquiries/:id', deleteEnquiry);  // Delete an enquiry
 
 
 // category CRUD routes

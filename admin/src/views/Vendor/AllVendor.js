@@ -25,6 +25,9 @@ function AllVendor() {
     const [modalData, setModalData] = React.useState(null);
     const [showModal, setShowModal] = React.useState(false);
     const [modalType, setModalType] = React.useState('');
+    const [selected, setSelected] = React.useState('');
+    const [documentVerify, setDocumentVerify] = React.useState('');
+
     const itemsPerPage = 10;
 
     const handleFetchBanner = async () => {
@@ -74,6 +77,23 @@ function AllVendor() {
         }
     };
 
+    const handleVerifyDocument = async () => {
+        console.log(selected)
+        setLoading(true);
+        try {
+            const res = await axios.post(`https://olyox.digital4now.in/api/v1/verify_document?id=${selected}`);
+            console.log(res?.data);
+            toast.success(res?.data?.message);
+            handleFetchBanner();
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error verify Documents:', error);
+            toast.error('Failed to Verify. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const confirmDelete = (email) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -102,10 +122,12 @@ function AllVendor() {
         setCurrentPage(page);
     };
 
-    const handleModalOpen = (data, type) => {
+    const handleModalOpen = (data, type, id, documentVerify) => {
         setModalData(data);
+        setSelected(id)
         setModalType(type);
         setShowModal(true);
+        setDocumentVerify(documentVerify)
     };
 
     const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Active/Block', 'Action', 'View Detail'];
@@ -155,7 +177,7 @@ function AllVendor() {
                             <CTableDataCell>
                                 <CButton
                                     color="warning"
-                                    onClick={() => handleModalOpen(item.Documents, 'Documents')}
+                                    onClick={() => handleModalOpen(item.Documents, 'Documents', item._id, item.documentVerify)}
                                 >
                                     View Documents
                                 </CButton>
@@ -179,7 +201,7 @@ function AllVendor() {
                             </CTableDataCell>
                             <CTableDataCell>
                                 <CButton color="info">
-                                <a style={{color:'white'}} href={`#/vendor/vendor_detail/${item._id}`}>View</a>
+                                    <a style={{ color: 'white' }} href={`#/vendor/vendor_detail/${item._id}`}>View</a>
                                 </CButton>
                             </CTableDataCell>
                         </CTableRow>
@@ -265,23 +287,66 @@ function AllVendor() {
 
                     {modalType === 'Documents' && (
                         <>
-                            <p>
-                                <a href={modalData?.documentFirst?.image} target='_blank' ><img src={modalData?.documentFirst?.image} alt="Document 1" width={100} /></a>
-                            </p>
-                            <p>
-                                <a href={modalData?.documentSecond?.image} target='_blank' >
+                            <div className="mb-3">
+                                <p className={`text-${documentVerify ? 'success' : 'danger'} font-weight-bold`}>
+                                    {documentVerify ? 'Verified' : 'Not Verified'}
+                                </p>
+                            </div>
 
-                                    <img src={modalData?.documentSecond?.image} alt="Document 2" width={100} />
-                                </a>
-                            </p>
-                            <p>
-                                <a href={modalData?.documentThird?.image} target='_blank' >
+                            <div className="row">
+                                {/* Document 1 */}
+                                <div className="col-12 col-md-4 mb-3">
+                                    <p>
+                                        <a href={modalData?.documentFirst?.image} target='_blank' rel='noopener noreferrer'>
+                                            <img
+                                                src={modalData?.documentFirst?.image}
+                                                alt="Document 1"
+                                                className="img-fluid rounded shadow-sm"
+                                                width={100}
+                                            />
+                                        </a>
+                                    </p>
+                                </div>
 
-                                    <img src={modalData?.documentThird?.image} alt="Document 2" width={100} />
-                                </a>
-                            </p>
+                                {/* Document 2 */}
+                                <div className="col-12 col-md-4 mb-3">
+                                    <p>
+                                        <a href={modalData?.documentSecond?.image} target='_blank' rel='noopener noreferrer'>
+                                            <img
+                                                src={modalData?.documentSecond?.image}
+                                                alt="Document 2"
+                                                className="img-fluid rounded shadow-sm"
+                                                width={100}
+                                            />
+                                        </a>
+                                    </p>
+                                </div>
+
+                                {/* Document 3 */}
+                                <div className="col-12 col-md-4 mb-3">
+                                    <p>
+                                        <a href={modalData?.documentThird?.image} target='_blank' rel='noopener noreferrer'>
+                                            <img
+                                                src={modalData?.documentThird?.image}
+                                                alt="Document 3"
+                                                className="img-fluid rounded shadow-sm"
+                                                width={100}
+                                            />
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <button
+                                className="btn btn-primary w-100"
+                                onClick={() => handleVerifyDocument()}
+                            >
+                                Verify Documents
+                            </button>
                         </>
                     )}
+
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" onClick={() => setShowModal(false)}>
