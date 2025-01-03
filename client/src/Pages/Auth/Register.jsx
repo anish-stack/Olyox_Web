@@ -211,8 +211,8 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validateForm()) return;
-
+        // if (!validateForm()) return;
+        console.log('Registration succesful:',formData);
 
         setSubmitting(true);
         const updatedData = new FormData();
@@ -249,7 +249,7 @@ const Register = () => {
 
         } catch (error) {
             console.log(error)
-            const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+            const errorMessage = error.response?.data?.message 
             alert(errorMessage);
         } finally {
             setSubmitting(false);
