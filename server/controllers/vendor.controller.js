@@ -102,20 +102,43 @@ exports.registerVendor = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Vendor already exists' });
         }
 
-        // Validate file uploads
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
 
-        if (!imageFileOne || !imageFileTwo) {
-            return res.status(400).json({ success: false, message: 'Please upload both images' });
+        const defaultImage = {
+            secure_url: 'https://placehold.co/600x400',
+            public_id: 'default-image',
+        };
+
+        // Upload images to Cloudinary with fallback to default image
+        let uploadImageOne = defaultImage;
+        let uploadImageTwo = defaultImage;
+        let uploadImageThree = defaultImage;
+
+        try {
+            if (imageFileOne) {
+                uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
+            }
+        } catch (error) {
+            console.error('Error uploading Aadhar Front:', error);
         }
 
-        // Upload images to Cloudinary
-        const uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
-        const uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
-        const uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
+        try {
+            if (imageFileTwo) {
+                uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
+            }
+        } catch (error) {
+            console.error('Error uploading Aadhar Back:', error);
+        }
 
+        try {
+            if (imageFileThree) {
+                uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
+            }
+        } catch (error) {
+            console.error('Error uploading Pancard:', error);
+        }
 
 
         // Generate codes
