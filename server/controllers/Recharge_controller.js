@@ -435,7 +435,7 @@ cron.schedule('0 0 * * *', async () => {
                 endDate: end_date,
             });
 
-            console.log(`Updated vendor ID ${vendor_id} with plan ID ${plan_id}: plan_status set to false.`);
+            console.log(`Updated vendor ID ${vendor_id} with plan_status set to false.`);
         }
 
         // Save the cron job log with affected vendors and their plan IDs

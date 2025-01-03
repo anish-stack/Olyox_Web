@@ -8,6 +8,7 @@ const sendToken = require('../utils/SendToken.js');
 const bcrypt = require('bcrypt');
 const BhIdSchema = require('../model/Partner.model.js');
 const { CronJob } = require('cron');
+const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 // Register a vendor and send a verification email
 
 exports.registerVendor = async (req, res) => {
@@ -256,17 +257,18 @@ exports.registerVendor = async (req, res) => {
             find.isRegistered = true
             await find.save()
         }
-
+        
+        const emailService = new SendEmailService();
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
         const SendWhatsappMsg = await SendWhatsAppMessage(message, number)
         console.log(SendWhatsappMsg)
-        // const emailData = {
-        //     to: email,
-        //     text: Your OTP is ${otp},
-        // };
-        // emailData.subject = 'Verify your email';
-        // await emailService.sendEmail(emailData);
+        const emailData = {
+            to: email,
+            text: `Your OTP is ${otp}`,
+        };
+        emailData.subject = 'Verify your email';
+        await emailService.sendEmail(emailData);
 
         await insertBh.save();
         await vendor.save();
