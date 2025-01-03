@@ -249,7 +249,7 @@ const Register = () => {
 
         } catch (error) {
             console.log(error)
-            const errorMessage = error.response?.data?.message 
+            const errorMessage = error.response
             alert(errorMessage);
         } finally {
             setSubmitting(false);
