@@ -32,7 +32,7 @@ const ContactForm = () => {
 
     try {
       // Send POST request to your API
-      const response = await axios.post('https://olyox.digital4now.in/api/v1/enquiries', formData);
+      const response = await axios.post('https://apiking.digital4now.in/api/v1/enquiries', formData);
 console.log(response.data)
       // On success, display success message
     

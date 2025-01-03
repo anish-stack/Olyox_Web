@@ -13,11 +13,11 @@ const AllEnquiry = () => {
   useEffect(() => {
     const fetchEnquiries = async () => {
       try {
-        const response = await axios.get('https://olyox.digital4now.in/api/v1/enquiries');
-     
+        const response = await axios.get('https://apiking.digital4now.in/api/v1/enquiries');
+
           setEnquiries(response.data.data);
           setFilteredEnquiries(response.data.data); // Set initial data as filtered data
-        
+
       } catch (error) {
         console.error('Error fetching enquiries:', error);
       }
@@ -41,7 +41,7 @@ const AllEnquiry = () => {
       filtered = filtered.filter(
         (enquiry) => enquiry.email.includes(searchNumber) // Searching by email for now
       );
-      
+
     }
 
     // Filter by date range
@@ -64,7 +64,7 @@ const AllEnquiry = () => {
   return (
     <div className="container mt-5">
       <h2 className="text-center mb-4">All Enquiries</h2>
-      
+
       <div className="mb-4">
         <div className="row">
           {/* Search by Name */}
@@ -77,7 +77,7 @@ const AllEnquiry = () => {
               onChange={(e) => setSearchName(e.target.value)}
             />
           </div>
-          
+
           {/* Search by Number/Email */}
           <div className="col-md-3">
             <input
@@ -88,7 +88,7 @@ const AllEnquiry = () => {
               onChange={(e) => setSearchNumber(e.target.value)}
             />
           </div>
-          
+
           {/* Start Date Filter */}
           <div className="col-md-2">
             <input
@@ -98,7 +98,7 @@ const AllEnquiry = () => {
               onChange={(e) => setStartDate(e.target.value)}
             />
           </div>
-          
+
           {/* End Date Filter */}
           <div className="col-md-2">
             <input
@@ -108,7 +108,7 @@ const AllEnquiry = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
-          
+
           {/* Apply Filters */}
           <div className="col-md-2">
             <button

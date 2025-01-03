@@ -26,7 +26,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://olyox.digital4now.in/api/v1/login', formData);
+      const response = await axios.post('https://apiking.digital4now.in/api/v1/login', formData);
       if (response.data.success) {
         const token = response.data.token;
         const user = response.data.user;

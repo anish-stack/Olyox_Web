@@ -11,7 +11,7 @@ function AddMembership() {
     price: '',
     description: '',
     validityDays: '',
-    level: '', 
+    level: '',
     includes: '',
     whatIsThis: '',
     active: true,
@@ -35,7 +35,7 @@ function AddMembership() {
 
     setLoading(true);
     try {
-      const res = await axios.post('https://olyox.digital4now.in/api/v1/membership-plans-create', formDataToSend);
+      const res = await axios.post('https://apiking.digital4now.in/api/v1/membership-plans-create', formDataToSend);
       toast.success(res.data.message);
       // Reset the form
       setFormData({

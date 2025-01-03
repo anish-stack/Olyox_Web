@@ -42,7 +42,7 @@ function UpdatePassword() {
         setLoading(true);
 
         try {
-            await axios.post(`https://olyox.digital4now.in/api/v1/change_Vendor_Password`, {
+            await axios.post(`https://apiking.digital4now.in/api/v1/change_Vendor_Password`, {
                 oldPassword: formData.oldPassword,
                 newPassword: formData.newPassword,
                 email: formData.email

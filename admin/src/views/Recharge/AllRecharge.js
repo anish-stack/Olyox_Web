@@ -30,7 +30,7 @@ function AllRecharge() {
     const fetchRecharges = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/get-all-recharge');
+            const { data } = await axios.get('https://apiking.digital4now.in/api/v1/get-all-recharge');
             setRecharges(data.data || []);
         } catch (error) {
             console.error('Error fetching recharges:', error);
@@ -44,7 +44,7 @@ function AllRecharge() {
         setLoading(true);
         try {
             // Call the getApprovedRecharge endpoint
-            const res = await axios.get(`https://olyox.digital4now.in/api/v1/approve_recharge?_id=${id}`);
+            const res = await axios.get(`https://apiking.digital4now.in/api/v1/approve_recharge?_id=${id}`);
             toast.success(res?.data?.message);
 
             // Refresh the recharge list after updating
@@ -67,7 +67,7 @@ function AllRecharge() {
         }
         setLoading(true);
         try {
-            const res = await axios.put(`https://olyox.digital4now.in/api/v1/cancel_recharge?_id=${selectedRechargeId}`, {
+            const res = await axios.put(`https://apiking.digital4now.in/api/v1/cancel_recharge?_id=${selectedRechargeId}`, {
                 cancelReason,
                 isCancelPayment: true,
             });

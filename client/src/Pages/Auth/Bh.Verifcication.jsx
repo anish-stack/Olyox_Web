@@ -15,7 +15,7 @@ const BhVerification = () => {
       setLoading(true);
       setError(null);
 
-      const { data } = await axios.post('https://olyox.digital4now.in/api/v1/check-bh-id', { bh });
+      const { data } = await axios.post('https://apiking.digital4now.in/api/v1/check-bh-id', { bh });
 
       if (!data.success) {
         setLoading(false);

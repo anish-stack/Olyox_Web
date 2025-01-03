@@ -24,7 +24,7 @@ function EditCategory() {
     const handleFetchCategory = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/categories/${id}`);
+            const { data } = await axios.get(`https://apiking.digital4now.in/api/v1/categories/${id}`);
             setFormData({
                 title: data.data.title,
                 icon: data.data.icon,
@@ -45,7 +45,7 @@ function EditCategory() {
 
         setLoading(true);
         try {
-            const res = await axios.put(`https://olyox.digital4now.in/api/v1/categories/${id}`, formData);
+            const res = await axios.put(`https://apiking.digital4now.in/api/v1/categories/${id}`, formData);
             toast.success(res.data.message);
             navigate('/category/all_category');
         } catch (error) {
