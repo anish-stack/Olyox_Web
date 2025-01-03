@@ -112,9 +112,9 @@ exports.registerVendor = async (req, res) => {
         }
 
         // Upload images to Cloudinary
-        const uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne.buffer);
-        const uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo.buffer);
-        const uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree.buffer);
+        const uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
+        const uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
+        const uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
 
 
 
@@ -263,12 +263,12 @@ exports.registerVendor = async (req, res) => {
 
         const SendWhatsappMsg = await SendWhatsAppMessage(message, number)
         console.log(SendWhatsappMsg)
-        const emailData = {
-            to: email,
-            text: `Your OTP is ${otp}`,
-        };
-        emailData.subject = 'Verify your email';
-        await emailService.sendEmail(emailData);
+        // const emailData = {
+        //     to: email,
+        //     text: `Your OTP is ${otp}`,
+        // };
+        // emailData.subject = 'Verify your email';
+        // await emailService.sendEmail(emailData);
 
         await insertBh.save();
         await vendor.save();
