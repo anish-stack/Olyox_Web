@@ -44,7 +44,7 @@ function App() {
         <Route path='/term' element={<Term />} />
         <Route path='/get-my-referral/:id' element={<DoneRefer />} />
 
-        
+
         <Route path='/Bh' element={<BhVerification />} />
 
 
@@ -58,7 +58,7 @@ function App() {
         <Route path='/Forgot-Password' element={<ForgetPassword />} />
 
 
-       
+
         <Route path='/privacy' element={<Privacy />} />
       </Routes>
       <Footer />

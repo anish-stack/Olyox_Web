@@ -29,6 +29,7 @@ const BhVerification = () => {
         window.location.href = `/register?bh_id=${bh}`;
       }, 4500);
     } catch (err) {
+      console.log(err)
       setResponse(null);
       setError(err.response?.data?.message || 'An unexpected error occurred. Please try again.');
     } finally {

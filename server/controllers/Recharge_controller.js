@@ -5,29 +5,31 @@ const SendEmailService = require('../service/SendEmail.Service')
 const ActiveReferral_Model = require('../model/activereferal.js');
 const cron = require('node-cron');
 const CronJobLog = require('../model/CronJobLogSchema.js');
+const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
+
 const FIRST_RECHARGE_COMMISONS = 7
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
-        const vendor = req.user.id._id
-        const { plan_id, trn_no } = req.body
-        // console.log(plan_id)
+        const vendor = req.user.id._id;
+        const { plan_id, trn_no } = req.body;
 
         if (!plan_id) {
-            return res.status(400).json({ message: "Please select a valid plan." })
+            return res.status(400).json({ message: "Please select a valid plan." });
         }
 
         if (!trn_no) {
-            return res.status(400).json({ message: "Please enter a valid transaction number." })
+            return res.status(400).json({ message: "Please enter a valid transaction number." });
         }
 
-        const checkVendor = await VendorModel.findById(vendor)
+        const checkVendor = await VendorModel.findById(vendor);
         if (!checkVendor) {
-            return res.status(400).json({ message: "Vendor not found." })
+            return res.status(400).json({ message: "Vendor not found." });
         }
-        const checkPlanIsValidOrNot = await PlansModel.findById(plan_id)
+
+        const checkPlanIsValidOrNot = await PlansModel.findById(plan_id);
         if (!checkPlanIsValidOrNot) {
-            return res.status(400).json({ message: "Invalid plan." })
+            return res.status(400).json({ message: "Invalid plan." });
         }
 
         let isFirstRecharge = false;
@@ -35,6 +37,7 @@ exports.DoRecharge = async (req, res) => {
         if (checkVendor?.payment_id) {
             isFirstRecharge = true;
         }
+
         // Calculate end date based on validityDays and whatIsThis (unit)
         const whatIsThis = checkPlanIsValidOrNot.whatIsThis;
         let endDate = new Date();
@@ -53,7 +56,7 @@ exports.DoRecharge = async (req, res) => {
                 endDate.setDate(endDate.getDate() + (checkPlanIsValidOrNot.validityDays * 7));
                 break;
             default:
-                return res.status(400).json({ message: "Invalid validity unit." })
+                return res.status(400).json({ message: "Invalid validity unit." });
         }
 
         const rechargeData = new Recharge_Model({
@@ -64,20 +67,20 @@ exports.DoRecharge = async (req, res) => {
             end_date: endDate
         });
 
-        const find = await ActiveReferral_Model.findOne({ contactNumber: checkVendor.number })
+        const find = await ActiveReferral_Model.findOne({ contactNumber: checkVendor.number });
         if (find) {
-
             if (checkVendor.recharge === 1) {
-                find.isRecharge = true
-                await find.save()
+                find.isRecharge = true;
+                await find.save();
             }
         }
-        checkVendor.payment_id = rechargeData?._id
-        checkVendor.recharge += 1
-        checkVendor.plan_status = true
-        checkVendor.member_id = checkPlanIsValidOrNot?._id
 
-        await checkVendor.save()
+        checkVendor.payment_id = rechargeData?._id;
+        checkVendor.recharge += 1;
+        checkVendor.plan_status = true;
+        checkVendor.member_id = checkPlanIsValidOrNot?._id;
+
+        await checkVendor.save();
         await rechargeData.save();
 
         const emailService = new SendEmailService();
@@ -106,17 +109,26 @@ exports.DoRecharge = async (req, res) => {
         emailData.subject = 'Payment Received Notification';
         await emailService.sendEmail(emailData);
 
+        // Vendor WhatsApp Message
+        const vendorMessage = `Dear ${checkVendor.name},\n\nYour recharge request has been received successfully!\n\nDetails:\n- Plan: ${checkPlanIsValidOrNot?.title}\n- Amount: ${checkPlanIsValidOrNot?.price}\n- Start Date: ${new Date().toDateString()}\n- End Date: ${endDate.toDateString()}\n\nYour payment will be approved within 30 minutes. Thank you for choosing us!`;
+
+        // Admin WhatsApp Message
+        const adminMessage = `Dear Admin,\n\nA new recharge request has been received.\n\nDetails:\n- Transaction No: ${trn_no}\n- Plan: ${checkPlanIsValidOrNot?.title}\n- Amount: ${checkPlanIsValidOrNot?.price}\n- Vendor Name: ${checkVendor.name}\n- Vendor Contact: ${checkVendor.number}\n\nPlease review and approve the payment within 30 minutes.`;
+
+        await SendWhatsAppMessage(vendorMessage, checkVendor.number);
+        await SendWhatsAppMessage(adminMessage, process.env.ADMIN_WHATSAPP_NUMBER);
+
         return res.status(200).json({
             message: "Recharge successful! Your payment will be approved within 30 minutes. Thank you for your patience!",
             rechargeData
         });
 
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Server error. Please try again." });
     }
-}
+};
+
 
 
 exports.getMyRecharges = async (req, res) => {
@@ -127,7 +139,6 @@ exports.getMyRecharges = async (req, res) => {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        // Fetch recharge data for the logged-in vendor and populate member details
         const rechargeData = await Recharge_Model.find({ vendor_id: userId })
             .populate('member_id')
             .sort({ createdAt: -1 });
@@ -151,7 +162,6 @@ exports.getApprovedRecharge = async (req, res) => {
     try {
         const recharge_id = req.query?._id;
 
-        // Validate recharge ID
         if (!recharge_id) {
             return res.status(400).json({
                 success: false,
@@ -159,7 +169,7 @@ exports.getApprovedRecharge = async (req, res) => {
             });
         }
 
-        // Fetch recharge data and populate the vendor details
+      
         const rechargeData = await Recharge_Model.findById(recharge_id).populate('vendor_id').populate('member_id');
         if (!rechargeData) {
             return res.status(404).json({
@@ -170,7 +180,6 @@ exports.getApprovedRecharge = async (req, res) => {
 
         const vendor = rechargeData.vendor_id;
 
-        // Validate vendor data
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -180,7 +189,6 @@ exports.getApprovedRecharge = async (req, res) => {
 
         const parentReferralId = vendor?.parentReferral_id;
 
-        // Fetch the vendor who completed the recharge
         const rechargeVendor = await VendorModel.findById(vendor._id);
         if (!rechargeVendor) {
             return res.status(404).json({
@@ -189,12 +197,12 @@ exports.getApprovedRecharge = async (req, res) => {
             });
         }
 
-        // Fetch the parent referral details
+       
         const referringPerson = parentReferralId
             ? await VendorModel.findById(parentReferralId)
             : null;
 
-        // Calculate commission
+
         let rechargeAmount = rechargeData?.amount || 0;
         if (isNaN(rechargeAmount)) {
             return res.status(400).json({
@@ -203,7 +211,6 @@ exports.getApprovedRecharge = async (req, res) => {
             });
         }
 
-        // Update the wallet of the referring person
         if (referringPerson) {
             referringPerson.wallet = referringPerson.wallet || 0;
 
@@ -223,7 +230,7 @@ exports.getApprovedRecharge = async (req, res) => {
 
             referringPerson.wallet += commission;
 
-            // Save the updated wallet value for referring person
+
             await referringPerson.save();
             console.log("Updated referring person's wallet:", referringPerson.wallet);
         } else {
@@ -267,7 +274,9 @@ exports.getApprovedRecharge = async (req, res) => {
         rechargeData.payment_approved = true
         rechargeVendor.higherLevel = rechargeData?.member_id?.level
         rechargeVendor.plan_status = true
+        const vendorMessage = `Dear ${rechargeVendor.name},\n\nYour recharge has been successfully approved!\n\nDetails:\n- Plan: ${rechargeData?.member_id?.title}\n- Amount: ${rechargeData?.amount}\n- Start Date: ${new Date().toDateString()}\n- End Date: ${rechargeData.end_date.toDateString()}\n\nThank you for choosing us!`;
 
+        await SendWhatsAppMessage(vendorMessage, rechargeVendor.number);
         await rechargeData.save()
         await rechargeVendor.save()
 
@@ -345,7 +354,6 @@ exports.cancelRecharge = async (req, res) => {
         const recharge_id = req.query?._id;
         const { cancelReason, isCancelPayment } = req.body;
 
-        // Validate recharge ID
         if (!recharge_id) {
             return res.status(400).json({
                 success: false,
@@ -353,7 +361,6 @@ exports.cancelRecharge = async (req, res) => {
             });
         }
 
-        // Fetch recharge data and populate the vendor details
         const rechargeData = await Recharge_Model.findById(recharge_id).populate('vendor_id');
         if (!rechargeData) {
             return res.status(404).json({
@@ -361,7 +368,7 @@ exports.cancelRecharge = async (req, res) => {
                 message: "Recharge not found.",
             });
         }
-        // Check if recharge is already cancelled
+
         if (rechargeData.isCancelPayment) {
             return res.status(400).json({
                 success: false,
@@ -369,7 +376,7 @@ exports.cancelRecharge = async (req, res) => {
                 error: "Recharge is already cancelled.",
             });
         }
-        // Check if recharge is already completed
+
         if (rechargeData.payment_approved) {
             return res.status(400).json({
                 success: false,
@@ -378,22 +385,30 @@ exports.cancelRecharge = async (req, res) => {
             });
         }
 
-        rechargeData.isCancelPayment = isCancelPayment
-        rechargeData.cancelReason = cancelReason
-        await rechargeData.save()
+        rechargeData.isCancelPayment = isCancelPayment;
+        rechargeData.cancelReason = cancelReason;
+        await rechargeData.save();
+
+        // Notify vendor about cancellation
+        const vendor = rechargeData.vendor_id;
+        if (vendor && vendor.number) {
+            const cancelMessage = `Dear ${vendor.name}, your recharge with ID ${recharge_id} has been cancelled for the following reason: ${cancelReason}. For more details, please contact support.`;
+            await SendWhatsAppMessage(cancelMessage, vendor.number);
+        }
+
         res.json({
             success: true,
-            message: "Recharge cancelled successfully.",
+            message: "Recharge cancelled successfully and vendor notified.",
         });
-
-
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, message: "Server error. Please try again later.", error: error.message });
+        return res.status(500).json({
+            success: false,
+            message: "Server error. Please try again later.",
+            error: error.message,
+        });
     }
-}
-
-
+};
 
 cron.schedule('0 0 * * *', async () => {
     try {
@@ -419,23 +434,25 @@ cron.schedule('0 0 * * *', async () => {
             const { vendor_id, member_id, end_date } = recharge;
 
             // Update the vendor's plan status and end date
-            await VendorModel.findByIdAndUpdate(
+            const vendor = await VendorModel.findByIdAndUpdate(
                 vendor_id,
-                {
-                    plan_status: false
-
-                },
+                { plan_status: false },
                 { new: true }
             );
 
-            // Push the vendor info along with the plan_id to vendorsUpdated
-            vendorsUpdated.push({
-                vendorId: vendor_id,
-                planId: member_id,
-                endDate: end_date,
-            });
+            if (vendor) {
+                // Notify vendor about expiry
+                const expiryMessage = `Dear ${vendor.name}, your recharge plan associated with ID ${recharge._id} has expired on ${end_date}. Please renew to continue enjoying the services.`;
+                await SendWhatsAppMessage(expiryMessage, vendor.number);
 
-            console.log(`Updated vendor ID ${vendor_id} with plan_status set to false.`);
+                vendorsUpdated.push({
+                    vendorId: vendor_id,
+                    planId: member_id,
+                    endDate: end_date,
+                });
+
+                console.log(`Updated vendor ID ${vendor_id} with plan_status set to false.`);
+            }
         }
 
         // Save the cron job log with affected vendors and their plan IDs

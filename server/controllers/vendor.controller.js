@@ -5,15 +5,12 @@ const OtpService = require('../service/Otp_Send.Service.js');
 const SendEmailService = require('../service/SendEmail.Service.js');
 const crypto = require('crypto');
 const sendToken = require('../utils/SendToken.js');
-const bcrypt = require('bcrypt');
 const BhIdSchema = require('../model/Partner.model.js');
-const { CronJob } = require('cron');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 // Register a vendor and send a verification email
 
 exports.registerVendor = async (req, res) => {
     try {
-        console.log("i am hit",req.files)
         console.log("i am hit")
 
 
@@ -63,48 +60,21 @@ exports.registerVendor = async (req, res) => {
             });
         }
 
-        // Check if the coordinates field is a string
-        let coordinatesArray = [];
-
-        if (
-            address?.location?.coordinates &&
-            typeof address.location.coordinates === 'string'
-        ) {
-            // Parse the string into an array
+        let coordinatesArray = [0, 0];
+        if (address?.location?.coordinates) {
             try {
-                coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
+                if (typeof address.location.coordinates === "string") {
+                    coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
+                } else if (Array.isArray(address.location.coordinates)) {
+                    coordinatesArray = address.location.coordinates.map(coord => parseFloat(coord));
+                }
+                if (!Array.isArray(coordinatesArray) || coordinatesArray.length !== 2 || coordinatesArray.some(isNaN)) {
+                    throw new Error("Invalid coordinates format");
+                }
             } catch (error) {
-                console.log("Invalid coordinates format. Unable to parse string to array.")
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid coordinates format. Unable to parse string to array.',
-                });
+                console.error("Coordinates parsing failed. Falling back to default coordinates.");
             }
-        } else if (
-            address?.location?.coordinates &&
-            Array.isArray(address.location.coordinates) &&
-            address.location.coordinates.length === 2
-        ) {
-
-            coordinatesArray = address.location.coordinates.map(coord => parseFloat(coord));
         }
-
-
-        if (
-            !Array.isArray(coordinatesArray) ||
-            coordinatesArray.length !== 2 ||
-            coordinatesArray.some(isNaN)
-        ) {
-            console.log("Invalid coordinates format. Expected [longitude, latitude]")
-
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid coordinates format. Expected [longitude, latitude].',
-            });
-        }
-
-
-
         address.location.coordinates = coordinatesArray;
 
 
@@ -118,14 +88,13 @@ exports.registerVendor = async (req, res) => {
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
-        console.log(imageFileOne, imageFileTwo, imageFileThree)
 
         const defaultImage = {
             secure_url: 'https://placehold.co/600x400',
             public_id: 'default-image',
         };
 
-        // Upload images to Cloudinary with fallback to default image
+
         let uploadImageOne = defaultImage;
         let uploadImageTwo = defaultImage;
         let uploadImageThree = defaultImage;
@@ -298,8 +267,7 @@ exports.registerVendor = async (req, res) => {
 
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
-        const SendWhatsappMsg = await SendWhatsAppMessage(message, number)
-        console.log(SendWhatsappMsg)
+        await SendWhatsAppMessage(message, number)
 
 
         await insertBh.save();
@@ -318,20 +286,16 @@ exports.registerVendor = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Vendor registration failed',
-            error: error ,
+            error: error,
         });
     }
 };
 
 exports.verifyDocument = async (req, res) => {
     try {
-        const id = req.query.id;  // Extract vendor ID from request parameters
-        console.log(id)
-
-        // Find the vendor by ID
+        const id = req.query.id;
         const vendor = await Vendor_Model.findById(id);
 
-        // If vendor is not found, return a 404 response
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -339,13 +303,17 @@ exports.verifyDocument = async (req, res) => {
             });
         }
 
-        // Toggle the document verification status based on the current value
-        vendor.documentVerify = !vendor.documentVerify;  // If it's true, set to false; if it's false, set to true
 
-        // Save the updated vendor document
+        vendor.documentVerify = !vendor.documentVerify;
         await vendor.save();
 
-        // Send a success response with the updated vendor data
+
+        const message = vendor.documentVerify
+            ? `Hello ${vendor.name}, your documents have been successfully verified. Thank you for completing the process!`
+            : `Hello ${vendor.name}, your document verification has been revoked. Please contact support if you believe this is an error.`;
+
+        await SendWhatsAppMessage(message, vendor?.number);
+
         return res.status(200).json({
             success: true,
             message: 'Vendor document verification status updated successfully',
@@ -361,11 +329,12 @@ exports.verifyDocument = async (req, res) => {
     }
 };
 
+
 exports.verifyVendorEmail = async (req, res) => {
     try {
         const { email, otp, type } = req.body;
 
-        // Validate input
+
         if (!email || !otp) {
             return res.status(400).json({
                 success: false,
@@ -373,8 +342,8 @@ exports.verifyVendorEmail = async (req, res) => {
             });
         }
 
-        // Check if vendor exists
-        const vendor = await Vendor_Model.findOne({ email }).populate('member_id', 'category');
+
+        const vendor = await Vendor_Model.findOne({ email }).populate('member_id').populate('category');
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -383,7 +352,7 @@ exports.verifyVendorEmail = async (req, res) => {
         }
 
         if (type === 'email') {
-            // Handle email verification
+
             if (vendor.isEmailVerified) {
                 return res.status(400).json({
                     success: false,
@@ -405,7 +374,7 @@ exports.verifyVendorEmail = async (req, res) => {
                 });
             }
 
-            // Update vendor's email verified status
+
             vendor.isEmailVerified = true;
             vendor.otp_ = null;
             vendor.otp_expire_time = null;
@@ -413,14 +382,14 @@ exports.verifyVendorEmail = async (req, res) => {
 
             const emailData = {
                 to: email,
-                text: `        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                text: `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #4CAF50; text-align: center;">Welcome to Olyox Pvt Ltd!</h2>
             <p>Dear <strong>${vendor.name || 'Vendor'}</strong>,</p>
             <p>Congratulations on completing your onboarding process with us!</p>
             <p><strong>Here are your details:</strong></p>
             <ul style="list-style: none; padding: 0;">
                 <li><strong>Vendor BH ID:</strong> ${vendor.myReferral}</li>
-                <li><strong>Plan:</strong> ${vendor.member_id?.title || 'Not Assigned'}</li>
+                <li><strong>Plan:</strong> ${vendor?.member_id?.title || 'Not Assigned'}</li>
                 <li><strong>Category:</strong> ${vendor.category?.title || 'Not Specified'}</li>
                 <li><strong>Mobile Number:</strong> ${vendor.number || 'Not Provided'}</li>
             </ul>
@@ -500,20 +469,16 @@ exports.verifyVendorEmail = async (req, res) => {
 exports.resendOtp = async (req, res) => {
     try {
         const { type, email } = req.body;
-        const vendor = await Vendor_Model.findOne({ email });
 
+        // Find vendor by email
+        const vendor = await Vendor_Model.findOne({ email });
         if (!vendor) {
             return res.status(404).json({ success: false, message: 'Vendor not found' });
         }
 
         const otpService = new OtpService();
         const { otp, expiryTime } = otpService.generateOtp();
-
-        const emailService = new SendEmailService();
-        const emailData = {
-            to: email,
-            text: `Your OTP is ${otp}`,
-        };
+        let message = '';
 
         if (type === 'email') {
             if (vendor.isEmailVerified) {
@@ -522,26 +487,40 @@ exports.resendOtp = async (req, res) => {
 
             vendor.otp_ = otp;
             vendor.otp_expire_time = expiryTime;
-            await vendor.save();
+            message = `Hi ${vendor.name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
-            emailData.subject = 'Verify your email';
-            await emailService.sendEmail(emailData);
-            return res.status(200).json({ success: true, message: 'OTP sent successfully for email verification' });
-        } else {
+        } else if (type === 'password') {
             vendor.password_otp = otp;
             vendor.password_otp_expire = expiryTime;
-            await vendor.save();
-
-            emailData.subject = 'Change your Password';
-            await emailService.sendEmail(emailData);
-            return res.status(200).json({ success: true, message: 'Password change OTP sent successfully' });
+            message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid type provided' });
         }
 
+        // Save vendor with updated OTP
+        await vendor.save();
+
+        // Send WhatsApp message
+        try {
+            await SendWhatsAppMessage(message, vendor?.number);
+        } catch (error) {
+            console.error('Error sending WhatsApp message:', error);
+            return res.status(500).json({ success: false, message: 'Failed to send WhatsApp message' });
+        }
+
+        // Send appropriate response
+        const successMessage =
+            type === 'email'
+                ? 'OTP sent successfully for email verification'
+                : 'Password change OTP sent successfully';
+
+        return res.status(200).json({ success: true, message: successMessage });
     } catch (error) {
         console.error('Error resending OTP:', error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 
 exports.loginVendor = async (req, res) => {
     try {
