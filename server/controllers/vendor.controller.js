@@ -13,6 +13,7 @@ const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 
 exports.registerVendor = async (req, res) => {
     try {
+        console.log("i am hit")
         const {
             dob,
             name, VehicleNumber, email, number, password, category,
@@ -23,6 +24,7 @@ exports.registerVendor = async (req, res) => {
 
         const files = req.files || [];
         if (!name || !email || !number || !password || !category) {
+            console.log("Please enter all fields")
             return res.status(400).json({ success: false, message: 'Please enter all fields' });
         }
 
@@ -33,12 +35,14 @@ exports.registerVendor = async (req, res) => {
             const isBeforeBirthday = currentDate < new Date(dobDate.setFullYear(currentDate.getFullYear()));
 
             if (age < 18 || (age === 18 && isBeforeBirthday)) {
+                console.log("Vendor must be at least 18 years old")
                 return res.status(400).json({ success: false, message: 'Vendor must be at least 18 years old' });
             }
         }
 
-        // Validate phone number
+
         if (!/^\d{10}$/.test(number)) {
+            console.log("Please provide a valid 10-digit phone number")
             return res.status(400).json({
                 success: false,
                 message: 'Please provide a valid 10-digit phone number',
@@ -47,8 +51,9 @@ exports.registerVendor = async (req, res) => {
 
 
 
-        // Validate address and coordinates
         if (!address || !address.location || !address.location.coordinates) {
+            console.log("Address or location coordinates are missing")
+
             return res.status(400).json({
                 success: false,
                 message: 'Address or location coordinates are missing',
@@ -66,6 +71,7 @@ exports.registerVendor = async (req, res) => {
             try {
                 coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
             } catch (error) {
+                console.log("Invalid coordinates format. Unable to parse string to array.")
                 return res.status(400).json({
                     success: false,
                     message: 'Invalid coordinates format. Unable to parse string to array.',
@@ -86,6 +92,8 @@ exports.registerVendor = async (req, res) => {
             coordinatesArray.length !== 2 ||
             coordinatesArray.some(isNaN)
         ) {
+            console.log("Invalid coordinates format. Expected [longitude, latitude]")
+
             return res.status(400).json({
                 success: false,
                 message: 'Invalid coordinates format. Expected [longitude, latitude].',
@@ -99,6 +107,8 @@ exports.registerVendor = async (req, res) => {
 
         const existingVendor = await Vendor_Model.findOne({ $or: [{ email }, { number }] });
         if (existingVendor) {
+            console.log("Vendor already exists")
+
             return res.status(400).json({ success: false, message: 'Vendor already exists' });
         }
 
@@ -121,6 +131,7 @@ exports.registerVendor = async (req, res) => {
                 uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
             }
         } catch (error) {
+
             console.error('Error uploading Aadhar Front:', error);
         }
 
@@ -280,7 +291,7 @@ exports.registerVendor = async (req, res) => {
             find.isRegistered = true
             await find.save()
         }
-        
+
         const emailService = new SendEmailService();
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
@@ -295,7 +306,7 @@ exports.registerVendor = async (req, res) => {
 
         await insertBh.save();
         await vendor.save();
-
+        console.log(vendor)
         res.status(201).json({
             success: true,
             message: 'Vendor registered successfully',
@@ -309,7 +320,7 @@ exports.registerVendor = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Vendor registration failed',
-            error: error.message || 'An unexpected error occurred',
+            error: error || 'An unexpected error occurred',
         });
     }
 };
@@ -321,7 +332,7 @@ exports.verifyDocument = async (req, res) => {
 
         // Find the vendor by ID
         const vendor = await Vendor_Model.findById(id);
-        
+
         // If vendor is not found, return a 404 response
         if (!vendor) {
             return res.status(404).json({

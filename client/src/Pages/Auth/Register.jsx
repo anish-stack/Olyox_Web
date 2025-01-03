@@ -248,6 +248,7 @@ const Register = () => {
             // Reset form or redirect here
 
         } catch (error) {
+            console.log(error)
             const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
             alert(errorMessage);
         } finally {
