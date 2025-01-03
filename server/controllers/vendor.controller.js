@@ -13,7 +13,10 @@ const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 
 exports.registerVendor = async (req, res) => {
     try {
+        console.log("i am hit",req.files)
         console.log("i am hit")
+
+
         const {
             dob,
             name, VehicleNumber, email, number, password, category,
@@ -115,6 +118,7 @@ exports.registerVendor = async (req, res) => {
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
+        console.log(imageFileOne, imageFileTwo, imageFileThree)
 
         const defaultImage = {
             secure_url: 'https://placehold.co/600x400',
@@ -292,17 +296,11 @@ exports.registerVendor = async (req, res) => {
             await find.save()
         }
 
-        const emailService = new SendEmailService();
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
         const SendWhatsappMsg = await SendWhatsAppMessage(message, number)
         console.log(SendWhatsappMsg)
-        // const emailData = {
-        //     to: email,
-        //     text: `Your OTP is ${otp}`,
-        // };
-        // emailData.subject = 'Verify your email';
-        // await emailService.sendEmail(emailData);
+
 
         await insertBh.save();
         await vendor.save();
@@ -320,7 +318,7 @@ exports.registerVendor = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Vendor registration failed',
-            error: error || 'An unexpected error occurred',
+            error: error ,
         });
     }
 };
