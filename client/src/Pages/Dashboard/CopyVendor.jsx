@@ -4,9 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 
 const CopyVendor = () => {
     const [formData, setFormData] = useState({
-        Newemail:"",
+        Newemail: "",
         category: "",
         number: "",
+        password:"",
     });
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -68,7 +69,7 @@ const CopyVendor = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:7000/api/v1/copy-her-id",
+                "https://apiking.digital4now.in/api/v1/copy-her-id",
                 formData,
                 {
                     headers: {
@@ -96,14 +97,16 @@ const CopyVendor = () => {
         }
         const formDataSend = {
             email: formData.Newemail,
+            
             type: "email",
             otp: otp,
         }
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:7000/api/v1/verify_email", formDataSend);
+            const response = await axios.post("https://apiking.digital4now.in/api/v1/verify_email", formDataSend);
             toast.success(response.data.message || "OTP verified successfully!");
-            setOtpModalOpen(false); 
+            setOtpModalOpen(false);
+            window.location.href = "/dashboard";
         } catch (error) {
             toast.error(
                 error.response?.data?.message || "Failed to verify OTP. Try again."
@@ -123,8 +126,8 @@ const CopyVendor = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:7000/api/v1/resend_Otp",
-                { email:formData.Newemail, type: 'email' }
+                "https://apiking.digital4now.in/api/v1/resend_Otp",
+                { email: formData.Newemail, type: 'email' }
             );
             toast.success(response.data.message || "OTP sent successfully!");
             setTimer(120);
@@ -146,10 +149,12 @@ const CopyVendor = () => {
     }, [timer]);
 
     return (
-        <div className="p-4 max-w-md mx-auto">
+        <div className="p-4 min-h-screen flex items-center justify-center flex-col max-w-md mx-auto">
             <Toaster />
-            <h1 className="text-2xl font-bold mb-4">Copy Vendor</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <h1 className="text-2xl font-bold mb-4">
+                Switch Your ID and Create Another One in a Different Category
+            </h1>
+            <form onSubmit={handleSubmit} className=" w-full  space-y-4">
                 {/* Category Selection */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -194,6 +199,19 @@ const CopyVendor = () => {
                         value={formData.number}
                         onChange={handleChange}
                         placeholder="Enter new phone number"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                    Password
+                    </label>
+                    <input
+                        type="text"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Enter Password"
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>

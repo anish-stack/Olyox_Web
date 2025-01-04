@@ -13,7 +13,7 @@ const OtherVendors = () => {
     const fetchVendorData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/v1/get_Copy_Provider/${vendorId}`
+          `https://apiking.digital4now.in/api/v1/get_Copy_Provider/${vendorId}`
         );
         if (response.data.success) {
           setVendorData(response.data.data);
@@ -122,6 +122,10 @@ const OtherVendors = () => {
                         />
                       </svg>
                       {vendor.number}
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                     BHID: 
+                      {vendor.myReferral}
                     </div>
                   </div>
 

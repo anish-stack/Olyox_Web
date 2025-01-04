@@ -425,7 +425,7 @@ exports.verifyVendorEmail = async (req, res) => {
 `,
             };
             emailData.subject = 'onboarding complete';
-            await emailService.sendEmail(emailData);
+            // await emailService.sendEmail(emailData);
             const message = `🌟 *Welcome to Olyox Pvt Ltd!* 🌟
 
 Dear *${vendor.name || 'Valued Vendor'}*,
@@ -480,6 +480,7 @@ The Olyox Team`;
 
             return res.status(200).json({
                 success: true,
+                BHID: vendor.myReferral,
                 message: 'Password OTP verified successfully. Your password has been updated.',
             });
 
@@ -1022,15 +1023,10 @@ exports.forgetPassword = async (req, res) => {
         const { otp, expiryTime } = otpService.generateOtp();
 
         // Send OTP via email
-        const emailService = new SendEmailService();
-        const emailData = {
-            to: vendor.email, // Assuming vendor.email is available
-            subject: 'Reset your Password',
-            text: `Your OTP for password reset is: ${otp}`,
-        };
 
+        const message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
         try {
-            await emailService.sendEmail(emailData);
+            await SendWhatsAppMessage(message, vendor?.number);
         } catch (emailError) {
             return res.status(500).json({
                 success: false,
@@ -1123,7 +1119,7 @@ exports.updateVendorIsActive = async (req, res) => {
 exports.copyVendor = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { category: newCategory, number, Newemail } = req.body;
+        const { category: newCategory, number, Newemail, password } = req.body;
 
         const vendor = await Vendor_Model.findById(userId);
         if (!vendor) {
@@ -1170,14 +1166,29 @@ exports.copyVendor = async (req, res) => {
             _id: undefined,
             email: Newemail,
             isActive: false,
+            password: password,
+            wallet: 0,
+            level_id: 0,
+            Level1: [],
+            Level2: [],
+            Level3: [],
+            Level4: [],
+            Level5: [],
+            Level6: [],
+            Level7: [],
+            parentReferral_id: vendor._id,
             category: newCategory,
             isEmailVerified: false,
             isCopy: true,
-            plan_status:false,
-            member_id:null,
-            payment_id:null,
+            myReferral: generatedReferral,
+            plan_status: false,
+            member_id: null,
+            payment_id: null,
             child_referral_ids: [],
-           
+            higherLevel: 0,
+            recharge: 0,
+            referral_code_which_applied: null,
+            VehicleNumber: null,
             copyParentId: vendor._id,
             otp_: otp,
             otp_expire_time: expiryTime,
