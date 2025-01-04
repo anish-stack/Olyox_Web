@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 function Login() {
-  const navigate = useNavigate();
+  const location = new URLSearchParams(window.location.search);
+  const bh = location.get("bh");
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -26,27 +28,35 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://apiking.digital4now.in/api/v1/login', formData);
+      const response = await axios.post('http://localhost:7000/api/v1/login', formData);
       if (response.data.success) {
         const token = response.data.token;
         const user = response.data.user;
-        sessionStorage.setItem('token',token)
-        sessionStorage.setItem('user',JSON.stringify(user))
+        sessionStorage.setItem('token', token)
+        sessionStorage.setItem('user', JSON.stringify(user))
         // navigate('/dashboard');
         window.location.href = '/dashboard'
       }
     } catch (error) {
       setError(
-        error.response?.data?.message || 
+        error.response?.data?.message ||
         'An error occurred. Please try again.'
       );
-      console.log("error",error)
-      toast.error( error.response?.data?.message || 
+      console.log("error", error)
+      toast.error(error.response?.data?.message ||
         'An error occurred. Please try again.')
     } finally {
       setLoading(false);
     }
   };
+  useEffect(()=>{
+    if(bh){
+      setFormData({
+        ...formData,
+        email:bh
+      })
+    }
+  },[bh])
 
   return (
     <div className="min-h-screen bg-[#FFF4F4] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
@@ -66,11 +76,11 @@ function Login() {
           <div className="space-y-4">
             {/* Email Field */}
             <div>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Enter Your BH Id 
+                Enter Your BH Id
               </label>
               <div className="mt-1">
                 <input
@@ -89,8 +99,8 @@ function Login() {
 
             {/* Password Field */}
             <div>
-              <label 
-                htmlFor="password" 
+              <label
+                htmlFor="password"
                 className="block text-sm font-medium text-gray-700"
               >
                 Password
@@ -127,8 +137,8 @@ function Login() {
                 type="checkbox"
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label 
-                htmlFor="remember-me" 
+              <label
+                htmlFor="remember-me"
                 className="ml-2 block text-sm text-gray-700"
               >
                 Remember me
@@ -136,8 +146,8 @@ function Login() {
             </div>
 
             <div className="text-sm">
-              <a 
-                href="/Forgot-Password" 
+              <a
+                href="/Forgot-Password"
                 className="font-medium text-[#D62D28] hover:text-[#D62D28]"
               >
                 Forgot your password?
@@ -153,23 +163,23 @@ function Login() {
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#D62D28] hover:bg-[#bd1d18] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               {loading ? (
-                <svg 
-                  className="animate-spin h-5 w-5 text-white" 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
                   viewBox="0 0 24 24"
                 >
-                  <circle 
-                    className="opacity-25" 
-                    cx="12" 
-                    cy="12" 
-                    r="10" 
-                    stroke="currentColor" 
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
                     strokeWidth="4"
                   />
-                  <path 
-                    className="opacity-75" 
-                    fill="currentColor" 
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
@@ -184,8 +194,8 @@ function Login() {
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <Link 
-              to={"/bh"} 
+            <Link
+              to={"/bh"}
               className="font-medium text-[#D62D28] hover:text-[#D62D28"
             >
               Sign up now

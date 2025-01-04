@@ -84,7 +84,7 @@ const vendorSchema = new mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        default: true
+        default: false
     },
     plan_status: {
         type: Boolean,
@@ -98,7 +98,14 @@ const vendorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor',
     },
-
+    isCopy:{
+        type: Boolean,
+        default: false
+    },
+    copyParentId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    },
     Child_referral_ids: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor',

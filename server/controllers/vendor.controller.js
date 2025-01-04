@@ -11,8 +11,6 @@ const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 
 exports.registerVendor = async (req, res) => {
     try {
-        console.log("i am hit")
-
 
         const {
             dob,
@@ -80,9 +78,27 @@ exports.registerVendor = async (req, res) => {
 
         const existingVendor = await Vendor_Model.findOne({ $or: [{ email }, { number }] });
         if (existingVendor) {
-            console.log("Vendor already exists")
+            if (existingVendor.isEmailVerified === true) {
+                return res.status(400).json({ success: false, message: 'Vendor already exists, and the mobile number has been successfully verified.' });
+            } else {
+                const otpServiceR = new OtpService();
+                const { otp, expiryTime } = otpServiceR.generateOtp();
 
-            return res.status(400).json({ success: false, message: 'Vendor already exists' });
+                const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+                await SendWhatsAppMessage(message, number)
+                existingVendor.otp_ = otp;
+                existingVendor.otp_expire_time = expiryTime;
+                await existingVendor.save();
+                return res.status(201).json({
+                    success: true,
+                    message: 'Vendor already exists, but the mobile number has not been verified.',
+                    data: existingVendor,
+                    type: 'email',
+                    email: existingVendor.email,
+                    number: existingVendor.number,
+                    time: existingVendor.otp_expire_time,
+                });
+            }
         }
 
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
@@ -279,6 +295,7 @@ exports.registerVendor = async (req, res) => {
             data: vendor,
             type: 'email',
             email: vendor.email,
+            number: vendor.number,
             time: vendor.otp_expire_time,
         });
     } catch (error) {
@@ -376,6 +393,8 @@ exports.verifyVendorEmail = async (req, res) => {
 
 
             vendor.isEmailVerified = true;
+            vendor.isActive = true;
+
             vendor.otp_ = null;
             vendor.otp_expire_time = null;
             const emailService = new SendEmailService();
@@ -407,12 +426,29 @@ exports.verifyVendorEmail = async (req, res) => {
             };
             emailData.subject = 'onboarding complete';
             await emailService.sendEmail(emailData);
+            const message = `🌟 *Welcome to Olyox Pvt Ltd!* 🌟
 
+Dear *${vendor.name || 'Valued Vendor'}*,
+
+_We're thrilled to have you join our network!_
+
+Here's a snapshot of your details with us:
+- 🆔 *Vendor BH ID:* ${vendor.myReferral || 'Pending Assignment'}
+- 🗂️ *Category:* ${vendor.category?.title || 'To Be Specified'}
+
+Feel free to reach out if you have any questions or need assistance. We're here to support you every step of the way! 🎉
+
+Warm regards,
+The Olyox Team`;
+
+
+            await SendWhatsAppMessage(message, vendor.number)
             await vendor.save();
 
             return res.status(200).json({
                 success: true,
-                message: 'Email has been verified successfully.',
+                BHID: vendor.myReferral,
+                message: 'Mobile Number has been verified successfully.',
             });
 
         } else if (type === 'password') {
@@ -582,6 +618,8 @@ exports.getSingleProvider = async (req, res) => {
             .populate('category')
             .populate('member_id')
             .populate('payment_id')
+            .populate('payment_id')
+            .populate('copyParentId')
             .populate({
                 path: 'Level1',
                 populate: [
@@ -668,7 +706,103 @@ exports.getSingleProvider = async (req, res) => {
         })
     }
 }
+exports.getCopyOfProvider = async (req, res) => {
+    try {
+        // console.log("i am hit")
+        const { id } = req.params;
+        const provider = await Vendor_Model.find({ copyParentId: id })
+            .select('-password')
+            .populate('category')
+            .populate('member_id')
+            .populate('payment_id')
+            .populate('payment_id')
+            .populate('copyParentId')
+            .populate({
+                path: 'Level1',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level2',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level3',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level4',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level5',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level6',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level7',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            });
 
+
+        if (!provider) {
+            return res.status(400).json({
+                success: false,
+                message: 'Provider not founded by id',
+                error: 'Provider not founded by id'
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Provider founded by id',
+            data: provider
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            message: error.message
+        })
+    }
+}
 
 exports.changeVendorCategory = async (req, res) => {
     try {
@@ -979,3 +1113,93 @@ exports.updateVendorIsActive = async (req, res) => {
 }
 
 
+
+
+
+
+
+//copy her id with different category
+
+exports.copyVendor = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { category: newCategory, number, Newemail } = req.body;
+
+        const vendor = await Vendor_Model.findById(userId);
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found',
+                error: 'Vendor not found',
+            });
+        }
+
+        if (vendor.category === newCategory) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vendor already has this category',
+                error: 'Vendor already has this category',
+            });
+        }
+
+        if (!/^\d{10}$/.test(number)) {
+            console.log("Please provide a valid 10-digit phone number");
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid 10-digit phone number',
+            });
+        }
+
+
+        const otpService = new OtpService();
+        const { otp, expiryTime } = otpService.generateOtp();
+
+        function generateBhId() {
+            const randomNum = crypto.randomInt(100000, 999999);
+            return `BH${randomNum}`;
+        }
+        const generatedReferral = generateBhId();
+
+
+        const newBhId = new BhIdSchema({
+            BhId: generatedReferral,
+        });
+
+        const newVendor = new Vendor_Model({
+            ...vendor.toObject(),
+            _id: undefined,
+            email: Newemail,
+            isActive: false,
+            category: newCategory,
+            isEmailVerified: false,
+            isCopy: true,
+            plan_status:false,
+            member_id:null,
+            payment_id:null,
+            child_referral_ids: [],
+           
+            copyParentId: vendor._id,
+            otp_: otp,
+            otp_expire_time: expiryTime,
+            number,
+        });
+
+        const message = `Dear Vendor,\n\nYour new vendor ID is ${generatedReferral}. Please verify your OTP: *${otp}* to proceed with onboarding for the category: ${newCategory}.`;
+        await SendWhatsAppMessage(message, number);
+
+        await newBhId.save();
+        await newVendor.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Vendor copy created successfully. Please verify the OTP sent to your phone.',
+            vendorId: newVendor._id,
+        });
+    } catch (error) {
+        console.error('Error creating vendor copy:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred while creating the vendor copy. Please try again later.',
+        });
+    }
+};

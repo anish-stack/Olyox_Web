@@ -7,10 +7,11 @@ const Otp = () => {
     const location = new URLSearchParams(window.location.search);
     const type = location.get("type");
     const email = location.get("email");
-    const expireTime = location.get("expireTime");
+    const numberGrom = location.get("number");
+
 
     const [formData, setFormData] = useState({
-        otp: "", // 6-digit OTP
+        otp: "", 
         type: type,
         email: email,
     });
@@ -36,12 +37,12 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://apiking.digital4now.in/api/v1/verify_email",
+                "http://localhost:7000/api/v1/verify_email",
                 formData
             );
 
             toast.success(response.data.message || "OTP verified successfully!");
-            window.location.href = `/login`
+            window.location.href = `/login?bh=${response.data.BHID}`
 
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to verify OTP.");
@@ -58,7 +59,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://apiking.digital4now.in/api/v1/resend_Otp",
+                "http://localhost:7000/api/v1/resend_Otp",
                 { email, type }
             );
             toast.success(response.data.message || "OTP sent successfully!");
@@ -75,7 +76,7 @@ const Otp = () => {
             <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md">
                 <h2 className="text-center text-2xl font-semibold mb-4">Enter OTP</h2>
                 <p className="text-center text-gray-600 mb-4">
-                    We have sent a 6-digit OTP to <strong>{email}</strong>
+                    We have sent a 6-digit OTP to <strong>{numberGrom}</strong>
                 </p>
                 <form>
                     <div className="mb-4">
