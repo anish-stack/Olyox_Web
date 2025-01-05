@@ -13,7 +13,7 @@ const OtherVendors = () => {
     const fetchVendorData = async () => {
       try {
         const response = await axios.get(
-          `https://apiking.digital4now.in/api/v1/get_Copy_Provider/${vendorId}`
+          `https://api.olyox.com/api/v1/get_Copy_Provider/${vendorId}`
         );
         if (response.data.success) {
           setVendorData(response.data.data);

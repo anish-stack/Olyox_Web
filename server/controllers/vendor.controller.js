@@ -7,7 +7,13 @@ const crypto = require('crypto');
 const sendToken = require('../utils/SendToken.js');
 const BhIdSchema = require('../model/Partner.model.js');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
+const Bull = require('bull');
 // Register a vendor and send a verification email
+
+const fileUploadQueue = new Bull('file-upload-queue', {
+    redis: { host: process.env.REDIS_HOST, port: process.env.REDIS_PORT },
+});
+
 
 exports.registerVendor = async (req, res) => {
     try {
@@ -105,40 +111,41 @@ exports.registerVendor = async (req, res) => {
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
 
+
         const defaultImage = {
             secure_url: 'https://placehold.co/600x400',
             public_id: 'default-image',
         };
 
 
-        let uploadImageOne = defaultImage;
-        let uploadImageTwo = defaultImage;
-        let uploadImageThree = defaultImage;
+        // let uploadImageOne = defaultImage;
+        // let uploadImageTwo = defaultImage;
+        // let uploadImageThree = defaultImage;
 
-        try {
-            if (imageFileOne) {
-                uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
-            }
-        } catch (error) {
+        // try {
+        //     if (imageFileOne) {
+        //         uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
+        //     }
+        // } catch (error) {
 
-            console.error('Error uploading Aadhar Front:', error);
-        }
+        //     console.error('Error uploading Aadhar Front:', error);
+        // }
 
-        try {
-            if (imageFileTwo) {
-                uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
-            }
-        } catch (error) {
-            console.error('Error uploading Aadhar Back:', error);
-        }
+        // try {
+        //     if (imageFileTwo) {
+        //         uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
+        //     }
+        // } catch (error) {
+        //     console.error('Error uploading Aadhar Back:', error);
+        // }
 
-        try {
-            if (imageFileThree) {
-                uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
-            }
-        } catch (error) {
-            console.error('Error uploading Pancard:', error);
-        }
+        // try {
+        //     if (imageFileThree) {
+        //         uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
+        //     }
+        // } catch (error) {
+        //     console.error('Error uploading Pancard:', error);
+        // }
 
 
         // Generate codes
@@ -178,21 +185,21 @@ exports.registerVendor = async (req, res) => {
             aadharNumber,
             panNumber,
             myReferral: genreateReferral,
-            Documents: {
-                documentFirst: {
+            // Documents: {
+            //     documentFirst: {
 
-                    image: uploadImageOne.secure_url,
-                    public_id: uploadImageOne.public_id,
-                },
-                documentSecond: {
-                    image: uploadImageTwo.secure_url,
-                    public_id: uploadImageTwo.public_id,
-                },
-                documentThird: {
-                    image: uploadImageThree.secure_url,
-                    public_id: uploadImageThree.public_id,
-                },
-            },
+            //         image: uploadImageOne.secure_url,
+            //         public_id: uploadImageOne.public_id,
+            //     },
+            //     documentSecond: {
+            //         image: uploadImageTwo.secure_url,
+            //         public_id: uploadImageTwo.public_id,
+            //     },
+            //     documentThird: {
+            //         image: uploadImageThree.secure_url,
+            //         public_id: uploadImageThree.public_id,
+            //     },
+            // },
             referral_code_which_applied,
             is_referral_applied,
             otp_: otp,
@@ -288,7 +295,14 @@ exports.registerVendor = async (req, res) => {
 
         await insertBh.save();
         await vendor.save();
-        console.log(vendor)
+        fileUploadQueue.add({ userId: vendor._id, fileFirst: imageFileOne, fileSecond: imageFileTwo, fileThird: imageFileThree }, {
+            attempts: 3,
+            backoff: {
+                type: 'exponential', 
+                delay: 5000,
+            },
+        });
+
         res.status(201).json({
             success: true,
             message: 'Vendor registered successfully',
@@ -1211,6 +1225,189 @@ exports.copyVendor = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: 'An unexpected error occurred while creating the vendor copy. Please try again later.',
+        });
+    }
+};
+
+exports.manuallyRegisterVendor = async (req, res) => {
+    try {
+        console.log("object",req.body)
+        const {
+            dob,
+            isActive,
+            member_id,
+            plan_status,
+            myReferral,
+            name, email, number, password, category, referral_code_which_applied, is_referral_applied = false
+        } = req.body;
+
+        // const files = req.files || [];
+        if (!name || !email  || !password || !category) {
+            console.log("Please enter all fields")
+            return res.status(400).json({ success: false, message: 'Please enter all fields' });
+        }
+
+        // if (dob) {
+        //     const dobDate = new Date(dob);
+        //     const currentDate = new Date();
+        //     const age = currentDate.getFullYear() - dobDate.getFullYear();
+        //     const isBeforeBirthday = currentDate < new Date(dobDate.setFullYear(currentDate.getFullYear()));
+
+        //     if (age < 18 || (age === 18 && isBeforeBirthday)) {
+        //         console.log("Vendor must be at least 18 years old")
+        //         return res.status(400).json({ success: false, message: 'Vendor must be at least 18 years old' });
+        //     }
+        // }
+
+
+        // if (!/^\d{10}$/.test(number)) {
+        //     console.log("Please provide a valid 10-digit phone number")
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Please provide a valid 10-digit phone number',
+        //     });
+        // }
+
+
+        let checkReferral = null;
+        let checkReferralFromBh = null;
+
+        if (referral_code_which_applied) {
+            checkReferral = await Vendor_Model.findOne({ myReferral: referral_code_which_applied });
+        } else {
+            checkReferralFromBh = await BhIdSchema.findOne({ BhId: referral_code_which_applied });
+        }
+
+        const vendor = new Vendor_Model({
+            name,
+            email,
+            // number,
+            password,
+            parentReferral_id: checkReferral?._id,
+            category,
+            myReferral,
+            referral_code_which_applied,
+            is_referral_applied,
+            dob,
+            isActive,
+            plan_status,
+            myReferral,
+            member_id:"6774f068d26e0d8a969fb8e3",
+        });
+
+        const insertBh = new BhIdSchema({
+            BhId: vendor.myReferral,
+        })
+
+
+        async function addChildToAllParents(vendorId, parentReferralId) {
+            if (!parentReferralId) return;
+
+            const parentReferral = await Vendor_Model.findById(parentReferralId);
+            if (parentReferral) {
+                if (!parentReferral.Child_referral_ids.includes(vendorId)) {
+                    parentReferral.Child_referral_ids.push(vendorId);
+                    await parentReferral.save();
+                }
+
+                if (parentReferral.parentReferral_id) {
+                    await addChildToAllParents(vendorId, parentReferral.parentReferral_id);
+                }
+            }
+        }
+        if (checkReferral) {
+            checkReferral.Level1.push(vendor._id);
+            await checkReferral.save();
+
+            let currentVendor = checkReferral;
+
+            const maxLevel = vendor.higherLevel || 5
+            for (let level = 2; level <= maxLevel; level++) {
+                if (!currentVendor.parentReferral_id) {
+                    console.log(`No parent referral ID for Vendor ID: ${currentVendor._id}`);
+                    break;
+                }
+
+                const higherLevelVendor = await Vendor_Model.findById(currentVendor.parentReferral_id);
+
+                if (higherLevelVendor) {
+                    const levelKey = `Level${level}`;
+
+
+                    // Ensure the level array is initialized
+                    if (!Array.isArray(higherLevelVendor[levelKey])) {
+                        higherLevelVendor[levelKey] = [];
+                    }
+
+                    higherLevelVendor[levelKey].push(vendor._id);
+
+
+                    console.log(`Added Vendor ID ${vendor._id} to ${levelKey} of Vendor ID: ${higherLevelVendor._id}`);
+
+                    // Save the updated higher-level vendor
+                    try {
+                        await higherLevelVendor.save();
+                    } catch (saveError) {
+                        console.error(`Error saving ${levelKey} for Vendor ID: ${higherLevelVendor._id}, saveError`);
+                    }
+
+                    currentVendor = higherLevelVendor; // Move up the hierarchy
+                } else {
+                    console.error(`Parent Vendor with ID ${currentVendor.parentReferral_id} not found`);
+                    break;
+                }
+            }
+        }
+
+
+        if (checkReferral && checkReferral.isActive) {
+            checkReferral.Child_referral_ids.push(vendor._id);
+            await addChildToAllParents(vendor._id, checkReferral.parentReferral_id);
+            await checkReferral.save();
+        }
+
+        if (checkReferralFromBh) {
+            checkReferralFromBh.vendorIds.push(vendor._id);
+            await checkReferralFromBh.save();
+        }
+
+        const find = await ActiveReferral_Model.findOne({ contactNumber: number })
+
+        if (find) {
+            find.isRegistered = true
+            await find.save()
+        }
+
+        // const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+
+        // await SendWhatsAppMessage(message, number)
+
+
+        await insertBh.save();
+        await vendor.save();
+        // fileUploadQueue.add({ userId: vendor._id, fileFirst: imageFileOne, fileSecond: imageFileTwo, fileThird: imageFileThree }, {
+        //     attempts: 3,
+        //     backoff: {
+        //         type: 'exponential', 
+        //         delay: 5000,
+        //     },
+        // });
+
+        res.status(201).json({
+            success: true,
+            message: 'Vendor registered successfully',
+            data: vendor,
+            type: 'email',
+            email: vendor.email,
+            number: vendor.number,
+            time: vendor.otp_expire_time,
+        });
+    } catch (error) {
+        console.error('Error registering vendor:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Vendor registration failed',
+            error: error,
         });
     }
 };

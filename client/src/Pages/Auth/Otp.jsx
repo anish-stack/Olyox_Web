@@ -11,7 +11,7 @@ const Otp = () => {
 
 
     const [formData, setFormData] = useState({
-        otp: "", 
+        otp: "",
         type: type,
         email: email,
     });
@@ -29,7 +29,8 @@ const Otp = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         if (!formData.otp || formData.otp.length !== 6) {
             toast.error("Please enter a valid 6-digit OTP");
             return;
@@ -37,7 +38,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://apiking.digital4now.in/api/v1/verify_email",
+                "https://api.olyox.com/api/v1/verify_email",
                 formData
             );
 
@@ -59,7 +60,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://apiking.digital4now.in/api/v1/resend_Otp",
+                "https://api.olyox.com/api/v1/resend_Otp",
                 { email, type }
             );
             toast.success(response.data.message || "OTP sent successfully!");
@@ -68,6 +69,11 @@ const Otp = () => {
             toast.error(error.response?.data?.message || "Failed to resend OTP.");
         } finally {
             setLoading(false);
+        }
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit(e);
         }
     };
 
@@ -90,6 +96,7 @@ const Otp = () => {
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             maxLength="6"
                             placeholder="Enter OTP"
+                            onKeyDown={handleKeyPress}
                             value={formData.otp}
                             onChange={handleChange}
                             required

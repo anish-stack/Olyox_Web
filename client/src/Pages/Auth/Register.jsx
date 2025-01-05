@@ -12,20 +12,20 @@ const Register = () => {
 
 
     const [formData, setFormData] = useState({
-        name: 'test',
+        name: '',
         // VehicleNumber: '',
-        email: 'test@example.com',
-        reEmail: 'test@example.com',
-        number: '9633699632',
-        password: '123456789',
+        email: '',
+        reEmail: '',
+        number: '',
+        password: '',
         category: '',
         address: {
-            area: 'test@ex',
-            street_address: 'test@ex',
-            landmark: 'test@ex',
-            pincode: '123456',
+            area: '',
+            street_address: '',
+            landmark: '',
+            pincode: '',
             location: {
-                type: 'Point',
+                type: '',
                 coordinates: [78.2693, 25.369]
             }
         },
@@ -47,7 +47,7 @@ const Register = () => {
     const checkBhId = async () => {
         try {
 
-            const { data } = await axios.post('https://apiking.digital4now.in/api/v1/check-bh-id', { bh: bh_id });
+            const { data } = await axios.post('https://api.olyox.com/api/v1/check-bh-id', { bh: bh_id });
             const status = data.success
             if (status) {
                 setIsverify(true)
@@ -190,7 +190,7 @@ const Register = () => {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('https://apiking.digital4now.in/api/v1/categories_get');
+            const { data } = await axios.get('https://api.olyox.com/api/v1/categories_get');
             setCategories(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -227,7 +227,7 @@ const Register = () => {
         });
 
         try {
-            const response = await axios.post('https://apiking.digital4now.in/api/v1/register_vendor', updatedData, {
+            const response = await axios.post('https://api.olyox.com/api/v1/register_vendor', updatedData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 

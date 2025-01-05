@@ -25,8 +25,16 @@ function ForgetPassword() {
         setLoading(true);
         setError('');
 
+        // Password length validation
+        if (formData.newPassword.length < 8) {
+            setLoading(false);
+            setError('Password should be at least 8 characters long.');
+            toast.error('Password should be at least 8 characters long.');
+            return;
+        }
+
         try {
-            const response = await axios.post('https://apiking.digital4now.in/api/v1/forget-password', formData);
+            const response = await axios.post('https://api.olyox.com/api/v1/forget-password', formData);
             console.log(response.data)
             const { email, time } = response.data
             setLoading(false);
@@ -47,6 +55,8 @@ function ForgetPassword() {
         }
     };
 
+
+
     return (
         <div className="min-h-screen bg-[#FFF4F4] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
@@ -59,7 +69,6 @@ function ForgetPassword() {
                         Secure your account by updating your password. Enter the details below to proceed with changing your password safely and quickly.
                     </p>
                 </div>
-
 
                 {/* Form */}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -79,6 +88,7 @@ function ForgetPassword() {
                                     type="text"
                                     autoComplete="number"
                                     required
+                                    
                                     value={formData.number}
                                     onChange={handleChange}
                                     className="appearance-none block w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -90,7 +100,7 @@ function ForgetPassword() {
                         {/* Password Field */}
                         <div>
                             <label
-                                htmlFor="password"
+                                htmlFor="newPassword"
                                 className="block text-sm font-medium text-gray-700"
                             >
                                 New Password
@@ -117,8 +127,6 @@ function ForgetPassword() {
                             <p className="text-sm text-red-700">{error}</p>
                         </div>
                     )}
-
-
 
                     {/* Submit Button */}
                     <div>

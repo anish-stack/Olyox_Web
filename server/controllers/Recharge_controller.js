@@ -7,7 +7,7 @@ const cron = require('node-cron');
 const CronJobLog = require('../model/CronJobLogSchema.js');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 
-const FIRST_RECHARGE_COMMISONS = 7
+const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
@@ -129,8 +129,6 @@ exports.DoRecharge = async (req, res) => {
     }
 };
 
-
-
 exports.getMyRecharges = async (req, res) => {
     try {
         const userId = req.user.id?._id;
@@ -169,7 +167,7 @@ exports.getApprovedRecharge = async (req, res) => {
             });
         }
 
-      
+
         const rechargeData = await Recharge_Model.findById(recharge_id).populate('vendor_id').populate('member_id');
         if (!rechargeData) {
             return res.status(404).json({
@@ -197,7 +195,7 @@ exports.getApprovedRecharge = async (req, res) => {
             });
         }
 
-       
+
         const referringPerson = parentReferralId
             ? await VendorModel.findById(parentReferralId)
             : null;
@@ -217,7 +215,7 @@ exports.getApprovedRecharge = async (req, res) => {
             const commission =
                 (Number(rechargeAmount) *
                     (rechargeVendor.recharge > 1
-                        ? SECOND_RECHARGE_COMMISONS
+                        ? FIRST_RECHARGE_COMMISONS
                         : FIRST_RECHARGE_COMMISONS)) /
                 100;
             console.log("commission", commission);
@@ -410,6 +408,92 @@ exports.cancelRecharge = async (req, res) => {
     }
 };
 
+exports.assignFreePlan = async (req, res) => {
+    try {
+        const { vendor_id, plan_id } = req.body;
+
+        const checkVendor = await Vendor.findById(vendor_id);
+        if (!checkVendor) {
+            return res.status(404).json({
+                success: false,
+                message: "Vendor not found.",
+                error: "Vendor not found.",
+            });
+        }
+
+        // Check if plan exists
+        const checkPlan = await PlansModel.findById(plan_id);
+        if (!checkPlan) {
+            return res.status(404).json({
+                success: false,
+                message: "Plan not found.",
+            });
+        }
+
+        const whatIsThis = checkPlan.whatIsThis;
+        let endDate = new Date();
+
+        // Calculate end date based on plan validity
+        switch (whatIsThis) {
+            case 'Day':
+                endDate.setDate(endDate.getDate() + checkPlan.validityDays);
+                break;
+            case 'Month':
+                endDate.setMonth(endDate.getMonth() + checkPlan.validityDays);
+                break;
+            case 'Year':
+                endDate.setFullYear(endDate.getFullYear() + checkPlan.validityDays);
+                break;
+            case 'Week':
+                endDate.setDate(endDate.getDate() + (checkPlan.validityDays * 7));
+                break;
+            default:
+                return res.status(400).json({ message: "Invalid validity unit." });
+        }
+
+        // Create recharge data
+        const rechargeData = new Recharge_Model({
+            vendor_id: checkVendor._id,
+            member_id: checkPlan._id,
+            amount: checkPlan.price,
+            trn_no: 'FREE-PLAN',
+            payment_approved: true,
+            payment_approved_date: new Date(),
+            end_date: endDate,
+        });
+
+        // Save the recharge data to the database
+        await rechargeData.save();
+
+        // Update the vendor with the new plan data
+        checkVendor.payment_id = rechargeData._id;
+        checkVendor.higherLevel = checkPlan.level;
+        checkVendor.plan_status = true;
+        checkVendor.isFreePlanActive = true
+        checkVendor.member_id = checkPlan._id;
+
+        // Save updated vendor data
+        await checkVendor.save();
+
+        // Return success response
+        return res.status(200).json({
+            success: true,
+            message: "Plan assigned successfully.",
+            vendor: checkVendor,
+            rechargeData: rechargeData,
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred. Please try again.",
+            error: error.message,
+        });
+    }
+};
+
+
 cron.schedule('0 0 * * *', async () => {
     try {
         console.log('Cron job started to check recharge end dates.');
@@ -442,7 +526,7 @@ cron.schedule('0 0 * * *', async () => {
 
             if (vendor) {
                 // Notify vendor about expiry
-                const expiryMessage = `Dear ${vendor.name}, your recharge plan associated with ID ${recharge._id} has expired on ${end_date}. Please renew to continue enjoying the services.`;
+                const expiryMessage = `Dear ${vendor.name}, your recharge plan associated with ID ${vendor.myReferral} has expired on ${end_date}. Please renew to continue enjoying the services.`;
                 await SendWhatsAppMessage(expiryMessage, vendor.number);
 
                 vendorsUpdated.push({

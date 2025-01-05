@@ -23,6 +23,7 @@ import DoneRefer from './Pages/Dashboard/DoneRefer.jsx'
 import { Toaster } from 'react-hot-toast'
 import CopyVendor from './Pages/Dashboard/CopyVendor.jsx'
 import OtherVendors from './Pages/Dashboard/Other/OtherVendors.jsx'
+import ManualRegister from './Pages/ManualRegister/ManualRegister.jsx'
 // import About from './Pages/About/About'
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
         <Route path='/Forgot-Password' element={<ForgetPassword />} />
         <Route path='/Dublicate-vendor' element={<CopyVendor />} />
         <Route path='/Other-Vendor-Ids' element={<OtherVendors />} />
+        <Route path='/manual-register' element={<ManualRegister />} />
 
 
         <Route path='/privacy' element={<Privacy />} />

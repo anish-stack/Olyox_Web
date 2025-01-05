@@ -15,7 +15,7 @@ function VendorDetail() {
     const fetchVendor = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://apiking.digital4now.in/api/v1/get_Single_Provider/${id}`);
+            const { data } = await axios.get(`https://api.olyox.com/api/v1/get_Single_Provider/${id}`);
             setVendor(data.data);
             console.log(data.data)
         } catch (error) {
@@ -28,7 +28,7 @@ function VendorDetail() {
     const fetchWithdrawls = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://apiking.digital4now.in/api/v1/admin-withdrawals?id=${id}`);
+            const { data } = await axios.get(`https://api.olyox.com/api/v1/admin-withdrawals?id=${id}`);
             setWithDrawals(data.
                 withdrawal
             );
@@ -44,7 +44,7 @@ function VendorDetail() {
     const fetchRecharge = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://apiking.digital4now.in/api/v1/get-all-admin-recharge?id=${id}`);
+            const { data } = await axios.get(`https://api.olyox.com/api/v1/get-all-admin-recharge?id=${id}`);
             setRecharge(data.data);
             console.log(data.
                 data
