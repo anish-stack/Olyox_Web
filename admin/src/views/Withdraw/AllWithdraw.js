@@ -32,7 +32,7 @@ function AllWithdraw() {
         setLoading(true);
         try {
             // Change to the withdrawal endpoint
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/withdrawals');
+            const { data } = await axios.get('https://api.olyox.com/api/v1/withdrawals');
 
             setWithdrawals(data.withdrawals || []); // Ensure you handle the correct data
         } catch (error) {
@@ -53,7 +53,7 @@ function AllWithdraw() {
         try {
             const token = localStorage.getItem('authToken'); // Assuming the token is stored in localStorage
             const res = await axios.put(
-                `https://olyox.digital4now.in/api/v1/approve-withdrawal/${selectedWithdrawalId}`,
+                `https://api.olyox.com/api/v1/approve-withdrawal/${selectedWithdrawalId}`,
                 { trn_no: trnNo, time_of_payment_done: paymentTime },
                 {
                     headers: {
@@ -81,7 +81,7 @@ function AllWithdraw() {
         }
         setLoading(true);
         try {
-            const res = await axios.put(`https://olyox.digital4now.in/api/v1/reject-withdrawal/${selectedWithdrawalId}`, {
+            const res = await axios.put(`https://api.olyox.com/api/v1/reject-withdrawal/${selectedWithdrawalId}`, {
                 cancelReason
             });
             toast.success(res?.data?.message);
@@ -186,7 +186,7 @@ function AllWithdraw() {
                             <CTableDataCell>{new Date(item.requestedAt).toLocaleString()}</CTableDataCell>
                             <CTableDataCell>{item.time_of_payment_done ? new Date(item.time_of_payment_done).toLocaleString() : 'N/A'}</CTableDataCell>
                             <CTableDataCell>{item.status}</CTableDataCell>
-                           
+
                         </CTableRow>
                     ))}
                 />

@@ -1,26 +1,26 @@
 const Withdraw = require('../model/Withdraw.history.model'); // Import the Withdraw model
 const Vendor = require('../model/vendor');
+const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
+
 
 exports.createWithdrawal = async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming req.user.id contains the vendor ID
+        const userId = req.user.id;
 
         const { amount, method, BankDetails, upi_details } = req.body;
         console.log('Request Body:', req.body);
 
-        // Check for required fields
+        // Validate request fields
         if (!amount || !method) {
             return res.status(400).json({ success: false, message: 'Amount and method are required.' });
         }
 
-        // Parse and validate amount
         const parsedAmount = parseFloat(amount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
             return res.status(400).json({ success: false, message: 'Amount must be a valid positive number.' });
         }
-        console.log(parsedAmount)
+        console.log(parsedAmount);
 
-        // Validate withdrawal method
         if (!['Bank Transfer', 'UPI'].includes(method)) {
             return res.status(400).json({ success: false, message: 'Invalid withdrawal method. Choose Bank Transfer or UPI.' });
         }
@@ -62,9 +62,20 @@ exports.createWithdrawal = async (req, res) => {
         await vendor.save();
         await newWithdrawal.save();
 
+        // Send notification to the vendor
+        const vendorMessage = `Dear ${vendor.name}, your withdrawal request of ₹${parsedAmount.toFixed(2)} via ${method} has been successfully submitted. Your request is currently under review, and the status is pending. Please wait while we process your request.`;
+        await SendWhatsAppMessage(vendorMessage, vendor.number);
+
+        // Send notification to the admin
+        const adminMessage = `Admin Alert: A new withdrawal request of ₹${parsedAmount.toFixed(2)} has been created by vendor ${vendor.name} (${vendor.number}) using ${method}. Please review and process it.`;
+        const adminNumber = process.env.ADMIN_WHATSAPP_NUMBER;
+        if (adminNumber) {
+            await SendWhatsAppMessage(adminMessage, adminNumber);
+        }
+
         res.status(201).json({
             success: true,
-            message: 'Withdrawal request created successfully.',
+            message: 'Withdrawal request created successfully. Notifications sent to vendor and admin.',
             withdrawal: newWithdrawal,
         });
     } catch (error) {
@@ -81,7 +92,6 @@ exports.approveWithdrawal = async (req, res) => {
         const { id } = req.params;
         const { trn_no, time_of_payment_done } = req.body;
 
-        // Fetch withdrawal request and populate vendor details
         const withdrawal = await Withdraw.findById(id).populate('vendor_id');
         if (!withdrawal) {
             return res.status(404).json({ success: false, message: 'Withdrawal not found.' });
@@ -110,6 +120,15 @@ exports.approveWithdrawal = async (req, res) => {
         await withdrawal.vendor_id.save(); // Save vendor wallet update
         await withdrawal.save(); // Save withdrawal status update
 
+        // Send WhatsApp notification to the vendor
+        const vendorMessage = `Dear ${withdrawal.vendor_id.name}, your withdrawal request of ₹${withdrawal.amount.toFixed(2)} via ${withdrawal.method} has been approved successfully. Transaction No: ${trn_no}. Please wait for further updates.`;
+        await SendWhatsAppMessage(vendorMessage, withdrawal.vendor_id.number);
+
+        // Send WhatsApp notification to the admin
+        const adminMessage = `A withdrawal request of ₹${withdrawal.amount.toFixed(2)} from vendor ${withdrawal.vendor_id.name} has been approved. Transaction No: ${trn_no}.`;
+        const adminNumber = 'ADMIN_PHONE_NUMBER';
+        await SendWhatsAppMessage(adminMessage, adminNumber);
+
         res.status(200).json({
             success: true,
             message: 'Withdrawal approved successfully.',
@@ -120,6 +139,7 @@ exports.approveWithdrawal = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };
+
 
 
 exports.rejectWithdrawal = async (req, res) => {

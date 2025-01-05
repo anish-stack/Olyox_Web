@@ -24,7 +24,7 @@ function EditMember() {
   useEffect(() => {
     const fetchMembershipPlan = async () => {
       try {
-        const res = await axios.get(`https://olyox.digital4now.in/api/v1/membership-plans/${id}`);
+        const res = await axios.get(`https://api.olyox.com/api/v1/membership-plans/${id}`);
         setFormData({
           title: res.data.data.title,
           price: res.data.data.price,
@@ -40,7 +40,7 @@ function EditMember() {
         toast.error('Failed to fetch membership plan.');
       }
     };
-    
+
     fetchMembershipPlan();
   }, [id]);
 
@@ -61,7 +61,7 @@ function EditMember() {
 
     setLoading(true);
     try {
-      const res = await axios.put(`https://olyox.digital4now.in/api/v1/membership-plans/${id}`, formDataToSend);
+      const res = await axios.put(`https://api.olyox.com/api/v1/membership-plans/${id}`, formDataToSend);
       toast.success(res.data.message);
       // history.push('/membership-plans'); // Redirect to the membership plans list page
     } catch (error) {
@@ -135,7 +135,7 @@ function EditMember() {
                      <option value="Week">Week</option>
                      <option value="Month">Month</option>
                      <option value="Year">Year</option>
-     
+
                    </CFormSelect>
                  </CCol>
                  <CCol md={12} className="mt-3">

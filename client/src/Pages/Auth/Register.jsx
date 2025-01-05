@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import toast from "react-hot-toast";
 
 const Register = () => {
 
     const location = new URLSearchParams(window.location.search)
-    const code = location.get('referral') || null
     const bh_id = location.get('bh_id') || null
 
     const [isBhverify, setIsverify] = useState(false)
@@ -26,7 +26,7 @@ const Register = () => {
             pincode: '',
             location: {
                 type: '',
-                coordinates: []
+                coordinates: [78.2693, 25.369]
             }
         },
         dob: null,
@@ -47,7 +47,7 @@ const Register = () => {
     const checkBhId = async () => {
         try {
 
-            const { data } = await axios.post('https://olyox.digital4now.in/api/v1/check-bh-id', { bh: bh_id });
+            const { data } = await axios.post('https://api.olyox.com/api/v1/check-bh-id', { bh: bh_id });
             const status = data.success
             if (status) {
                 setIsverify(true)
@@ -66,7 +66,6 @@ const Register = () => {
     }, [bh_id])
 
     const [categories, setCategories] = useState([]);
-    const [memberships, setMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [addressSuggestions, setAddressSuggestions] = useState([]);
@@ -74,7 +73,7 @@ const Register = () => {
 
     useEffect(() => {
         fetchCategory();
-        fetchMembershipPlan();
+
     }, []);
 
     useEffect(() => {
@@ -191,7 +190,7 @@ const Register = () => {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/categories_get');
+            const { data } = await axios.get('https://api.olyox.com/api/v1/categories_get');
             setCategories(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -200,19 +199,10 @@ const Register = () => {
         }
     };
 
-    const fetchMembershipPlan = async () => {
-        try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/membership-plans');
-            setMemberships(data.data);
-        } catch (err) {
-            console.error('Error fetching membership plans:', err);
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
+        console.log('Registration succesful:', formData);
 
         setSubmitting(true);
         const updatedData = new FormData();
@@ -237,20 +227,22 @@ const Register = () => {
         });
 
         try {
-            const response = await axios.post('https://olyox.digital4now.in/api/v1/register_vendor', updatedData, {
+            const response = await axios.post('https://api.olyox.com/api/v1/register_vendor', updatedData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            console.log('Registration successful:', response.data);
 
+            // console.log('Registration successful:', response.data);
+            toast.success(response.data.message || 'Registration successful');
             if (response.data?.success) {
-                window.location.href = `/otp-verify?type=${response.data?.type}&email=${response?.data?.email}&expireTime=${response?.data?.time}`
+                window.location.href = `/otp-verify?type=${response.data?.type}&email=${response?.data?.email}&expireTime=${response?.data?.time}&number=${response?.data?.number}`;
             }
             // Reset form or redirect here
 
         } catch (error) {
             console.log(error)
-            const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
-            alert(errorMessage);
+            const errorMessage = error.response.data.message || error.response.data
+            toast.error(errorMessage)
+
         } finally {
             setSubmitting(false);
         }
@@ -474,29 +466,6 @@ const Register = () => {
                         <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
 
 
-                            {/* <div>
-                                <label htmlFor="member_id" className="block text-sm font-medium text-gray-700">
-                                    Membership Plan (Pay after registration from Dashboard)
-                                </label>
-                                <select
-                                    id="member_id"
-                                    name="member_id"
-                                    value={formData.member_id}
-                                    onChange={handleSelect}
-                                    className={`mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 ${errors.member_id ? 'border-red-500' : 'border-gray-300'
-                                        } px-3 py-2 border`}
-                                >
-                                    <option value="">Select a membership plan</option>
-                                    {memberships.map((plan, index) => (
-                                        <option key={index} value={plan._id}>  <span style={{ fontWeight: 'bold' }}>{plan.title}</span>
-                                            <span>/ Rs: <strong>{plan?.price}</strong></span>
-                                            <span> Plan Valid Upto <strong>{plan?.validityDays}</strong></span>
-                                            <span> {plan?.whatIsThis}</span></option>
-                                    ))}
-                                </select>
-                                {errors.member_id && <p className="mt-1 text-sm text-red-600">{errors.member_id}</p>}
-                            </div> */}
-
                             <div>
                                 <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
                                 <select
@@ -517,24 +486,6 @@ const Register = () => {
 
                         </div>
 
-                        {/* Category and Vehicle Number Row */}
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-
-
-                            {/* {formData.category === '676ef9685c75082fcbc59c4f' && (
-                                    <div>
-                                        <label htmlFor="VehicleNumber" className="block text-sm font-medium text-gray-700">Vehicle Number</label>
-                                        <input
-                                            type="text"
-                                            id="VehicleNumber"
-                                            name="VehicleNumber"
-                                            value={formData.VehicleNumber}
-                                            onChange={handleChange}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
-                                        />
-                                    </div>
-                                )} */}
-                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label htmlFor="aadharfront" className="block text-sm font-medium text-gray-700">Aadhaar Front</label>
@@ -588,39 +539,6 @@ const Register = () => {
                             </div>
                         </div>
                     </div>
-
-
-
-                    {/* Referral Section */}
-                    {/* <div className="space-y-4">
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="is_referral_applied"
-                                name="is_referral_applied"
-                                checked={formData.is_referral_applied}
-                                onChange={(e) => setFormData(prev => ({ ...prev, is_referral_applied: e.target.checked }))}
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="is_referral_applied" className="ml-2 block text-sm text-gray-700">
-                                Apply Referral
-                            </label>
-                        </div>
-
-                        {formData.is_referral_applied && (
-                            <div>
-                                <label htmlFor="referral_code" className="block text-sm font-medium text-gray-700">Referral Code</label>
-                                <input
-                                    type="text"
-                                    id="referral_code"
-                                    name="referral_code_which_applied"
-                                    value={formData.referral_code_which_applied}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
-                                />
-                            </div>
-                        )}
-                    </div> */}
 
 
 

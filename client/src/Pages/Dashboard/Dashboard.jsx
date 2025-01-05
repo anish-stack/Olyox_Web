@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { FiUser, FiDollarSign, FiUsers, FiRefreshCw, FiEdit, FiLock, FiHelpCircle, FiGrid, FiTrendingUp, FiActivity, FiPieChart } from 'react-icons/fi';
 import LoginAlert from '../../Components/AlertPages/LoginAlert';
-import { Clock, Coins, CoinsIcon, LogOut, Outdent, Share, Share2Icon, UserPlus } from 'lucide-react';
+import { Clock, Coins, CoinsIcon, CopyCheck, IndianRupee, LogOut, Outdent, Share, Share2Icon, UserPlus } from 'lucide-react';
 import Recharge_Model from './Recharge_Model';
 import { formatDate } from './formData';
 import ReferralModal from './Refreal.model';
@@ -49,7 +49,7 @@ function Dashboard() {
     const fetchProvider = async () => {
         try {
             setIsLoading(true);
-            const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get_Single_Provider/${providerId}`);
+            const { data } = await axios.get(`https://api.olyox.com/api/v1/get_Single_Provider/${providerId}`);
             const levelLengths = Array.from({ length: 7 }, (_, i) => data.data?.[`Level${i + 1}`]?.length);
             const totalLength = levelLengths.reduce((sum, length) => sum + length, 0);
             setAllRefreal(totalLength)
@@ -64,7 +64,7 @@ function Dashboard() {
 
     // const fetchReferralsDetaisl = async () => {
     //     try {
-    //         const { data } = await axios.get(`https://olyox.digital4now.in/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+    //         const { data } = await axios.get(`https://api.olyox.com/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
     //         console.log(data.data)
     //         setAllRefreal(data.data)
     //     } catch (error) {
@@ -84,10 +84,11 @@ function Dashboard() {
         { icon: <FiEdit className="w-6 h-6" />, title: 'Update Profile', description: 'Modify your details', link: '/update-profile', color: 'from-purple-400 to-purple-600' },
         { icon: <FiLock className="w-6 h-6" />, title: 'Security', description: 'Change password', link: '/change-password', color: 'from-red-400 to-red-600' },
         { icon: <FiHelpCircle className="w-6 h-6" />, title: 'Support', description: 'Get help', link: '/contact', color: 'from-green-400 to-green-600' },
-        // { icon: <FiGrid className="w-6 h-6" />, title: 'Categories', description: 'Switch category', link: '/change-category', color: 'from-yellow-400 to-yellow-600' },
+      
         { icon: <Coins className="w-6 h-6" />, title: 'Recharge History', description: 'Check Your Past Recharge', link: '/Recharge-History', color: 'from-indigo-400 to-yellow-600' },
         { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' },
-        { icon: <UserPlus className="w-6 h-6" />, title: 'Referral History', description: ' Past and present Referral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' }
+        { icon: <UserPlus className="w-6 h-6" />, title: 'Referral History', description: ' Past and present Referral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' },
+        { icon: <CopyCheck className="w-6 h-6" />, title: 'Other Vendor Ids', description: ' Other Vendor Ids', link: `/Other-Vendor-Ids?id=${providerId}`, color: 'from-gray-400 to-red-600' }
 
 
     ];
@@ -155,7 +156,12 @@ function Dashboard() {
                                 <LogOut className="text-white" />
                                 <span className="text-white font-medium">Log Out</span>
                             </div>
+                            <a href="/Dublicate-vendor"  className="flex mt-5 items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                                <UserPlus className="text-white" />
+                                <span className="text-white font-medium">Make New id</span>
+                            </a>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -174,7 +180,7 @@ function Dashboard() {
                                 </p>
                             </div>
                             <div className="bg-blue-500/10 p-3 rounded-full">
-                                <FiDollarSign className="w-8 h-8 text-blue-500" />
+                                <IndianRupee className="w-8 h-8 text-blue-500" />
                             </div>
                         </div>
                     </div>
@@ -206,7 +212,7 @@ function Dashboard() {
                                 </p>
                             </div>
                             <div className="bg-green-500/10 p-3 rounded-full">
-                                <FiDollarSign className="w-8 h-8 text-green-500" />
+                                <IndianRupee className="w-8 h-8 text-green-500" />
                             </div>
                         </div>
                     </div>

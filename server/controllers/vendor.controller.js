@@ -5,15 +5,19 @@ const OtpService = require('../service/Otp_Send.Service.js');
 const SendEmailService = require('../service/SendEmail.Service.js');
 const crypto = require('crypto');
 const sendToken = require('../utils/SendToken.js');
-const bcrypt = require('bcrypt');
 const BhIdSchema = require('../model/Partner.model.js');
-const { CronJob } = require('cron');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
+const Bull = require('bull');
 // Register a vendor and send a verification email
+
+const fileUploadQueue = new Bull('file-upload-queue', {
+    redis: { host: process.env.REDIS_HOST, port: process.env.REDIS_PORT },
+});
+
 
 exports.registerVendor = async (req, res) => {
     try {
-        console.log("i am hit")
+
         const {
             dob,
             name, VehicleNumber, email, number, password, category,
@@ -60,96 +64,88 @@ exports.registerVendor = async (req, res) => {
             });
         }
 
-        // Check if the coordinates field is a string
-        let coordinatesArray = [];
-
-        if (
-            address?.location?.coordinates &&
-            typeof address.location.coordinates === 'string'
-        ) {
-            // Parse the string into an array
+        let coordinatesArray = [0, 0];
+        if (address?.location?.coordinates) {
             try {
-                coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
+                if (typeof address.location.coordinates === "string") {
+                    coordinatesArray = JSON.parse(address.location.coordinates).map(coord => parseFloat(coord));
+                } else if (Array.isArray(address.location.coordinates)) {
+                    coordinatesArray = address.location.coordinates.map(coord => parseFloat(coord));
+                }
+                if (!Array.isArray(coordinatesArray) || coordinatesArray.length !== 2 || coordinatesArray.some(isNaN)) {
+                    throw new Error("Invalid coordinates format");
+                }
             } catch (error) {
-                console.log("Invalid coordinates format. Unable to parse string to array.")
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid coordinates format. Unable to parse string to array.',
-                });
+                console.error("Coordinates parsing failed. Falling back to default coordinates.");
             }
-        } else if (
-            address?.location?.coordinates &&
-            Array.isArray(address.location.coordinates) &&
-            address.location.coordinates.length === 2
-        ) {
-
-            coordinatesArray = address.location.coordinates.map(coord => parseFloat(coord));
         }
-
-
-        if (
-            !Array.isArray(coordinatesArray) ||
-            coordinatesArray.length !== 2 ||
-            coordinatesArray.some(isNaN)
-        ) {
-            console.log("Invalid coordinates format. Expected [longitude, latitude]")
-
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid coordinates format. Expected [longitude, latitude].',
-            });
-        }
-
-
-
         address.location.coordinates = coordinatesArray;
 
 
         const existingVendor = await Vendor_Model.findOne({ $or: [{ email }, { number }] });
         if (existingVendor) {
-            console.log("Vendor already exists")
+            if (existingVendor.isEmailVerified === true) {
+                return res.status(400).json({ success: false, message: 'Vendor already exists, and the mobile number has been successfully verified.' });
+            } else {
+                const otpServiceR = new OtpService();
+                const { otp, expiryTime } = otpServiceR.generateOtp();
 
-            return res.status(400).json({ success: false, message: 'Vendor already exists' });
+                const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+                await SendWhatsAppMessage(message, number)
+                existingVendor.otp_ = otp;
+                existingVendor.otp_expire_time = expiryTime;
+                await existingVendor.save();
+                return res.status(201).json({
+                    success: true,
+                    message: 'Vendor already exists, but the mobile number has not been verified.',
+                    data: existingVendor,
+                    type: 'email',
+                    email: existingVendor.email,
+                    number: existingVendor.number,
+                    time: existingVendor.otp_expire_time,
+                });
+            }
         }
 
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
 
+
         const defaultImage = {
             secure_url: 'https://placehold.co/600x400',
             public_id: 'default-image',
         };
 
-        // Upload images to Cloudinary with fallback to default image
-        let uploadImageOne = defaultImage;
-        let uploadImageTwo = defaultImage;
-        let uploadImageThree = defaultImage;
 
-        try {
-            if (imageFileOne) {
-                uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
-            }
-        } catch (error) {
+        // let uploadImageOne = defaultImage;
+        // let uploadImageTwo = defaultImage;
+        // let uploadImageThree = defaultImage;
 
-            console.error('Error uploading Aadhar Front:', error);
-        }
+        // try {
+        //     if (imageFileOne) {
+        //         uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
+        //     }
+        // } catch (error) {
 
-        try {
-            if (imageFileTwo) {
-                uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
-            }
-        } catch (error) {
-            console.error('Error uploading Aadhar Back:', error);
-        }
+        //     console.error('Error uploading Aadhar Front:', error);
+        // }
 
-        try {
-            if (imageFileThree) {
-                uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
-            }
-        } catch (error) {
-            console.error('Error uploading Pancard:', error);
-        }
+        // try {
+        //     if (imageFileTwo) {
+        //         uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
+        //     }
+        // } catch (error) {
+        //     console.error('Error uploading Aadhar Back:', error);
+        // }
+
+        // try {
+        //     if (imageFileThree) {
+        //         uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
+        //     }
+        // } catch (error) {
+        //     console.error('Error uploading Pancard:', error);
+        // }
 
 
         // Generate codes
@@ -189,21 +185,21 @@ exports.registerVendor = async (req, res) => {
             aadharNumber,
             panNumber,
             myReferral: genreateReferral,
-            Documents: {
-                documentFirst: {
+            // Documents: {
+            //     documentFirst: {
 
-                    image: uploadImageOne.secure_url,
-                    public_id: uploadImageOne.public_id,
-                },
-                documentSecond: {
-                    image: uploadImageTwo.secure_url,
-                    public_id: uploadImageTwo.public_id,
-                },
-                documentThird: {
-                    image: uploadImageThree.secure_url,
-                    public_id: uploadImageThree.public_id,
-                },
-            },
+            //         image: uploadImageOne.secure_url,
+            //         public_id: uploadImageOne.public_id,
+            //     },
+            //     documentSecond: {
+            //         image: uploadImageTwo.secure_url,
+            //         public_id: uploadImageTwo.public_id,
+            //     },
+            //     documentThird: {
+            //         image: uploadImageThree.secure_url,
+            //         public_id: uploadImageThree.public_id,
+            //     },
+            // },
             referral_code_which_applied,
             is_referral_applied,
             otp_: otp,
@@ -292,27 +288,28 @@ exports.registerVendor = async (req, res) => {
             await find.save()
         }
 
-        const emailService = new SendEmailService();
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
-        const SendWhatsappMsg = await SendWhatsAppMessage(message, number)
-        console.log(SendWhatsappMsg)
-        // const emailData = {
-        //     to: email,
-        //     text: `Your OTP is ${otp}`,
-        // };
-        // emailData.subject = 'Verify your email';
-        // await emailService.sendEmail(emailData);
+        await SendWhatsAppMessage(message, number)
+
 
         await insertBh.save();
         await vendor.save();
-        console.log(vendor)
+        fileUploadQueue.add({ userId: vendor._id, fileFirst: imageFileOne, fileSecond: imageFileTwo, fileThird: imageFileThree }, {
+            attempts: 3,
+            backoff: {
+                type: 'exponential', 
+                delay: 5000,
+            },
+        });
+
         res.status(201).json({
             success: true,
             message: 'Vendor registered successfully',
             data: vendor,
             type: 'email',
             email: vendor.email,
+            number: vendor.number,
             time: vendor.otp_expire_time,
         });
     } catch (error) {
@@ -320,20 +317,16 @@ exports.registerVendor = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Vendor registration failed',
-            error: error || 'An unexpected error occurred',
+            error: error,
         });
     }
 };
 
 exports.verifyDocument = async (req, res) => {
     try {
-        const id = req.query.id;  // Extract vendor ID from request parameters
-        console.log(id)
-
-        // Find the vendor by ID
+        const id = req.query.id;
         const vendor = await Vendor_Model.findById(id);
 
-        // If vendor is not found, return a 404 response
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -341,13 +334,17 @@ exports.verifyDocument = async (req, res) => {
             });
         }
 
-        // Toggle the document verification status based on the current value
-        vendor.documentVerify = !vendor.documentVerify;  // If it's true, set to false; if it's false, set to true
 
-        // Save the updated vendor document
+        vendor.documentVerify = !vendor.documentVerify;
         await vendor.save();
 
-        // Send a success response with the updated vendor data
+
+        const message = vendor.documentVerify
+            ? `Hello ${vendor.name}, your documents have been successfully verified. Thank you for completing the process!`
+            : `Hello ${vendor.name}, your document verification has been revoked. Please contact support if you believe this is an error.`;
+
+        await SendWhatsAppMessage(message, vendor?.number);
+
         return res.status(200).json({
             success: true,
             message: 'Vendor document verification status updated successfully',
@@ -363,11 +360,12 @@ exports.verifyDocument = async (req, res) => {
     }
 };
 
+
 exports.verifyVendorEmail = async (req, res) => {
     try {
         const { email, otp, type } = req.body;
 
-        // Validate input
+
         if (!email || !otp) {
             return res.status(400).json({
                 success: false,
@@ -375,8 +373,8 @@ exports.verifyVendorEmail = async (req, res) => {
             });
         }
 
-        // Check if vendor exists
-        const vendor = await Vendor_Model.findOne({ email }).populate('member_id', 'category');
+
+        const vendor = await Vendor_Model.findOne({ email }).populate('member_id').populate('category');
         if (!vendor) {
             return res.status(404).json({
                 success: false,
@@ -385,7 +383,7 @@ exports.verifyVendorEmail = async (req, res) => {
         }
 
         if (type === 'email') {
-            // Handle email verification
+
             if (vendor.isEmailVerified) {
                 return res.status(400).json({
                     success: false,
@@ -407,22 +405,24 @@ exports.verifyVendorEmail = async (req, res) => {
                 });
             }
 
-            // Update vendor's email verified status
+
             vendor.isEmailVerified = true;
+            vendor.isActive = true;
+
             vendor.otp_ = null;
             vendor.otp_expire_time = null;
             const emailService = new SendEmailService();
 
             const emailData = {
                 to: email,
-                text: `        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                text: `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="color: #4CAF50; text-align: center;">Welcome to Olyox Pvt Ltd!</h2>
             <p>Dear <strong>${vendor.name || 'Vendor'}</strong>,</p>
             <p>Congratulations on completing your onboarding process with us!</p>
             <p><strong>Here are your details:</strong></p>
             <ul style="list-style: none; padding: 0;">
                 <li><strong>Vendor BH ID:</strong> ${vendor.myReferral}</li>
-                <li><strong>Plan:</strong> ${vendor.member_id?.title || 'Not Assigned'}</li>
+                <li><strong>Plan:</strong> ${vendor?.member_id?.title || 'Not Assigned'}</li>
                 <li><strong>Category:</strong> ${vendor.category?.title || 'Not Specified'}</li>
                 <li><strong>Mobile Number:</strong> ${vendor.number || 'Not Provided'}</li>
             </ul>
@@ -439,13 +439,30 @@ exports.verifyVendorEmail = async (req, res) => {
 `,
             };
             emailData.subject = 'onboarding complete';
-            await emailService.sendEmail(emailData);
+            // await emailService.sendEmail(emailData);
+            const message = `🌟 *Welcome to Olyox Pvt Ltd!* 🌟
 
+Dear *${vendor.name || 'Valued Vendor'}*,
+
+_We're thrilled to have you join our network!_
+
+Here's a snapshot of your details with us:
+- 🆔 *Vendor BH ID:* ${vendor.myReferral || 'Pending Assignment'}
+- 🗂️ *Category:* ${vendor.category?.title || 'To Be Specified'}
+
+Feel free to reach out if you have any questions or need assistance. We're here to support you every step of the way! 🎉
+
+Warm regards,
+The Olyox Team`;
+
+
+            await SendWhatsAppMessage(message, vendor.number)
             await vendor.save();
 
             return res.status(200).json({
                 success: true,
-                message: 'Email has been verified successfully.',
+                BHID: vendor.myReferral,
+                message: 'Mobile Number has been verified successfully.',
             });
 
         } else if (type === 'password') {
@@ -477,6 +494,7 @@ exports.verifyVendorEmail = async (req, res) => {
 
             return res.status(200).json({
                 success: true,
+                BHID: vendor.myReferral,
                 message: 'Password OTP verified successfully. Your password has been updated.',
             });
 
@@ -502,20 +520,16 @@ exports.verifyVendorEmail = async (req, res) => {
 exports.resendOtp = async (req, res) => {
     try {
         const { type, email } = req.body;
-        const vendor = await Vendor_Model.findOne({ email });
 
+        // Find vendor by email
+        const vendor = await Vendor_Model.findOne({ email });
         if (!vendor) {
             return res.status(404).json({ success: false, message: 'Vendor not found' });
         }
 
         const otpService = new OtpService();
         const { otp, expiryTime } = otpService.generateOtp();
-
-        const emailService = new SendEmailService();
-        const emailData = {
-            to: email,
-            text: `Your OTP is ${otp}`,
-        };
+        let message = '';
 
         if (type === 'email') {
             if (vendor.isEmailVerified) {
@@ -524,26 +538,40 @@ exports.resendOtp = async (req, res) => {
 
             vendor.otp_ = otp;
             vendor.otp_expire_time = expiryTime;
-            await vendor.save();
+            message = `Hi ${vendor.name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
-            emailData.subject = 'Verify your email';
-            await emailService.sendEmail(emailData);
-            return res.status(200).json({ success: true, message: 'OTP sent successfully for email verification' });
-        } else {
+        } else if (type === 'password') {
             vendor.password_otp = otp;
             vendor.password_otp_expire = expiryTime;
-            await vendor.save();
-
-            emailData.subject = 'Change your Password';
-            await emailService.sendEmail(emailData);
-            return res.status(200).json({ success: true, message: 'Password change OTP sent successfully' });
+            message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid type provided' });
         }
 
+        // Save vendor with updated OTP
+        await vendor.save();
+
+        // Send WhatsApp message
+        try {
+            await SendWhatsAppMessage(message, vendor?.number);
+        } catch (error) {
+            console.error('Error sending WhatsApp message:', error);
+            return res.status(500).json({ success: false, message: 'Failed to send WhatsApp message' });
+        }
+
+        // Send appropriate response
+        const successMessage =
+            type === 'email'
+                ? 'OTP sent successfully for email verification'
+                : 'Password change OTP sent successfully';
+
+        return res.status(200).json({ success: true, message: successMessage });
     } catch (error) {
         console.error('Error resending OTP:', error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 
 exports.loginVendor = async (req, res) => {
     try {
@@ -605,6 +633,8 @@ exports.getSingleProvider = async (req, res) => {
             .populate('category')
             .populate('member_id')
             .populate('payment_id')
+            .populate('payment_id')
+            .populate('copyParentId')
             .populate({
                 path: 'Level1',
                 populate: [
@@ -691,7 +721,103 @@ exports.getSingleProvider = async (req, res) => {
         })
     }
 }
+exports.getCopyOfProvider = async (req, res) => {
+    try {
+        // console.log("i am hit")
+        const { id } = req.params;
+        const provider = await Vendor_Model.find({ copyParentId: id })
+            .select('-password')
+            .populate('category')
+            .populate('member_id')
+            .populate('payment_id')
+            .populate('payment_id')
+            .populate('copyParentId')
+            .populate({
+                path: 'Level1',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level2',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level3',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level4',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level5',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level6',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level7',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            });
 
+
+        if (!provider) {
+            return res.status(400).json({
+                success: false,
+                message: 'Provider not founded by id',
+                error: 'Provider not founded by id'
+            })
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Provider founded by id',
+            data: provider
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            message: error.message
+        })
+    }
+}
 
 exports.changeVendorCategory = async (req, res) => {
     try {
@@ -911,15 +1037,10 @@ exports.forgetPassword = async (req, res) => {
         const { otp, expiryTime } = otpService.generateOtp();
 
         // Send OTP via email
-        const emailService = new SendEmailService();
-        const emailData = {
-            to: vendor.email, // Assuming vendor.email is available
-            subject: 'Reset your Password',
-            text: `Your OTP for password reset is: ${otp}`,
-        };
 
+        const message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
         try {
-            await emailService.sendEmail(emailData);
+            await SendWhatsAppMessage(message, vendor?.number);
         } catch (emailError) {
             return res.status(500).json({
                 success: false,
@@ -1002,3 +1123,291 @@ exports.updateVendorIsActive = async (req, res) => {
 }
 
 
+
+
+
+
+
+//copy her id with different category
+
+exports.copyVendor = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { category: newCategory, number, Newemail, password } = req.body;
+
+        const vendor = await Vendor_Model.findById(userId);
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found',
+                error: 'Vendor not found',
+            });
+        }
+
+        if (vendor.category === newCategory) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vendor already has this category',
+                error: 'Vendor already has this category',
+            });
+        }
+
+        if (!/^\d{10}$/.test(number)) {
+            console.log("Please provide a valid 10-digit phone number");
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a valid 10-digit phone number',
+            });
+        }
+
+
+        const otpService = new OtpService();
+        const { otp, expiryTime } = otpService.generateOtp();
+
+        function generateBhId() {
+            const randomNum = crypto.randomInt(100000, 999999);
+            return `BH${randomNum}`;
+        }
+        const generatedReferral = generateBhId();
+
+
+        const newBhId = new BhIdSchema({
+            BhId: generatedReferral,
+        });
+
+        const newVendor = new Vendor_Model({
+            ...vendor.toObject(),
+            _id: undefined,
+            email: Newemail,
+            isActive: false,
+            password: password,
+            wallet: 0,
+            level_id: 0,
+            Level1: [],
+            Level2: [],
+            Level3: [],
+            Level4: [],
+            Level5: [],
+            Level6: [],
+            Level7: [],
+            parentReferral_id: vendor._id,
+            category: newCategory,
+            isEmailVerified: false,
+            isCopy: true,
+            myReferral: generatedReferral,
+            plan_status: false,
+            member_id: null,
+            payment_id: null,
+            child_referral_ids: [],
+            higherLevel: 0,
+            recharge: 0,
+            referral_code_which_applied: null,
+            VehicleNumber: null,
+            copyParentId: vendor._id,
+            otp_: otp,
+            otp_expire_time: expiryTime,
+            number,
+        });
+
+        const message = `Dear Vendor,\n\nYour new vendor ID is ${generatedReferral}. Please verify your OTP: *${otp}* to proceed with onboarding for the category: ${newCategory}.`;
+        await SendWhatsAppMessage(message, number);
+
+        await newBhId.save();
+        await newVendor.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Vendor copy created successfully. Please verify the OTP sent to your phone.',
+            vendorId: newVendor._id,
+        });
+    } catch (error) {
+        console.error('Error creating vendor copy:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An unexpected error occurred while creating the vendor copy. Please try again later.',
+        });
+    }
+};
+
+exports.manuallyRegisterVendor = async (req, res) => {
+    try {
+        console.log("object",req.body)
+        const {
+            dob,
+            isActive,
+            member_id,
+            plan_status,
+            myReferral,
+            name, email, number, password, category, referral_code_which_applied, is_referral_applied = false
+        } = req.body;
+
+        // const files = req.files || [];
+        if (!name || !email  || !password || !category) {
+            console.log("Please enter all fields")
+            return res.status(400).json({ success: false, message: 'Please enter all fields' });
+        }
+
+        // if (dob) {
+        //     const dobDate = new Date(dob);
+        //     const currentDate = new Date();
+        //     const age = currentDate.getFullYear() - dobDate.getFullYear();
+        //     const isBeforeBirthday = currentDate < new Date(dobDate.setFullYear(currentDate.getFullYear()));
+
+        //     if (age < 18 || (age === 18 && isBeforeBirthday)) {
+        //         console.log("Vendor must be at least 18 years old")
+        //         return res.status(400).json({ success: false, message: 'Vendor must be at least 18 years old' });
+        //     }
+        // }
+
+
+        // if (!/^\d{10}$/.test(number)) {
+        //     console.log("Please provide a valid 10-digit phone number")
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Please provide a valid 10-digit phone number',
+        //     });
+        // }
+
+
+        let checkReferral = null;
+        let checkReferralFromBh = null;
+
+        if (referral_code_which_applied) {
+            checkReferral = await Vendor_Model.findOne({ myReferral: referral_code_which_applied });
+        } else {
+            checkReferralFromBh = await BhIdSchema.findOne({ BhId: referral_code_which_applied });
+        }
+
+        const vendor = new Vendor_Model({
+            name,
+            email,
+            // number,
+            password,
+            parentReferral_id: checkReferral?._id,
+            category,
+            myReferral,
+            referral_code_which_applied,
+            is_referral_applied,
+            dob,
+            isActive,
+            plan_status,
+            myReferral,
+            member_id:"6774f068d26e0d8a969fb8e3",
+        });
+
+        const insertBh = new BhIdSchema({
+            BhId: vendor.myReferral,
+        })
+
+
+        async function addChildToAllParents(vendorId, parentReferralId) {
+            if (!parentReferralId) return;
+
+            const parentReferral = await Vendor_Model.findById(parentReferralId);
+            if (parentReferral) {
+                if (!parentReferral.Child_referral_ids.includes(vendorId)) {
+                    parentReferral.Child_referral_ids.push(vendorId);
+                    await parentReferral.save();
+                }
+
+                if (parentReferral.parentReferral_id) {
+                    await addChildToAllParents(vendorId, parentReferral.parentReferral_id);
+                }
+            }
+        }
+        if (checkReferral) {
+            checkReferral.Level1.push(vendor._id);
+            await checkReferral.save();
+
+            let currentVendor = checkReferral;
+
+            const maxLevel = vendor.higherLevel || 5
+            for (let level = 2; level <= maxLevel; level++) {
+                if (!currentVendor.parentReferral_id) {
+                    console.log(`No parent referral ID for Vendor ID: ${currentVendor._id}`);
+                    break;
+                }
+
+                const higherLevelVendor = await Vendor_Model.findById(currentVendor.parentReferral_id);
+
+                if (higherLevelVendor) {
+                    const levelKey = `Level${level}`;
+
+
+                    // Ensure the level array is initialized
+                    if (!Array.isArray(higherLevelVendor[levelKey])) {
+                        higherLevelVendor[levelKey] = [];
+                    }
+
+                    higherLevelVendor[levelKey].push(vendor._id);
+
+
+                    console.log(`Added Vendor ID ${vendor._id} to ${levelKey} of Vendor ID: ${higherLevelVendor._id}`);
+
+                    // Save the updated higher-level vendor
+                    try {
+                        await higherLevelVendor.save();
+                    } catch (saveError) {
+                        console.error(`Error saving ${levelKey} for Vendor ID: ${higherLevelVendor._id}, saveError`);
+                    }
+
+                    currentVendor = higherLevelVendor; // Move up the hierarchy
+                } else {
+                    console.error(`Parent Vendor with ID ${currentVendor.parentReferral_id} not found`);
+                    break;
+                }
+            }
+        }
+
+
+        if (checkReferral && checkReferral.isActive) {
+            checkReferral.Child_referral_ids.push(vendor._id);
+            await addChildToAllParents(vendor._id, checkReferral.parentReferral_id);
+            await checkReferral.save();
+        }
+
+        if (checkReferralFromBh) {
+            checkReferralFromBh.vendorIds.push(vendor._id);
+            await checkReferralFromBh.save();
+        }
+
+        const find = await ActiveReferral_Model.findOne({ contactNumber: number })
+
+        if (find) {
+            find.isRegistered = true
+            await find.save()
+        }
+
+        // const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+
+        // await SendWhatsAppMessage(message, number)
+
+
+        await insertBh.save();
+        await vendor.save();
+        // fileUploadQueue.add({ userId: vendor._id, fileFirst: imageFileOne, fileSecond: imageFileTwo, fileThird: imageFileThree }, {
+        //     attempts: 3,
+        //     backoff: {
+        //         type: 'exponential', 
+        //         delay: 5000,
+        //     },
+        // });
+
+        res.status(201).json({
+            success: true,
+            message: 'Vendor registered successfully',
+            data: vendor,
+            type: 'email',
+            email: vendor.email,
+            number: vendor.number,
+            time: vendor.otp_expire_time,
+        });
+    } catch (error) {
+        console.error('Error registering vendor:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Vendor registration failed',
+            error: error,
+        });
+    }
+};

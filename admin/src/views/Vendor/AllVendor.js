@@ -27,13 +27,15 @@ function AllVendor() {
     const [modalType, setModalType] = React.useState('');
     const [selected, setSelected] = React.useState('');
     const [documentVerify, setDocumentVerify] = React.useState('');
+    const [rechargeModel,setRechargeModel] = React.useState(false);
+    const [rechargeData,setRechargeData] = React.useState({});
 
     const itemsPerPage = 10;
 
     const handleFetchBanner = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://olyox.digital4now.in/api/v1/all_vendor');
+            const { data } = await axios.get('https://api.olyox.com/api/v1/all_vendor');
             const allData = data.data;
             setCategory(allData.reverse() || []);
         } catch (error) {
@@ -44,11 +46,24 @@ function AllVendor() {
         }
     };
 
+    const handleFetchRecharge = async () => {
+        try {
+            const {data} = await axios.get('https://api.olyox.com/api/v1/membership-plans')
+            setRechargeData(data.data)
+        } catch (error) {
+            console.log("Internal server error",error)
+        }
+    }
+
+    React.useEffect(()=>{
+        handleFetchRecharge();
+    },[])
+
     const handleUpdateActive = async (id, currentStatus) => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://olyox.digital4now.in/api/v1/update_vendor_status/${id}`, {
+            const res = await axios.put(`https://api.olyox.com/api/v1/update_vendor_status/${id}`, {
                 isActive: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -61,10 +76,14 @@ function AllVendor() {
         }
     };
 
+    const handleRechargeModel = (id) => {
+        setRechargeModel(true)
+    }
+
     const handleDeleteBanner = async (email) => {
         setLoading(true);
         try {
-            const res = await axios.delete('https://olyox.digital4now.in/api/v1/delete_account', {
+            const res = await axios.delete('https://api.olyox.com/api/v1/delete_account', {
                 data: { email },
             });
             toast.success(res?.data?.message);
@@ -81,7 +100,7 @@ function AllVendor() {
         console.log(selected)
         setLoading(true);
         try {
-            const res = await axios.post(`https://olyox.digital4now.in/api/v1/verify_document?id=${selected}`);
+            const res = await axios.post(`https://api.olyox.com/api/v1/verify_document?id=${selected}`);
             console.log(res?.data);
             toast.success(res?.data?.message);
             handleFetchBanner();
@@ -130,7 +149,7 @@ function AllVendor() {
         setDocumentVerify(documentVerify)
     };
 
-    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Active/Block', 'Action', 'View Detail'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'Action', 'View Detail'];
 
     return (
         <>
@@ -180,6 +199,15 @@ function AllVendor() {
                                     onClick={() => handleModalOpen(item.Documents, 'Documents', item._id, item.documentVerify)}
                                 >
                                     View Documents
+                                </CButton>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <CButton
+                                    color="warning"
+                                    disabled={!item.documentVerify}
+                                    onClick={() => handleRechargeModel(item._id)}
+                                >
+                                    Recharge
                                 </CButton>
                             </CTableDataCell>
                             <CTableDataCell>
@@ -344,6 +372,12 @@ function AllVendor() {
                             >
                                 Verify Documents
                             </button>
+                        </>
+                    )}
+
+                    {rechargeModel && (
+                        <>
+
                         </>
                     )}
 

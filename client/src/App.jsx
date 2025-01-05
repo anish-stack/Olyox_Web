@@ -1,10 +1,8 @@
-import React from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './Pages/Home/Home'
 import Header from './Components/Header/Header.jsx'
 import Footer from './Components/Footer/Footer.jsx'
 import AboutPage from './Pages/About/AboutPage.jsx'
-import Contact from './Pages/Contact/ContactPage.jsx'
 import ContactPage from './Pages/Contact/ContactPage.jsx'
 import Service from './Pages/Service/Service.jsx'
 import Register from './Pages/Auth/Register.jsx'
@@ -20,9 +18,12 @@ import ForgetPassword from './Pages/Auth/ForgetPassword.jsx'
 import Recharge_History from './Pages/Dashboard/Recharge_History.jsx'
 import Withdrawals from './Pages/Dashboard/Withdrawals.jsx'
 import BhVerification from './Pages/Auth/Bh.Verifcication.jsx'
-import Allreferral from './Pages/Dashboard/Allreferral.jsx'
 import AllReferral from './Pages/Dashboard/Allreferral.jsx'
 import DoneRefer from './Pages/Dashboard/DoneRefer.jsx'
+import { Toaster } from 'react-hot-toast'
+import CopyVendor from './Pages/Dashboard/CopyVendor.jsx'
+import OtherVendors from './Pages/Dashboard/Other/OtherVendors.jsx'
+import ManualRegister from './Pages/ManualRegister/ManualRegister.jsx'
 // import About from './Pages/About/About'
 
 function App() {
@@ -44,23 +45,22 @@ function App() {
         <Route path='/term' element={<Term />} />
         <Route path='/get-my-referral/:id' element={<DoneRefer />} />
 
-        
+
         <Route path='/Bh' element={<BhVerification />} />
 
 
         <Route path='/Recharge-History' element={<Recharge_History />} />
         <Route path='/Withdrawals-History' element={<Withdrawals />} />
         <Route path='/Refrreral-History' element={<AllReferral />} />
-
-
-
-
         <Route path='/Forgot-Password' element={<ForgetPassword />} />
+        <Route path='/Dublicate-vendor' element={<CopyVendor />} />
+        <Route path='/Other-Vendor-Ids' element={<OtherVendors />} />
+        <Route path='/manual-register' element={<ManualRegister />} />
 
 
-       
         <Route path='/privacy' element={<Privacy />} />
       </Routes>
+        <Toaster />
       <Footer />
     </BrowserRouter>
   )

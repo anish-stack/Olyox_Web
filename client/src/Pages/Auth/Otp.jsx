@@ -7,10 +7,11 @@ const Otp = () => {
     const location = new URLSearchParams(window.location.search);
     const type = location.get("type");
     const email = location.get("email");
-    const expireTime = location.get("expireTime");
+    const numberGrom = location.get("number");
+
 
     const [formData, setFormData] = useState({
-        otp: "", // 6-digit OTP
+        otp: "",
         type: type,
         email: email,
     });
@@ -28,7 +29,8 @@ const Otp = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         if (!formData.otp || formData.otp.length !== 6) {
             toast.error("Please enter a valid 6-digit OTP");
             return;
@@ -36,12 +38,12 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://olyox.digital4now.in/api/v1/verify_email",
+                "https://api.olyox.com/api/v1/verify_email",
                 formData
             );
 
             toast.success(response.data.message || "OTP verified successfully!");
-            window.location.href = `/login`
+            window.location.href = `/login?bh=${response.data.BHID}`
 
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to verify OTP.");
@@ -58,7 +60,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://olyox.digital4now.in/api/v1/resend_Otp",
+                "https://api.olyox.com/api/v1/resend_Otp",
                 { email, type }
             );
             toast.success(response.data.message || "OTP sent successfully!");
@@ -69,13 +71,18 @@ const Otp = () => {
             setLoading(false);
         }
     };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit(e);
+        }
+    };
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-[#FFF4F4]">
             <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md">
                 <h2 className="text-center text-2xl font-semibold mb-4">Enter OTP</h2>
                 <p className="text-center text-gray-600 mb-4">
-                    We have sent a 6-digit OTP to <strong>{email}</strong>
+                    We have sent a 6-digit OTP to <strong>{numberGrom}</strong>
                 </p>
                 <form>
                     <div className="mb-4">
@@ -89,6 +96,7 @@ const Otp = () => {
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             maxLength="6"
                             placeholder="Enter OTP"
+                            onKeyDown={handleKeyPress}
                             value={formData.otp}
                             onChange={handleChange}
                             required

@@ -3,36 +3,38 @@ const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const cluster = require("cluster");
+const os = require("os");
 const PORT = process.env.PORT || 5000;
 const app = express();
 const redis = require("redis");
 const connectDb = require("./config/db");
 const router = require("./routes/routes");
+const setupBullBoard = require('./bullBoard');
 
+// Redis client setup
 const redisClient = redis.createClient({
     url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
 });
 
-// (async () => {
-//     redisClient.on("error", (err) => {
-//         console.log(err)
-//     });
+(async () => {
+    redisClient.on("error", (err) => {
+        console.log(err);
+    });
 
-//     redisClient.on("ready", () => console.log("Redis is ready"));
+    redisClient.on("ready", () => console.log("Redis is ready"));
 
-//     try {
-//         await redisClient.connect();
-//         await redisClient.ping();
-//         app.locals.redis = redisClient;
-//     } catch (err) {
-//         console.log(err)
-//     }
-// })();
+    try {
+        await redisClient.connect();
+        await redisClient.ping();
+        app.locals.redis = redisClient;
+    } catch (err) {
+        console.log(err);
+    }
+})();
 
-
+// Middleware and routes setup
 app.use(cors());
-
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -68,30 +70,26 @@ app.get("/Flush-all-Redis-Cached", async (req, res) => {
     }
 });
 
-
 app.use("/api/v1", router);
 
 app.post('/admin-login', (req, res) => {
-    console.log(req.body)
+    console.log(req.body);
     const { email, password } = req.body;
-    const defaultEmail = process.env.ADMIN_EMAIL || "admin@gmail.com"
+    const defaultEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
     const defaultPassword = process.env.ADMIN_PASSWORD || "olyox@admin";
 
-    console.log(defaultEmail)
+    console.log(defaultEmail);
     if (email === defaultEmail && password === defaultPassword) {
-
-        res.json({ message: 'Login successful', login: true })
+        res.json({ message: 'Login successful', login: true });
     } else {
-        res.status(401).json({ message: 'Invalid credentials' })
+        res.status(401).json({ message: 'Invalid credentials' });
     }
-})
-
-
+});
 
 app.use((err, req, res, next) => {
     if (err.name === 'ValidationError') {
         for (const field in err.errors) {
-            console.log(`Validation Error on field '${field}': ${err.errors[field].message}`)
+            console.log(`Validation Error on field '${field}': ${err.errors[field].message}`);
         }
         return res.status(400).json({
             success: false,
@@ -105,6 +103,26 @@ app.use((err, req, res, next) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log('Server is running on port', PORT);
-});
+setupBullBoard(app);
+
+if (cluster.isMaster) {
+    // Fork workers for each CPU core
+    const numCores = os.cpus().length;
+    console.log(`Master process is running on ${process.pid}`);
+    console.log(`Forking ${numCores} workers`);
+
+    for (let i = 0; i < numCores; i++) {
+        cluster.fork(); // Create a new worker for each CPU core
+    }
+
+    cluster.on("exit", (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died`);
+    });
+
+} else {
+    // Worker processes have a HTTP server
+    app.listen(PORT, () => {
+        console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
+        console.log('Server is running on port', PORT);
+    });
+}

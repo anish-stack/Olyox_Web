@@ -15,7 +15,7 @@ const BhVerification = () => {
       setLoading(true);
       setError(null);
 
-      const { data } = await axios.post('https://olyox.digital4now.in/api/v1/check-bh-id', { bh });
+      const { data } = await axios.post('https://api.olyox.com/api/v1/check-bh-id', { bh });
 
       if (!data.success) {
         setLoading(false);
@@ -29,6 +29,7 @@ const BhVerification = () => {
         window.location.href = `/register?bh_id=${bh}`;
       }, 4500);
     } catch (err) {
+      console.log(err)
       setResponse(null);
       setError(err.response?.data?.message || 'An unexpected error occurred. Please try again.');
     } finally {

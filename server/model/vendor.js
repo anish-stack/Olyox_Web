@@ -11,6 +11,10 @@ const vendorSchema = new mongoose.Schema({
     bhId: {
         type: String,
     },
+    isManually: {
+        type: Boolean,
+        default: false
+    },
     email: {
         type: String,
         required: [true, 'Email is required'],
@@ -20,13 +24,17 @@ const vendorSchema = new mongoose.Schema({
     },
     number: {
         type: String,
-        required: [true, 'Phone Number is required'],
-        match: [/^\d{10}$/, 'Please provide a valid 10-digit phone number']
+        // required: [true, 'Phone Number is required'],
+        // match: [/^\d{10}$/, 'Please provide a valid 10-digit phone number']
     },
     password: {
         type: String,
         required: [true, 'Password is required'],
         minlength: [8, 'Password must be at least 8 characters long']
+    },
+    isFreePlanActive: {
+        type: Boolean,
+        default: false
     },
     temp_password: {
         type: String
@@ -56,6 +64,7 @@ const vendorSchema = new mongoose.Schema({
             },
             coordinates: {
                 type: [Number],
+                default: [0, 0]
             }
         },
         pincode: {
@@ -84,7 +93,7 @@ const vendorSchema = new mongoose.Schema({
     },
     isActive: {
         type: Boolean,
-        default: true
+        default: false
     },
     plan_status: {
         type: Boolean,
@@ -98,7 +107,14 @@ const vendorSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor',
     },
-
+    isCopy: {
+        type: Boolean,
+        default: false
+    },
+    copyParentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    },
     Child_referral_ids: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Vendor',
@@ -222,16 +238,17 @@ const vendorSchema = new mongoose.Schema({
     },
     dob: {
         type: Date,
+        default:new Date()
     },
     higherLevel: {
         type: Number
     },
     documentVerify: {
         type: Boolean,
-
     },
     wallet: {
-        type: Number
+        type: Number,
+        default: 0
     },
 
     aadharNumber: {
