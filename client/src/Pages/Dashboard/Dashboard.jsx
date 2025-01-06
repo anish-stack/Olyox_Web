@@ -84,7 +84,7 @@ function Dashboard() {
         { icon: <FiEdit className="w-6 h-6" />, title: 'Update Profile', description: 'Modify your details', link: '/update-profile', color: 'from-purple-400 to-purple-600' },
         { icon: <FiLock className="w-6 h-6" />, title: 'Security', description: 'Change password', link: '/change-password', color: 'from-red-400 to-red-600' },
         { icon: <FiHelpCircle className="w-6 h-6" />, title: 'Support', description: 'Get help', link: '/contact', color: 'from-green-400 to-green-600' },
-      
+
         { icon: <Coins className="w-6 h-6" />, title: 'Recharge History', description: 'Check Your Past Recharge', link: '/Recharge-History', color: 'from-indigo-400 to-yellow-600' },
         { icon: <Outdent className="w-6 h-6" />, title: 'Withdraw History', description: ' Past and present Withdrawals', link: '/Withdrawals-History', color: 'from-gray-400 to-red-600' },
         { icon: <UserPlus className="w-6 h-6" />, title: 'Referral History', description: ' Past and present Referral', link: '/Refrreral-History', color: 'from-gray-400 to-red-600' },
@@ -110,7 +110,11 @@ function Dashboard() {
                                 </p>
                             </h1>
                             <p className="text-sm font-bold text-white mb-2">{allProvider?.category?.title}</p>
-
+                            {/* {
+                                        allProvider.plan_status ? (
+                                            <span className="text-white text-sm font-bold">Plan Active</span>
+                                        ):null
+                                    } */}
                             <div className="mb-3 mt-3">
                                 {allProvider?.payment_id?.payment_approved ? (
                                     new Date(allProvider?.payment_id?.end_date) < new Date() ? (
@@ -124,10 +128,11 @@ function Dashboard() {
                                     )
                                 ) : null}
                             </div>
-
+                            {/* 
                             <div className="flex items-center cursor-pointer justify-between sm:justify-start space-x-4 bg-gradient-to-r from-red-700 to-red-600 rounded-lg px-6 py-3 shadow-lg">
                                 <div onClick={handleOpenR} className="flex items-center space-x-2">
                                     <FiUser className="text-white text-lg" />
+
                                     <span className="text-white font-semibold text-sm">
                                         Referral Code: {allProvider?.myReferral || 'N/A'}
                                     </span>
@@ -137,7 +142,25 @@ function Dashboard() {
                                     <span className="text-white text-xs font-medium">Share</span>
                                     <Share2Icon className="text-white text-lg" />
                                 </div>
-                            </div>
+                            </div> */}
+                            <button
+                                disabled={allProvider?.plan_status === false} // Disables the button if plan_status is false
+                                onClick={() => {
+                                    if (allProvider?.plan_status === false) {
+                                        alert('Your plan has expired. Please renew to use the referral code.');
+                                    } else {
+                                        handleOpenR(); // Proceed with the normal functionality
+                                    }
+                                }}
+                                className="flex items-center space-x-2 bg-gradient-to-r from-red-700 to-red-600 rounded-lg px-6 py-3 shadow-lg"
+                            >
+                                <FiUser className="text-white text-lg" />
+                                <span className="text-white font-semibold text-sm">
+                                    Referral Code: {allProvider?.myReferral || 'N/A'}
+                                </span>
+                            </button>
+
+
                             <div className="flex mt-2 items-center bg-red-5600 p-3 rounded-md shadow-sm">
                                 <Clock className="text-white text-xl mr-3" />
                                 <div>
@@ -156,12 +179,12 @@ function Dashboard() {
                                 <LogOut className="text-white" />
                                 <span className="text-white font-medium">Log Out</span>
                             </div>
-                            <a href="/Dublicate-vendor"  className="flex mt-5 items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                            <a href="/Dublicate-vendor" className="flex mt-5 items-center cursor-pointer space-x-2 bg-white/10 rounded-lg px-4 py-2">
                                 <UserPlus className="text-white" />
                                 <span className="text-white font-medium">Make New id</span>
                             </a>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

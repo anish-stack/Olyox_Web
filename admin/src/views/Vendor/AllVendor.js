@@ -7,11 +7,13 @@ import {
     CPaginationItem,
     CFormSwitch,
     CNavLink,
+
     CModal,
     CModalHeader,
     CModalBody,
     CModalFooter,
     CButton,
+    CFormInput,
 } from '@coreui/react';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
@@ -23,14 +25,26 @@ function AllVendor() {
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const [modalData, setModalData] = React.useState(null);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [statusFilter, setStatusFilter] = React.useState('');
+
     const [showModal, setShowModal] = React.useState(false);
     const [modalType, setModalType] = React.useState('');
     const [selected, setSelected] = React.useState('');
     const [documentVerify, setDocumentVerify] = React.useState('');
-    const [rechargeModel,setRechargeModel] = React.useState(false);
-    const [rechargeData,setRechargeData] = React.useState({});
+    const [rechargeModel, setRechargeModel] = React.useState(false);
+    const [rechargeData, setRechargeData] = React.useState({});
+    const [plans, setPlans] = React.useState([])
 
-    const itemsPerPage = 10;
+    const [selectedPlan, setSelectedPlan] = React.useState('');
+    const [vendorId, setVendorId] = React.useState(null);
+
+    const handleRechargeModel = (id) => {
+        setVendorId(id);
+        setRechargeModel(true);
+
+    };
+
 
     const handleFetchBanner = async () => {
         setLoading(true);
@@ -45,19 +59,33 @@ function AllVendor() {
             setLoading(false);
         }
     };
+    // const handleFetchPlans = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const { data } = await axios.get('https://www.api.olyox.com/api/v1/membership-plans');
+    //         const allData = data.data;
+    //         setPlans(allData || []);
+    //     } catch (error) {
+    //         console.error('Error fetching data:', error);
+    //         toast.error('Failed to load data. Please try again.');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const handleFetchRecharge = async () => {
         try {
-            const {data} = await axios.get('https://www.api.olyox.com/api/v1/membership-plans')
+            const { data } = await axios.get('https://www.api.olyox.com/api/v1/membership-plans')
             setRechargeData(data.data)
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
         }
     }
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
+        // handleFetchPlans()
         handleFetchRecharge();
-    },[])
+    }, [])
 
     const handleUpdateActive = async (id, currentStatus) => {
         setLoading(true);
@@ -76,9 +104,27 @@ function AllVendor() {
         }
     };
 
-    const handleRechargeModel = (id) => {
-        setRechargeModel(true)
-    }
+    const handleSaveChanges = async () => {
+        setLoading(true)
+        try {
+            const { data } = await axios.put('http://localhost:7000/api/v1/free_plan_approve', {
+                vendor_id: vendorId,
+                plan_id: selectedPlan
+            })
+            console.log(data)
+            setRechargeModel(false);
+            setLoading(false)
+
+
+        } catch (error) {
+            console.log(error)
+            setLoading(false)
+
+            setRechargeModel(false);
+
+        }
+
+    };
 
     const handleDeleteBanner = async (email) => {
         setLoading(true);
@@ -133,14 +179,39 @@ function AllVendor() {
         handleFetchBanner();
     }, []);
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = category.slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(category.length / itemsPerPage);
+    const filteredData = category
+        .filter(item => {
+            // Search in name, email, number, or referral
+            const searchMatch =
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
 
+                (item?.myReferral && item.myReferral.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            // Apply status filter
+            const statusMatch = statusFilter ? item.isActive.toString() === statusFilter : true;
+
+            return searchMatch && statusMatch;
+        });
+
+    const itemsPerPage = 20;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+
+    // Calculate the total number of pages based on filtered data
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1); // Reset to first page when search query changes
+    };
 
+    const handleStatusFilterChange = (e) => {
+        setStatusFilter(e.target.value);
+        setCurrentPage(1); // Reset to first page when status filter changes
+    };
     const handleModalOpen = (data, type, id, documentVerify) => {
         setModalData(data);
         setSelected(id)
@@ -153,6 +224,32 @@ function AllVendor() {
 
     return (
         <>
+
+            <div className="d-flex flex-column flex-md-row align-items-center mb-3">
+                <div className="mb-2 col-10 mb-md-0 me-md-3">
+                    <CFormInput
+                        type="text"
+                        placeholder="Search by Name or Email Or BH"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="form-control"
+                    />
+                </div>
+                <div className="mb-2 col-2 mb-md-0 me-md-3">
+                    <select
+                        value={statusFilter}
+                        onChange={handleStatusFilterChange}
+                        aria-label="Select Vendor Status"
+                        className="form-select"
+                    >
+                        <option value="">Select Status</option>
+                        <option value="true">Active</option>
+                        <option value="false">Blocked</option>
+                    </select>
+                </div>
+            </div>
+
+
             {loading ? (
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
@@ -167,7 +264,7 @@ function AllVendor() {
                     // btnText="Add Vendor"
                     btnURL="/vendor/add-vendor"
                     tableHeading={heading}
-                    tableContent={currentData.map((item, index) => (
+                    tableContent={filteredData.map((item, index) => (
                         <CTableRow key={item._id}>
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                             <CTableDataCell>
@@ -375,18 +472,93 @@ function AllVendor() {
                         </>
                     )}
 
-                    {rechargeModel && (
-                        <>
-
-                        </>
-                    )}
 
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" onClick={() => setShowModal(false)}>
                         Close
                     </CButton>
+
+
                 </CModalFooter>
+
+
+            </CModal>
+
+            <CModal visible={rechargeModel} onClose={() => setRechargeModel(false)}>
+                <CModalHeader>
+                    <h5>Assign Recharge</h5>
+                </CModalHeader>
+                <CModalBody>
+
+                    <div
+                        className="modal fade"
+                        id="rechargeModal"
+                        tabIndex="-1"
+                        aria-labelledby="rechargeModalLabel"
+                        aria-hidden="true"
+                    >
+
+                        <h5 className="modal-title" id="rechargeModalLabel">
+                            Select Plan
+                        </h5>
+                        <button
+                            type="button"
+                            className="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            onClick={() => setRechargeModel(false)}
+                        ></button>
+                    </div>
+                    <div className="modal-body">
+                        <form>
+                            <div className="mb-3">
+                                <label htmlFor="planSelect" className="form-label">
+                                    Choose a Plan
+                                </label>
+                                <select
+                                    className="form-select"
+                                    id="planSelect"
+                                    value={selectedPlan}
+                                    onChange={(e) => setSelectedPlan(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        Select a plan
+                                    </option>
+                                    {rechargeData && rechargeData.length > 0 && (
+                                        rechargeData.map((item, index) => (
+                                            <option key={index} value={item._id}>
+                                                {item.title} - Rs:{item.price} - Level {item.level} - {item.validityDays}/{item.whatIsThis}
+                                            </option>
+                                        ))
+                                    )}
+
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div className="modal-footer">
+                        <button
+                            type="button"
+                            className="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            onClick={() => setRechargeModel(false)}
+                        >
+                            Close
+                        </button>
+                        <button
+                            type="button"
+                            disabled={loading}
+                            className="btn btn-primary"
+                            onClick={handleSaveChanges}
+                        >
+                            {loading ? 'Please Wait ...' : 'Save Changes'}
+                        </button>
+                    </div>
+
+                </CModalBody>
+
+
             </CModal>
         </>
     );
