@@ -1,5 +1,5 @@
 config:
-  target: 'https://api.olyox.com/api/v1'
+  target: 'https://www.api.olyox.com/api/v1'
   phases:
     - duration: 30s
       arrivalRate: 100

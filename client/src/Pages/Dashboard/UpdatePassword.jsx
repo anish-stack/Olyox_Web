@@ -42,7 +42,7 @@ function UpdatePassword() {
         setLoading(true);
 
         try {
-            await axios.post(`https://api.olyox.com/api/v1/change_Vendor_Password`, {
+            await axios.post(`https://www.api.olyox.com/api/v1/change_Vendor_Password`, {
                 oldPassword: formData.oldPassword,
                 newPassword: formData.newPassword,
                 email: formData.email

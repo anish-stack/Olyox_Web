@@ -36,7 +36,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('https://api.olyox.com/admin-login', formData);
+      const res = await axios.post('https://www.api.olyox.com/admin-login', formData);
       const { login } = res.data;
 
       sessionStorage.setItem('login', login);

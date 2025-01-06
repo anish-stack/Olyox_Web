@@ -15,7 +15,7 @@ const BhVerification = () => {
       setLoading(true);
       setError(null);
 
-      const { data } = await axios.post('https://api.olyox.com/api/v1/check-bh-id', { bh });
+      const { data } = await axios.post('https://www.api.olyox.com/api/v1/check-bh-id', { bh });
 
       if (!data.success) {
         setLoading(false);

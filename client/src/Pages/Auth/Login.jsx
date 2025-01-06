@@ -28,7 +28,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://api.olyox.com/api/v1/login', formData);
+      const response = await axios.post('https://www.api.olyox.com/api/v1/login', formData);
       if (response.data.success) {
         const token = response.data.token;
         const user = response.data.user;
