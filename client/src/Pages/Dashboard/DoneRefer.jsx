@@ -31,6 +31,7 @@ function DoneRefer() {
       const { data } = await axios.get(`https://api.olyox.com/api/v1/get_Single_Provider/${id}`);
       setVendor(data.data);
     } catch (error) {
+      
       setError('Failed to fetch referral data. Please try again later.');
     } finally {
       setLoading(false);
