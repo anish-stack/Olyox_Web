@@ -34,7 +34,7 @@ function ForgetPassword() {
         }
 
         try {
-            const response = await axios.post('https://api.olyox.com/api/v1/forget-password', formData);
+            const response = await axios.post('https://www.api.olyox.com/api/v1/forget-password', formData);
             console.log(response.data)
             const { email, time } = response.data
             setLoading(false);

@@ -13,7 +13,7 @@ const AllEnquiry = () => {
   useEffect(() => {
     const fetchEnquiries = async () => {
       try {
-        const response = await axios.get('https://api.olyox.com/api/v1/enquiries');
+        const response = await axios.get('https://www.api.olyox.com/api/v1/enquiries');
 
           setEnquiries(response.data.data);
           setFilteredEnquiries(response.data.data); // Set initial data as filtered data
