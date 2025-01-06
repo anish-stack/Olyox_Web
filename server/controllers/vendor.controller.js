@@ -577,40 +577,62 @@ exports.loginVendor = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        console.log("Login request received with email:", email);
+        // Step 1: Check if both email and password are provided
         if (!email || !password) {
+            console.error("Missing email or password:", { email, password });
             return res.status(400).json({ success: false, message: 'Please provide both email and password' });
         }
+
+
+        // Step 2: Try to find the vendor by referral or number
         let vendor = await Vendor_Model.findOne({ myReferral: email }).populate('category', 'Profile_id');
+        console.log("Vendor data found by myReferral:", vendor);
+
         if (!vendor) {
             vendor = await Vendor_Model.findOne({ number: email }).populate('category', 'Profile_id');
+            console.log("Vendor data found by number:", vendor);
         }
 
-
+        // Step 3: Check if vendor exists
         if (!vendor) {
+            console.warn("Vendor not found for email/number:", email);
             return res.status(404).json({
                 success: false,
                 message: 'Vendor not found. Please check your email or number and try again.',
             });
         }
 
-
-        const isPasswordMatch = await vendor.comparePassword(password);
-        if (!isPasswordMatch) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials' });
-        }
+        // Step 4: Check if the account is blocked
         if (vendor.isActive === false) {
+            console.warn("Blocked vendor attempted login:", { vendorId: vendor._id, email });
             return res.status(401).json({
                 success: false,
                 message: 'Your account has been blocked due to suspicious activity. Please contact the admin for further assistance.'
             });
         }
 
-        await sendToken(vendor, res, 200)
+        // Step 5: Compare the password
+        console.log("Comparing password for vendor:", { vendorId: vendor._id, email });
+        const isPasswordMatch = await vendor.comparePassword(password);
+        console.log("Password match status:", isPasswordMatch);
+
+        if (!isPasswordMatch) {
+            console.warn("Invalid password attempt for vendor:", { vendorId: vendor._id, email });
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        // Step 6: Send the token upon successful login
+        console.log("Successful login for vendor:", { vendorId: vendor._id, email });
+        await sendToken(vendor, res, 200);
+
     } catch (error) {
-        console.error('Error logging in vendor:', error);
+        // Step 7: Catch and log unexpected errors
+        console.error('Error logging in vendor:', error.message, error.stack);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 
 // Vendor logout (simple session-based logout example)
 exports.logoutVendor = async (req, res) => {
