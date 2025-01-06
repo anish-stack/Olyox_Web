@@ -586,11 +586,11 @@ exports.loginVendor = async (req, res) => {
 
 
         // Step 2: Try to find the vendor by referral or number
-        let vendor = await Vendor_Model.findOne({ myReferral: email }).populate('category', 'Profile_id');
+        let vendor = await Vendor_Model.findOne({ myReferral: email }).populate('category');
         console.log("Vendor data found by myReferral:", vendor);
 
         if (!vendor) {
-            vendor = await Vendor_Model.findOne({ number: email }).populate('category', 'Profile_id');
+            vendor = await Vendor_Model.findOne({ number: email }).populate('category');
             console.log("Vendor data found by number:", vendor);
         }
 
@@ -656,70 +656,7 @@ exports.getSingleProvider = async (req, res) => {
             .populate('member_id')
             .populate('payment_id')
             .populate('payment_id')
-            .populate('copyParentId')
-            .populate({
-                path: 'Level1',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level2',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level3',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level4',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level5',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level6',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            })
-            .populate({
-                path: 'Level7',
-                populate: [
-                    { path: 'Child_referral_ids' },
-                    { path: 'category' },
-                    { path: 'payment_id' },
-                    { path: 'member_id' }
-                ],
-            });
+          
 
 
         if (!provider) {
