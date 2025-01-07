@@ -7,7 +7,6 @@ import {
     CPaginationItem,
     CFormSwitch,
     CNavLink,
-
     CModal,
     CModalHeader,
     CModalBody,
@@ -107,7 +106,7 @@ function AllVendor() {
     const handleSaveChanges = async () => {
         setLoading(true)
         try {
-            const { data } = await axios.put('http://localhost:7000/api/v1/free_plan_approve', {
+            const { data } = await axios.put('https://www.api.olyox.com/api/v1/free_plan_approve', {
                 vendor_id: vendorId,
                 plan_id: selectedPlan
             })
