@@ -6,6 +6,7 @@ const ActiveReferral_Model = require('../model/activereferal.js');
 const cron = require('node-cron');
 const CronJobLog = require('../model/CronJobLogSchema.js');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
+const vendor = require('../model/vendor');
 
 const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
@@ -412,7 +413,7 @@ exports.assignFreePlan = async (req, res) => {
     try {
         const { vendor_id, plan_id } = req.body;
 
-        const checkVendor = await Vendor.findById(vendor_id);
+        const checkVendor = await vendor.findById(vendor_id).populate('category');
         if (!checkVendor) {
             return res.status(404).json({
                 success: false,
@@ -474,8 +475,14 @@ exports.assignFreePlan = async (req, res) => {
 
         // Save updated vendor data
         await checkVendor.save();
+        const vendorMessage = `Congratulations, ${checkVendor.name}!\n\nYour free plan has been activated successfully! ✅\n\nVendor BHID: ${checkVendor.myReferral}\nCategory: ${checkVendor.category?.title || 'Not Specified'}\nPlan Valid Until: ${endDate.toLocaleDateString()}\n\nWelcome to Olyox! 🚀\n\nThank you for choosing Olyox! ❤️`;
 
-        // Return success response
+        // const encodedMessage = encodeURIComponent(message);
+        
+
+
+       const data = await SendWhatsAppMessage(vendorMessage, checkVendor.number);
+        console.log(data)
         return res.status(200).json({
             success: true,
             message: "Plan assigned successfully.",

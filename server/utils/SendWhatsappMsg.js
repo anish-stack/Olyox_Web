@@ -45,7 +45,7 @@ const SendWhatsAppMessage = async (Message, MobileNumber) => {
             };
         }
     } catch (error) {
-        console.error('Error sending WhatsApp message:', error.message || error);
+        console.error('Error sending WhatsApp message:', error || error);
         return {
             success: false,
             message: 'An error occurred while sending the WhatsApp message.',

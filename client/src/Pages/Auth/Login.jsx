@@ -28,15 +28,16 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://www.api.olyox.com/api/v1/login', formData,{
+      const response = await axios.post('https://www.sec.olyox.com/api/v1/login', formData,{
         headers: {
           'Content-Type': 'application/json',
           
         },
       });
+      console.log(response.data)
       if (response.data.success) {
         const token = response.data.token;
-        const user = response.data.user;
+        const user = response.data.vendor;
         sessionStorage.setItem('token', token)
         sessionStorage.setItem('user', JSON.stringify(user))
         // navigate('/dashboard');
