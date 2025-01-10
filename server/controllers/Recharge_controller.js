@@ -12,7 +12,7 @@ const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
-        const vendor = req.user.id._id;
+        const vendor = req.user.id;
         const { plan_id, trn_no } = req.body;
 
         if (!plan_id) {
