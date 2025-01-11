@@ -263,7 +263,7 @@ function AllVendor() {
                     // btnText="Add Vendor"
                     btnURL="/vendor/add-vendor"
                     tableHeading={heading}
-                    tableContent={filteredData.map((item, index) => (
+                    tableContent={currentData.map((item, index) => (
                         <CTableRow key={item._id}>
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                             <CTableDataCell>

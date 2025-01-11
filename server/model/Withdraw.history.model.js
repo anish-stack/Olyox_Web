@@ -17,26 +17,26 @@ const WithdrawSchema = new mongoose.Schema(
             enum: ['Bank Transfer', 'UPI', 'Other'], // Restrict to specific methods
             required: true, // Ensure method is provided
         },
-        BankDetails: {
-            accountNo: {
-                type: String,
-                required: function () {
-                    return this.method === 'Bank Transfer';
-                }, // Only required if method is 'Bank Transfer'
+            BankDetails: {
+                accountNo: {
+                    type: String,
+                    required: function () {
+                        return this.method === 'Bank Transfer';
+                    }, // Only required if method is 'Bank Transfer'
+                },
+                ifsc_code: {
+                    type: String,
+                    required: function () {
+                        return this.method === 'Bank Transfer';
+                    }, // Only required if method is 'Bank Transfer'
+                },
+                bankName: {
+                    type: String,
+                    required: function () {
+                        return this.method === 'Bank Transfer';
+                    }, // Only required if method is 'Bank Transfer'
+                },
             },
-            ifsc_code: {
-                type: String,
-                required: function () {
-                    return this.method === 'Bank Transfer';
-                }, // Only required if method is 'Bank Transfer'
-            },
-            bankName: {
-                type: String,
-                required: function () {
-                    return this.method === 'Bank Transfer';
-                }, // Only required if method is 'Bank Transfer'
-            },
-        },
         upi_details: {
             upi_id: {
                 type: String,
