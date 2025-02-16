@@ -21,7 +21,7 @@ const { createCategory, getAllCategories, getCategoryById, updateCategory, delet
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan, updateMembershipStatus } = require('../controllers/Member_ship.controller');
 const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelRecharge, getAllOfAnyIdRecharge,assignFreePlan } = require('../controllers/Recharge_controller');
 const Protect = require('../middlewares/Protect');
-const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId } = require('../controllers/Bh.controller');
+const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId, getDetailsViaBh } = require('../controllers/Bh.controller');
 const { doReffer, getMyReferral, GetRefrealDetailsBy, getAllReferal } = require('../controllers/Refrreal');
 const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals, getWithdrawalQueryById } = require('../controllers/Withdraw.controller');
 const { createEnquiry, getAllEnquiries, getEnquiryById, updateEnquiry, deleteEnquiry } = require('../controllers/Enquiry.controller');
@@ -126,7 +126,8 @@ router.delete('/membership-plans/:id', deleteMembershipPlan);
 router.put('/update_membership_status/:id', updateMembershipStatus);
 
 
-
+// app routes
+router.get('/app-get-details', getDetailsViaBh);
 
 
 

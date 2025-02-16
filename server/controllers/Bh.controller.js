@@ -176,3 +176,39 @@ exports.checkBhId = async (req, res) => {
         });
     }
 };
+
+exports.getDetailsViaBh = async (req, res) => {
+    try {
+        const { Bh } = req.query;
+        
+        if (!Bh) {
+            return res.status(400).json({
+                success: false,
+                message: 'BH ID is required',
+            });
+        }
+
+        const findDetails = await vendor.findOne({ myReferral: Bh }).populate('category').populate('member_id');
+
+        if (findDetails) {
+            return res.status(200).json({
+                success: true,
+                message: 'Vendor found successfully',
+                data: findDetails,  // Returning the found vendor details
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: 'No vendor found with this BH ID',
+            });
+        }
+
+    } catch (error) {
+        console.error('Error fetching vendor details:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
+            error: error.message,
+        });
+    }
+};
