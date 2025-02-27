@@ -60,8 +60,25 @@ router.post('/forget-password', forgetPassword);
 // router.put('/update_password/:id', updatePassword);
 
 //Recharge Crud ROutes
-router.post('/do-recharge', Protect, DoRecharge);
-router.get('/get-recharge', Protect, getMyRecharges);
+router.post('/do-recharge', (req, res, next) => {
+    if (req.query._id) {
+        return DoRecharge(req, res);
+    } else {
+        // Apply Protect middleware
+        return Protect(req, res, () => DoRecharge(req, res));
+    }
+});
+// router.get('/', Protect, getMyRecharges);
+router.get('/get-recharge', (req, res, next) => {
+    if (req.query._id) {
+        return getMyRecharges(req, res);
+    } else {
+        // Apply Protect middleware
+        return Protect(req, res, () => getMyRecharges(req, res));
+    }
+});
+
+
 router.get('/get-all-recharge', getAllRecharge)
 router.put('/cancel_recharge', cancelRecharge)
 router.get('/approve_recharge', getApprovedRecharge)

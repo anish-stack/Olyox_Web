@@ -139,7 +139,7 @@ exports.checkBhId = async (req, res) => {
         // Check if BH ID is active
         if (bhId.isActive) {
            
-            const findDetails = await vendor.findOne({ myReferral: bhId.BhId })
+            const findDetails = await vendor.findOne({ myReferral: bhId.BhId }).populate('category').populate('member_id');
 
             if (findDetails.isActive === false) {
                 return res.status(200).json({
@@ -153,6 +153,7 @@ exports.checkBhId = async (req, res) => {
                     success: true,
                     message: `BH ID found With Name ${findDetails.name} and is active`,
                     data: findDetails.name,
+                    complete:findDetails
                 });
             }else{
                 return res.status(200).json({

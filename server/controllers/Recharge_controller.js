@@ -12,7 +12,8 @@ const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
-        const vendor = req.user.id;
+        const vendor = req?.user?.id || req.query._id;
+        console.log(vendor)
         const { plan_id, trn_no } = req.body;
 
         if (!plan_id) {
@@ -22,9 +23,16 @@ exports.DoRecharge = async (req, res) => {
         if (!trn_no) {
             return res.status(400).json({ message: "Please enter a valid transaction number." });
         }
+        if (req?.user?.id) {
+            let checkVendor = await VendorModel.findById(vendor);
 
-        const checkVendor = await VendorModel.findById(vendor);
+        } else {
+            checkVendor = await VendorModel.findOne({ myReferral: vendor });
+        }
+
+
         if (!checkVendor) {
+
             return res.status(400).json({ message: "Vendor not found." });
         }
 
@@ -61,7 +69,7 @@ exports.DoRecharge = async (req, res) => {
         }
 
         const rechargeData = new Recharge_Model({
-            vendor_id: vendor,
+            vendor_id: checkVendor?._id,
             member_id: plan_id,
             amount: checkPlanIsValidOrNot?.price,
             trn_no: trn_no,
@@ -132,15 +140,30 @@ exports.DoRecharge = async (req, res) => {
 
 exports.getMyRecharges = async (req, res) => {
     try {
-        const userId = req.user.id?._id;
+        const userId = req?.user?.id?._id || req?.query?._id;
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required." });
         }
 
-        const rechargeData = await Recharge_Model.find({ vendor_id: userId })
+        let rechargeData;
+
+        // Fetch all recharges with populated vendor_id
+        rechargeData = await Recharge_Model.find({})
+            .populate('vendor_id')
             .populate('member_id')
             .sort({ createdAt: -1 });
+
+        // Filter recharges based on userId
+        if (req.query._id) {
+            rechargeData = rechargeData.filter(recharge => 
+                recharge?.vendor_id?.myReferral?.toString() === req.query._id
+            );
+        } else if (req.user) {
+            rechargeData = rechargeData.filter(recharge => 
+                recharge?.vendor_id?._id?.toString() === req.user.id._id
+            );
+        }
 
         if (!rechargeData.length) {
             return res.status(404).json({ message: "No recharges found for You." });
@@ -156,6 +179,7 @@ exports.getMyRecharges = async (req, res) => {
         return res.status(500).json({ message: "Server error. Please try again later." });
     }
 };
+
 
 exports.getApprovedRecharge = async (req, res) => {
     try {
@@ -478,10 +502,10 @@ exports.assignFreePlan = async (req, res) => {
         const vendorMessage = `Congratulations, ${checkVendor.name}!\n\nYour free plan has been activated successfully! ✅\n\nVendor BHID: ${checkVendor.myReferral}\nCategory: ${checkVendor.category?.title || 'Not Specified'}\nPlan Valid Until: ${endDate.toLocaleDateString()}\n\nWelcome to Olyox! 🚀\n\nThank you for choosing Olyox! ❤️`;
 
         // const encodedMessage = encodeURIComponent(message);
-        
 
 
-       const data = await SendWhatsAppMessage(vendorMessage, checkVendor.number);
+
+        const data = await SendWhatsAppMessage(vendorMessage, checkVendor.number);
         console.log(data)
         return res.status(200).json({
             success: true,
