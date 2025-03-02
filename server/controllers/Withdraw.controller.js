@@ -5,7 +5,10 @@ const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 
 exports.createWithdrawal = async (req, res) => {
     try {
-        const userId = req.user.id;
+        let userId = req?.user?.id;
+        if (!userId) {
+            userId = req.query._id
+        }
 
         const { amount, method, BankDetails, upi_details } = req.body;
         console.log('Request Body:', req.body);
@@ -298,7 +301,11 @@ exports.getAllWithdrawals = async (req, res) => {
 
 exports.getWithdrawalById = async (req, res) => {
     try {
-        const user = req.user.id._id
+        let user = req?.user?.id?._id
+        if (!user) {
+            user = req.query._id
+        }
+        console.log(req.query)
 
         const withdrawal = await Withdraw.find({ vendor_id: user })
             .populate('vendor_id')

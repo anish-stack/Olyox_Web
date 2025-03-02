@@ -138,8 +138,77 @@ exports.checkBhId = async (req, res) => {
 
         // Check if BH ID is active
         if (bhId.isActive) {
-           
-            const findDetails = await vendor.findOne({ myReferral: bhId.BhId }).populate('category').populate('member_id');
+
+            const findDetails = await vendor.findOne({ myReferral: bhId.BhId }).select('-password')
+                .populate('category')
+                .populate('member_id')
+                .populate('payment_id')
+                .populate('payment_id')
+                .populate('copyParentId')
+                .populate({
+                    path: 'Level1',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level2',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level3',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level4',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level5',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level6',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level7',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                });
+            ;
 
             if (findDetails.isActive === false) {
                 return res.status(200).json({
@@ -147,15 +216,15 @@ exports.checkBhId = async (req, res) => {
                     message: 'This BH ID has been blocked by the admin due to suspicious activity. Please contact support for assistance.',
                 });
             }
-            
+
             if (findDetails) {
                 return res.status(200).json({
                     success: true,
                     message: `BH ID found With Name ${findDetails.name} and is active`,
                     data: findDetails.name,
-                    complete:findDetails
+                    complete: findDetails
                 });
-            }else{
+            } else {
                 return res.status(200).json({
                     success: false,
                     message: 'BH ID is not active',
@@ -181,7 +250,7 @@ exports.checkBhId = async (req, res) => {
 exports.getDetailsViaBh = async (req, res) => {
     try {
         const { Bh } = req.query;
-        
+
         if (!Bh) {
             return res.status(400).json({
                 success: false,

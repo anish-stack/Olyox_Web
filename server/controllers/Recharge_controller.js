@@ -12,11 +12,9 @@ const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
-        const vendor = req?.user?.id || req.query._id;
-        console.log(vendor)
+        const vendor = req?.user?.id || req.query._id || req.query.BH;
         const { plan_id, trn_no } = req.body;
-
-        if (!plan_id) {
+        if (!plan_id) { 
             return res.status(400).json({ message: "Please select a valid plan." });
         }
 
@@ -29,10 +27,7 @@ exports.DoRecharge = async (req, res) => {
         } else {
             checkVendor = await VendorModel.findOne({ myReferral: vendor });
         }
-
-
         if (!checkVendor) {
-
             return res.status(400).json({ message: "Vendor not found." });
         }
 
