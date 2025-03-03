@@ -47,15 +47,16 @@ const HotelBooking = () => {
     const filteredOrders = orders.filter(order => {
         const searchQuery = searchTerm.toLowerCase();
         return (
-            order.restaurant?.restaurant_name?.toLowerCase().includes(searchQuery) ||
-            order.Order_Id?.toLowerCase().includes(searchQuery)
+            order.HotelUserId?.hotel_name?.toLowerCase().includes(searchQuery) ||
+            order.Booking_id?.toLowerCase().includes(searchQuery)
         );
     });
+    console.log("filteredOrders",filteredOrders)
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-    console.log("filteredOrders",filteredOrders)
+    console.log("currentData",currentData)
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -97,7 +98,7 @@ const HotelBooking = () => {
                             <CTableRow key={order._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                                 <CTableDataCell>{order.HotelUserId?.hotel_name}</CTableDataCell>
-                                <CTableDataCell>{order.Order_Id}</CTableDataCell>
+                                <CTableDataCell>{order.Booking_id}</CTableDataCell>
                                 <CTableDataCell>{order.user?.name || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>{order.user?.phone || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>
