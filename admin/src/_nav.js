@@ -144,12 +144,12 @@ const _nav = [
         to: '/cab/all-cab-booking',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       },
-      {
-        component: CNavItem,
-        name: 'Parcel Booking',
-        to: '/parcel/all-parcel-booking',
-        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Parcel Booking',
+      //   to: '/parcel/all-parcel-booking',
+      //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      // },
     ],
   },
 ]
