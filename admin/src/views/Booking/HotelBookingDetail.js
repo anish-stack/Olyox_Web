@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Truck, MapPin, Phone, Star, FileText, CheckCircle, XCircle, ArrowLeft, CreditCard, Calendar, Award, Home, Users, Clock, CreditCard as Payment, Tag, Clipboard, Check } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const HotelBookingDetail = () => {
     const {id} = useParams();
+    const navigate = useNavigate()
     // State for storing booking data
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,6 +17,7 @@ const HotelBookingDetail = () => {
 
             // In a real implementation, you would use axios like this:
             const { data } = await axios.get(`http://localhost:3100/api/v1/hotels/get_single_hotel_booking/${id}`);
+            console.log("data",data)
             setBooking(data.data);
         } catch (error) {
             console.error('Error fetching booking details:', error);
@@ -62,7 +65,8 @@ const HotelBookingDetail = () => {
     };
 
     const handleBackToList = () => {
-        console.log('Navigate back to bookings list');
+        navigate('/hotel/all-hotel-booking')
+        // console.log('Navigate back to bookings list');
         // In a real app, this would use navigation
     };
 

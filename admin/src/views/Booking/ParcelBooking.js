@@ -16,7 +16,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const HotelBooking = () => {
+const ParcelBooking = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +27,7 @@ const HotelBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel_booking');
+            const { data } = await axios.get('http://localhost:3100/api/v1/parcel/get_parcel_order');
             setOrders(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -42,32 +42,29 @@ const HotelBooking = () => {
         fetchOrders();
     }, []);
 
-    console.log("orders", orders)
-
-    // Filter orders by restaurant name or order ID based on the searchTerm
+    // Filter orders by ride status, pickup location, or other relevant fields
     const filteredOrders = orders.filter(order => {
         const searchQuery = searchTerm.toLowerCase();
         return (
-            order.HotelUserId?.hotel_name?.toLowerCase().includes(searchQuery) ||
-            order.Booking_id?.toLowerCase().includes(searchQuery)
+            order.pickup_desc.toLowerCase().includes(searchQuery) ||
+            order.drop_desc.toLowerCase().includes(searchQuery) ||
+            order.RideOtp.toLowerCase().includes(searchQuery)
         );
     });
-    console.log("filteredOrders",filteredOrders)
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-    console.log("currentData",currentData)
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
     const handleViewDetails = (id) => {
-        navigate(`/hotel/booking-detail/${id}`);
+        navigate(`/cab/all-cab-detail/${id}`);
     }
 
-    const heading = ['S.No', 'Hotel Name', 'Order ID', 'User Name', 'User Number', 'Guest Detail', 'Status', 'Payment Method', 'Action'];
+    const heading = ['S.No', 'User Name', 'User Number', 'Pickup Location', 'Drop Location', 'Rider Name', 'Rider Number', 'Ride OTP', 'Ride Distance (Km)', 'Status', 'Action'];
 
     return (
         <>
@@ -76,7 +73,7 @@ const HotelBooking = () => {
                 <CInputGroup>
                     <CInputGroupText>Search</CInputGroupText>
                     <CFormInput
-                        placeholder="Search by restaurant name or order ID"
+                        placeholder="Search by pickup location, drop location, or ride OTP"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -90,46 +87,39 @@ const HotelBooking = () => {
                 </div>
             ) : filteredOrders.length === 0 ? (
                 <div className="no-data">
-                    <p>No orders available</p>
+                    <p>No rides available</p>
                 </div>
             ) : (
                 <Table
-                    heading="Orders"
-                    btnText=""
-                    btnURL="/add-order"
+                    heading="Rides"
+                    btnText="Add Ride"
+                    btnURL="/add-ride"
                     tableHeading={heading}
-                    tableContent={
-                        currentData.map((order, index) => (
-                            <CTableRow key={order._id}>
-                                <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                                <CTableDataCell>{order.HotelUserId?.hotel_name}</CTableDataCell>
-                                <CTableDataCell>{order.Booking_id}</CTableDataCell>
-                                <CTableDataCell>{order.guest_id?.name || 'N/A'}</CTableDataCell>
-                                <CTableDataCell>{order.guest_id?.phone || 'N/A'}</CTableDataCell>
-                                <CTableDataCell>
-                                    {order.guestInformation.map(item => (
-                                        <div key={item._id}>
-                                            Name-{item.guestName} - Number-{item.guestPhone} - Age-{item.guestAge}
-                                        </div>
-                                    ))}
-                                </CTableDataCell>
-                                {/* <CTableDataCell>{order.totalPrice} INR</CTableDataCell> */}
-                                <CTableDataCell>{order.status}</CTableDataCell>
-                                <CTableDataCell>{order.paymentMode}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton
-                                        color="info"
-                                        size="sm"
-                                        className="d-flex align-items-center gap-2"
-                                        onClick={() => handleViewDetails(order._id)}
-                                    >
-                                        <FaEye />
-                                        View Details
-                                    </CButton>
-                                </CTableDataCell>
-                            </CTableRow>
-                        ))
-                    }
+                    tableContent={currentData.map((order, index) => (
+                        <CTableRow key={order._id}>
+                            <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                            <CTableDataCell>{order?.customerId?.name || 'N/A'}</CTableDataCell>
+                            <CTableDataCell>{order?.customerId?.number || 'N/A'}</CTableDataCell>
+                            <CTableDataCell>{order.pickupGeo}</CTableDataCell>
+                            <CTableDataCell>{order.dropoffLocation}</CTableDataCell>
+                            <CTableDataCell>{order.driverId?.name || 'N/A'}</CTableDataCell>
+                            <CTableDataCell>{order.driverId?.phone || 'N/A'}</CTableDataCell>
+                            <CTableDataCell>{order.RideOtp}</CTableDataCell>
+                            <CTableDataCell>{order.kmOfRide} km</CTableDataCell>
+                            <CTableDataCell>{order.status}</CTableDataCell>
+                            <CTableDataCell>
+                                <CButton
+                                    color="info"
+                                    size="sm"
+                                    className="d-flex align-items-center gap-2"
+                                    onClick={() => handleViewDetails(order._id)}
+                                >
+                                    <FaEye />
+                                    View Details
+                                </CButton>
+                            </CTableDataCell>
+                        </CTableRow>
+                    ))}
                     pagination={
                         <CPagination className="justify-content-center">
                             <CPaginationItem
@@ -161,4 +151,4 @@ const HotelBooking = () => {
     );
 };
 
-export default HotelBooking
+export default ParcelBooking

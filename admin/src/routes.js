@@ -40,6 +40,10 @@ import DutyRiderDetail from './views/DutyList/DutyRiderDetail'
 import AllRiderLocation from './views/DutyList/AllRiderLocation'
 import TiffinBooking from './views/Booking/TiffinBooking'
 import HotelBooking from './views/Booking/HotelBooking'
+import HotelBookingDetail from './views/Booking/HotelBookingDetail'
+import CabBooking from './views/Booking/CabBooking'
+import CabBookingDetail from './views/Booking/CabBookingDetail'
+import ParcelBooking from './views/Booking/ParcelBooking'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -229,6 +233,10 @@ const routes = [
   
   { path: '/tiffin/all-tiffin-booking', name: 'All Tiffin Booking', element: TiffinBooking },
   { path: '/hotel/all-hotel-booking', name: 'All Hotel Booking', element: HotelBooking },
+  { path: '/hotel/booking-detail/:id', name: 'Hotel Booking Detail', element: HotelBookingDetail },
+  { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
+  { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
+  { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
 
 ]
 
