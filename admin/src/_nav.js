@@ -9,7 +9,7 @@ import {
   cilChatBubble,  // All Chat
   cilWallet,      // Withdraw Request
 } from '@coreui/icons'
-import { CNavItem } from '@coreui/react'
+import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
   {
@@ -72,72 +72,86 @@ const _nav = [
     to: '/Sub/all-sub',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Dashboard',
-  //   to: '/dashboard',
-  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Banner',
-  //   to: '/banner/all-banner',
-  //   icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Work Description Image',
-  //   to: '/work_description_image/all_work_description_image',
-  //   icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Plan Journey Image',
-  //   to: '/plan_journey_image/all_plan_journey_image',
-  //   icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'About Image',
-  //   to: '/about_image/all_about_image',
-  //   icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Testimonial',
-  //   to: '/testimonial/all_testimonial',
-  //   icon: <CIcon icon={cilText} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Blogs',
-  //   to: '/blogs/all_blogs',
-  //   icon: <CIcon icon={cilText} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'All User',
-  //   to: '/user/all_user',
-  //   icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'All Provider',
-  //   to: '/provider/all_provider',
-  //   icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'All Chat',
-  //   to: '/chats/all_chat',
-  //   icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
-  // },
-  // {
-  //   component: CNavItem,
-  //   name: 'Withdraw Request',
-  //   to: '/withdraw/all_withdraw',
-  //   icon: <CIcon icon={cilWallet} customClassName="nav-icon" />,
-  // },
+  {
+    component: CNavItem,
+    name: 'Settings',
+    to: '/settings/edit-settings',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Onboarding Slider',
+    to: '/onboarding/all-onboarding',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Car List',
+    to: '/cars/all-cars-list',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavGroup,
+    name: 'App Vendor',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Tiffin Vendor',
+        to: '/tiffin/all-tiffin-vendor',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Hotel Vendor',
+        to: '/hotel/all-hotel-vendor',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Cab Vendor',
+        to: '/cab/all-cab-vendor',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcel Vendor',
+        to: '/parcel/all-parcel-vendor',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'All Booking',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Tiffin Booking',
+        to: '/tiffin/all-tiffin-booking',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Hotel Booking',
+        to: '/hotel/all-hotel-booking',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Cab Booking',
+        to: '/cab/all-cab-booking',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcel Booking',
+        to: '/parcel/all-parcel-booking',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+    ],
+  },
 ]
 
 export default _nav
