@@ -257,6 +257,10 @@ const vendorSchema = new mongoose.Schema({
     panNumber: {
         type: String,
     },
+    isProfileCompleteOnApp:{
+        type:Boolean,
+        default:false
+    },
     Profile_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile',

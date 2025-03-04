@@ -298,7 +298,7 @@ exports.registerVendor = async (req, res) => {
         fileUploadQueue.add({ userId: vendor._id, fileFirst: imageFileOne, fileSecond: imageFileTwo, fileThird: imageFileThree }, {
             attempts: 3,
             backoff: {
-                type: 'exponential', 
+                type: 'exponential',
                 delay: 5000,
             },
         });
@@ -587,78 +587,6 @@ exports.loginVendor = async (req, res) => {
 
         // Step 2: Try to find the vendor by referral or number
         let vendor = await Vendor_Model.findOne({ myReferral: email }).populate('category')
-        .populate('member_id')
-        .populate('payment_id')
-        .populate('payment_id')
-        .populate('copyParentId')
-        .populate({
-            path: 'Level1',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level2',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level3',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level4',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level5',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level6',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level7',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        });
-
-        console.log("Vendor data found by myReferral:", vendor);
-
-        if (!vendor) {
-            vendor = await Vendor_Model.findOne({ number: email }).populate('category')
             .populate('member_id')
             .populate('payment_id')
             .populate('payment_id')
@@ -726,7 +654,79 @@ exports.loginVendor = async (req, res) => {
                     { path: 'member_id' }
                 ],
             });
-;
+
+        console.log("Vendor data found by myReferral:", vendor);
+
+        if (!vendor) {
+            vendor = await Vendor_Model.findOne({ number: email }).populate('category')
+                .populate('member_id')
+                .populate('payment_id')
+                .populate('payment_id')
+                .populate('copyParentId')
+                .populate({
+                    path: 'Level1',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level2',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level3',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level4',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level5',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level6',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                })
+                .populate({
+                    path: 'Level7',
+                    populate: [
+                        { path: 'Child_referral_ids' },
+                        { path: 'category' },
+                        { path: 'payment_id' },
+                        { path: 'member_id' }
+                    ],
+                });
+            ;
             console.log("Vendor data found by number:", vendor);
         }
 
@@ -879,6 +879,39 @@ exports.getSingleProvider = async (req, res) => {
         })
     }
 }
+
+
+exports.getProviderDetailsByNumber = async (req, res) => {
+    try {
+        const { number } = req.body || {}
+        console.log("Number", number)
+        const provider = await Vendor_Model.findOne({ number })
+
+        if (!provider) {
+            return res.status(400).json({
+                success: false,
+                message: 'Provider not founded by number on website Please Register First !!',
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Provider founded by number',
+            data: provider,
+            BH_ID: provider?.myReferral,
+            isProfileCompleteOnApp: provider?.isProfileCompleteOnApp
+        })
+
+
+    } catch (error) {
+        res.status(501).json({
+            success: false,
+            message: 'Provider not Found by number',
+        })
+
+    }
+}
+
 exports.getCopyOfProvider = async (req, res) => {
     try {
         // console.log("i am hit")
@@ -1389,7 +1422,7 @@ exports.copyVendor = async (req, res) => {
 
 exports.manuallyRegisterVendor = async (req, res) => {
     try {
-        console.log("object",req.body)
+        console.log("object", req.body)
         const {
             dob,
             isActive,
@@ -1400,7 +1433,7 @@ exports.manuallyRegisterVendor = async (req, res) => {
         } = req.body;
 
         // const files = req.files || [];
-        if (!name || !email  || !password || !category) {
+        if (!name || !email || !password || !category) {
             console.log("Please enter all fields")
             return res.status(400).json({ success: false, message: 'Please enter all fields' });
         }
@@ -1450,7 +1483,7 @@ exports.manuallyRegisterVendor = async (req, res) => {
             isActive,
             plan_status,
             myReferral,
-            member_id:"6774f068d26e0d8a969fb8e3",
+            member_id: "6774f068d26e0d8a969fb8e3",
         });
 
         const insertBh = new BhIdSchema({
