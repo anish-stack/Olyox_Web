@@ -16,6 +16,34 @@ import AllEnquiry from './views/enquiry/AllEnquiry'
 import Roles from './views/Rols/Roles'
 import Dutyist from './views/DutyList/Duty.list'
 import AllUser from './views/All user/AllUser'
+import AllSettings from './views/Settings/AllSettings'
+import EditSetting from './views/Settings/EditSetting'
+import Onboarding from './views/Onboarding/Onboarding'
+import AddOnboarding from './views/Onboarding/AddOnboarding'
+import EditOnboarding from './views/Onboarding/EditOnboarding'
+import AllCarList from './views/CarList/AllCarList'
+import AddCarList from './views/CarList/AddCarList'
+import EditCarList from './views/CarList/EditCarList'
+import AllTiffinVendor from './views/TiffinVendor/AllTiffinVendor'
+import TiffinVendorDetail from './views/TiffinVendor/TiffinVendorDetail'
+import EditTiffinVendor from './views/TiffinVendor/EditTiffinVendor'
+import AllHoteslVendor from './views/HoteslVendor/AllHoteslVendor'
+import HotelVendor from './views/HoteslVendor/HotelVendor'
+import AllCabVendor from './views/CabVendor/AllCabVendor'
+import CabDetail from './views/CabVendor/CabDetail'
+import AllParcelVendor from './views/ParcelVendor/AllParcelVendor'
+import ParcelDetail from './views/ParcelVendor/ParcelDetail'
+import EditParcelVendor from './views/ParcelVendor/EditParcelVendor'
+import EditCabVendor from './views/CabVendor/EditCabVendor'
+import EditHotelVendor from './views/HoteslVendor/EditHotelVendor'
+import DutyRiderDetail from './views/DutyList/DutyRiderDetail'
+import AllRiderLocation from './views/DutyList/AllRiderLocation'
+import TiffinBooking from './views/Booking/TiffinBooking'
+import HotelBooking from './views/Booking/HotelBooking'
+import HotelBookingDetail from './views/Booking/HotelBookingDetail'
+import CabBooking from './views/Booking/CabBooking'
+import CabBookingDetail from './views/Booking/CabBookingDetail'
+import ParcelBooking from './views/Booking/ParcelBooking'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -124,13 +152,13 @@ const routes = [
   { path: '/category/add-category', name: 'Add Category', element: AddCategory },
   { path: '/category/edit-category/:id', name: 'Edit Category', element: EditCategory },
   { path: '/category/all_category', name: 'All Category', element: AllCategory },
-  
+
   // membership routes here 
   { path: '/membership', name: 'Membership', element: Cards, exact: true },
   { path: '/membership/add-membership', name: 'Add Category', element: AddMembership },
   { path: '/membership/edit-membership/:id', name: 'Edit Category', element: EditMember },
   { path: '/membership/all_membership', name: 'All Membership', element: AllMembership },
-  
+
   // vendor routes here 
   { path: '/vendor', name: 'Vendor', element: Cards, exact: true },
   { path: '/vendor/add-vendor', name: 'Add Category', element: AddVendor },
@@ -138,29 +166,77 @@ const routes = [
   { path: '/vendor/all_vendor', name: 'All Category', element: AllVendor },
   { path: '/vendor/vendor_detail/:id', name: 'All Category', element: VendorDetail },
 
-    
+
   // vendor qnwuire here 
   { path: '/enquiry/all-enuqiry', name: 'Enquiry', element: AllEnquiry },
 
   { path: '/Sub/all-sub', name: 'Roles Of Sub Admin', element: Roles },
 
-  { path: 'Duty/all-Duty', name: 'Duty List', element: Dutyist },
+  { path: '/Duty/all-Duty', name: 'Duty List', element: Dutyist },
+  { path: '/Duty/duty-rider-detail/:id', name: 'Duty Rider Detail', element: DutyRiderDetail },
+  { path: '/Duty/all-rider-location', name: 'All Rider Location', element: AllRiderLocation },
   { path: '/All/all-Users', name: 'Users', element: AllUser },
 
 
 
-   // recharge routes here 
-   { path: '/recharge', name: 'Recharge', element: Cards, exact: true },
-   { path: '/recharge/all-recharge', name: 'All Category', element: AllRecharge },
+  // recharge routes here 
+  { path: '/recharge', name: 'Recharge', element: Cards, exact: true },
+  { path: '/recharge/all-recharge', name: 'All Category', element: AllRecharge },
 
-   // withdraw routes here 
-   { path: '/withdraw', name: 'Withdraw', element: Cards, exact: true },
-   { path: '/withdraw/all-withdraw', name: 'All Withdraw', element: AllWithdraw },
+  // withdraw routes here 
+  { path: '/withdraw', name: 'Withdraw', element: Cards, exact: true },
+  { path: '/withdraw/all-withdraw', name: 'All Withdraw', element: AllWithdraw },
 
-   // refferal routes here 
-   { path: '/Refferal', name: 'Refferal', element: Cards, exact: true },
-   { path: '/refferal/all-refferal', name: 'All Refferal', element: AllActiveRefferal },
+  // refferal routes here 
+  { path: '/Refferal', name: 'Refferal', element: Cards, exact: true },
+  { path: '/refferal/all-refferal', name: 'All Refferal', element: AllActiveRefferal },
 
+  // refferal routes here 
+  { path: '/Settings', name: 'Settings', element: Cards, exact: true },
+  { path: '/settings/edit-settings', name: 'Edit Settings', element: EditSetting },
+
+  // refferal routes here 
+  { path: '/Onboarding', name: 'Onboarding', element: Cards, exact: true },
+  { path: '/onboarding/all-onboarding', name: 'All Onboarding', element: Onboarding },
+  { path: '/onboarding/add-onboarding', name: 'Add Onboarding', element: AddOnboarding },
+  { path: '/onboarding/edit-onboarding/:id', name: 'Edit Onboarding', element: EditOnboarding },
+
+  // refferal routes here 
+  { path: '/Cars List', name: 'Cars List', element: Cards, exact: true },
+  { path: '/cars/all-cars-list', name: 'All Cars List', element: AllCarList },
+  { path: '/cars/add-cars-list', name: 'Add Cars List', element: AddCarList },
+  { path: '/cars/edit-cars-list/:id', name: 'Edit Cars List', element: EditCarList },
+
+  // refferal routes here 
+  { path: '/Tiffin', name: 'Tiffin', element: Cards, exact: true },
+  { path: '/tiffin/all-tiffin-vendor', name: 'All Tiffin', element: AllTiffinVendor },
+  { path: '/tiffin/vendor-detail/:id', name: 'Tiffin Vendor Detail', element: TiffinVendorDetail },
+  { path: '/tiffin/edit-tiffin-vendor/:id', name: 'Edit Tiffin Vendor Detail', element: EditTiffinVendor },
+
+  // refferal routes here 
+  { path: '/Hotel', name: 'Hotel', element: Cards, exact: true },
+  { path: '/hotel/all-hotel-vendor', name: 'All Hotel', element: AllHoteslVendor },
+  { path: '/hotel/vendor-detail/:id', name: 'Hotel Vendor Detail', element: HotelVendor },
+  { path: '/hotel/edit-hotel-vendor/:id', name: 'Edit Hotel Vendor Detail', element: EditHotelVendor },
+
+  // refferal routes here 
+  { path: '/Cab', name: 'Cab', element: Cards, exact: true },
+  { path: '/cab/all-cab-vendor', name: 'All Cab', element: AllCabVendor },
+  { path: '/cab/vendor-detail/:id', name: 'Cab Vendor Detail', element: CabDetail },
+  { path: '/cab/edit-cab-vendor/:id', name: 'Edit Cab Vendor Detail', element: EditCabVendor },
+
+  // refferal routes here 
+  { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
+  { path: '/parcel/all-parcel-vendor', name: 'All Parcel', element: AllParcelVendor },
+  { path: '/parcel/vendor-detail/:id', name: 'Parcel Vendor Detail', element: ParcelDetail },
+  { path: '/parcel/edit-parcel-vendor/:id', name: 'Edit Parcel Vendor Detail', element: EditParcelVendor },
+  
+  { path: '/tiffin/all-tiffin-booking', name: 'All Tiffin Booking', element: TiffinBooking },
+  { path: '/hotel/all-hotel-booking', name: 'All Hotel Booking', element: HotelBooking },
+  { path: '/hotel/booking-detail/:id', name: 'Hotel Booking Detail', element: HotelBookingDetail },
+  { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
+  { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
+  { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
 
 ]
 
