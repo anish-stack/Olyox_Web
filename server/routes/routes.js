@@ -16,7 +16,7 @@ const upload = multer({
 });
 
 
-const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive, verifyDocument, copyVendor, getCopyOfProvider, manuallyRegisterVendor } = require('../controllers/vendor.controller');
+const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive, verifyDocument, copyVendor, getCopyOfProvider, manuallyRegisterVendor, getProviderDetailsByNumber } = require('../controllers/vendor.controller');
 const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory, updateCategoryToggle } = require('../controllers/category.controller');
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan, updateMembershipStatus } = require('../controllers/Member_ship.controller');
 const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelRecharge, getAllOfAnyIdRecharge, assignFreePlan } = require('../controllers/Recharge_controller');
@@ -103,6 +103,8 @@ router.put('/reject-withdrawal/:id', rejectWithdrawal);
 router.put('/cancel-withdrawal/:id', cancelWithdrawal);
 router.get('/withdrawals', getAllWithdrawals);
 router.get('/admin-withdrawals', getWithdrawalQueryById);
+
+router.post('/getProviderDetailsByNumber', getProviderDetailsByNumber);
 
 
 // router.get('/withdrawal', Protect, getWithdrawalById);
