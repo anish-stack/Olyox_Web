@@ -430,21 +430,29 @@ function CabDetail() {
                                 <div className="col-md-6">
                                     <div className="mb-3">
                                         <div className="text-muted small">Coordinates</div>
-                                        <div>
-                                            Latitude: {rider.location.coordinates[1]}<br />
-                                            Longitude: {rider.location.coordinates[0]}
-                                        </div>
+                                       <div>
+    Latitude: {rider?.location?.coordinates?.[1] ?? "Not Available"}<br />
+    Longitude: {rider?.location?.coordinates?.[0] ?? "Not Available"}
+</div>
+
                                     </div>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="mb-3">
                                         <div className="text-muted small">Map View</div>
-                                        <a
-                                            className="btn btn-primary btn-sm"
-                                            href={`https://www.google.com/maps?q=${rider.location.coordinates[1]},${rider.location.coordinates[0]}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
+                                       {rider?.location?.coordinates ? (
+    <a
+        className="btn btn-primary btn-sm"
+        href={`https://www.google.com/maps?q=${rider.location.coordinates[1]},${rider.location.coordinates[0]}`}
+        target="_blank"
+        rel="noreferrer"
+    >
+        View Location
+    </a>
+) : (
+    <span className="text-muted">Location Not Available</span>
+)}
+
                                             <MapPin className="me-2" size={16} />
                                             View on Google Maps
                                         </a>
