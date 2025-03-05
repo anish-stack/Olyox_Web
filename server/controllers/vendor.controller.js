@@ -111,44 +111,6 @@ exports.registerVendor = async (req, res) => {
         const imageFileTwo = files.find(file => file.fieldname === 'aadharback');
         const imageFileThree = files.find(file => file.fieldname === 'pancard');
 
-
-        const defaultImage = {
-            secure_url: 'https://placehold.co/600x400',
-            public_id: 'default-image',
-        };
-
-
-        // let uploadImageOne = defaultImage;
-        // let uploadImageTwo = defaultImage;
-        // let uploadImageThree = defaultImage;
-
-        // try {
-        //     if (imageFileOne) {
-        //         uploadImageOne = await UploadService.uploadFromBuffer(imageFileOne?.buffer);
-        //     }
-        // } catch (error) {
-
-        //     console.error('Error uploading Aadhar Front:', error);
-        // }
-
-        // try {
-        //     if (imageFileTwo) {
-        //         uploadImageTwo = await UploadService.uploadFromBuffer(imageFileTwo?.buffer);
-        //     }
-        // } catch (error) {
-        //     console.error('Error uploading Aadhar Back:', error);
-        // }
-
-        // try {
-        //     if (imageFileThree) {
-        //         uploadImageThree = await UploadService.uploadFromBuffer(imageFileThree?.buffer);
-        //     }
-        // } catch (error) {
-        //     console.error('Error uploading Pancard:', error);
-        // }
-
-
-        // Generate codes
         const otpService = new OtpService();
         const { otp, expiryTime } = otpService.generateOtp();
         const genreateOrder = crypto.randomBytes(16).toString('hex');
@@ -185,21 +147,7 @@ exports.registerVendor = async (req, res) => {
             aadharNumber,
             panNumber,
             myReferral: genreateReferral,
-            // Documents: {
-            //     documentFirst: {
-
-            //         image: uploadImageOne.secure_url,
-            //         public_id: uploadImageOne.public_id,
-            //     },
-            //     documentSecond: {
-            //         image: uploadImageTwo.secure_url,
-            //         public_id: uploadImageTwo.public_id,
-            //     },
-            //     documentThird: {
-            //         image: uploadImageThree.secure_url,
-            //         public_id: uploadImageThree.public_id,
-            //     },
-            // },
+          
             referral_code_which_applied,
             is_referral_applied,
             otp_: otp,
