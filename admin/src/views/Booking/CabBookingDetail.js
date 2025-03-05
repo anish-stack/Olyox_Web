@@ -28,7 +28,7 @@ function CabBookingDetail() {
     const fetchBookingDetails = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`http://localhost:3100/api/v1/rides/single_rides/${id}`);
+        const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rides/single_rides/${id}`);
         setBooking(data.data);
       } catch (error) {
         console.error('Error fetching booking details:', error);

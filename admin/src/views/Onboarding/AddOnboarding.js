@@ -44,7 +44,7 @@ const AddOnboarding = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:3100/api/v1/admin/create_onboarding_slide', formDataToSend, {
+            const res = await axios.post('https://demoapi.olyox.com/api/v1/admin/create_onboarding_slide', formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

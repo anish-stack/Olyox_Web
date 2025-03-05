@@ -55,7 +55,7 @@ const EditTiffinVendor = () => {
     const handleFetchRestaurant = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`http://localhost:3100/api/v1/tiffin/get_single_restaurant/${id}`);
+            const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/tiffin/get_single_restaurant/${id}`);
             setFormData({
                 restaurant_name: data.data.restaurant_name,
                 restaurant_phone: data.data.restaurant_phone,
@@ -132,7 +132,7 @@ const EditTiffinVendor = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `http://localhost:3100/api/v1/tiffin/update_restaurant_details/${id}`,
+                `https://demoapi.olyox.com/api/v1/tiffin/update_restaurant_details/${id}`,
                 formDataToSend,
                 {
                     headers: {

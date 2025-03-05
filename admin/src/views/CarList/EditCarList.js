@@ -33,7 +33,7 @@ const EditCarList = () => {
     const handleFetchCarList = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`http://localhost:3100/api/v1/admin/getSuggestionById/${id}`);
+            const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/admin/getSuggestionById/${id}`);
             setFormData({
                 name: data.data.name,
                 type: data.data.type,
@@ -76,7 +76,7 @@ const EditCarList = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `http://localhost:3100/api/v1/admin/updateSuggestion/update/${id}`,
+                `https://demoapi.olyox.com/api/v1/admin/updateSuggestion/update/${id}`,
                 payload
             );
             toast.success(res.data.message);

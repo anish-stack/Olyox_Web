@@ -90,7 +90,7 @@ const EditHotelVendor = () => {
     const handleFetchHotel = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`http://localhost:3100/api/v1/hotels/get_hotelbyId/${id}`);
+            const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/hotels/get_hotelbyId/${id}`);
             setFormData({
                 hotel_name: data.data.hotel_name,
                 hotel_phone: data.data.hotel_phone,
@@ -151,7 +151,7 @@ const EditHotelVendor = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `http://localhost:3100/api/v1/hotels/update_hotel_detail/${id}`,
+                `https://demoapi.olyox.com/api/v1/hotels/update_hotel_detail/${id}`,
                 formDataToSend,
                 {
                     headers: {

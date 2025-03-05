@@ -27,7 +27,7 @@ const HotelBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel_booking');
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/hotels/get_all_hotel_booking');
             setOrders(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
             console.error('Error fetching orders:', error);

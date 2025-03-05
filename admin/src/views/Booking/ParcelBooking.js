@@ -27,7 +27,7 @@ const ParcelBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/parcel/get_parcel_order');
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/parcel/get_parcel_order');
             setOrders(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
