@@ -23,6 +23,7 @@ function EditCategory() {
     // Fetch existing category data
     const handleFetchCategory = async () => {
         setLoading(true);
+        
         try {
             const { data } = await axios.get(`https://www.api.olyox.com/api/v1/categories/${id}`);
             setFormData({

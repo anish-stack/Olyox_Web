@@ -25,6 +25,7 @@ const CabBooking = () => {
     const itemsPerPage = 10;
 
     const fetchOrders = async () => {
+        
         setLoading(true);
         try {
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rides/all_rides');

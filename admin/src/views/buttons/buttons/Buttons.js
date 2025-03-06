@@ -26,6 +26,7 @@ const Buttons = () => {
                   <CCol xs={12} xl={2} className="mb-3 mb-xl-0">
                     {state.charAt(0).toUpperCase() + state.slice(1)}
                   </CCol>
+                  
                   <CCol xs>
                     {[
                       'primary',

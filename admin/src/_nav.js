@@ -24,6 +24,7 @@ const _nav = [
     to: '/membership/all_membership',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
+  
   {
     component: CNavItem,
     name: 'All Vendor',

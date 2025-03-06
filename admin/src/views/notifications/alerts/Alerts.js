@@ -13,6 +13,7 @@ import { DocsComponents, DocsExample } from 'src/components'
 
 const Alerts = () => {
   return (
+    
     <CRow>
       <CCol xs={12}>
         <DocsComponents href="components/alert/" />

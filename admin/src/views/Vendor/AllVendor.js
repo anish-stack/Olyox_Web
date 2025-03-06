@@ -20,6 +20,7 @@ import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
 function AllVendor() {
+    
     const [category, setCategory] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);

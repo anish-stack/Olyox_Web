@@ -24,6 +24,7 @@ const CoreUIIcons = () => {
       <CCard className="mb-4">
         <CCardHeader>Brand Icons</CCardHeader>
         <CCardBody>
+          
           <CRow className="text-center">{getIconsView(brandSet)}</CRow>
         </CCardBody>
       </CCard>

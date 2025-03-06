@@ -23,6 +23,7 @@ import { DocsComponents, DocsExample } from 'src/components'
 
 const InputGroup = () => {
   return (
+    
     <CRow>
       <CCol xs={12}>
         <DocsComponents href="forms/input-group/" />

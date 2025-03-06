@@ -23,6 +23,7 @@ const FloatingLabels = () => {
             <strong>React Floating labels</strong>
           </CCardHeader>
           <CCardBody>
+            
             <p className="text-body-secondary small">
               Wrap a pair of <code>&lt;CFormInput&gt;</code> and <code>&lt;CFormLabel&gt;</code>{' '}
               elements in <code>CFormFloating</code> to enable floating labels with textual form

@@ -24,6 +24,7 @@ function AllCarList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [deleteModal, setDeleteModal] = useState(false);
     const [selectedRideId, setSelectedRideId] = useState(null);
+    
     const navigate = useNavigate();
     const itemsPerPage = 10;
 

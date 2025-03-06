@@ -22,6 +22,7 @@ const Charts = () => {
             Bar Chart <DocsLink name="chart" />
           </CCardHeader>
           <CCardBody>
+            
             <CChartBar
               data={{
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],

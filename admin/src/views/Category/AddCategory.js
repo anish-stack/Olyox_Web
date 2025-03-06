@@ -20,6 +20,7 @@ function AddCategory() {
     // Submit the form
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
 
         setLoading(true);
         try {

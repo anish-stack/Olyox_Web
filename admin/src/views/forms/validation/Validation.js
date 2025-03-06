@@ -27,6 +27,7 @@ const CustomStyles = () => {
       event.stopPropagation()
     }
     setValidated(true)
+    
   }
   return (
     <CForm

@@ -23,6 +23,7 @@ const EditSetting = () => {
             } catch (error) {
                 toast.error('Failed to load settings. Please try again.');
             }
+            
         };
         fetchSettings();
     }, []);

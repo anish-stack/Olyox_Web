@@ -27,6 +27,7 @@ function AllWithdraw() {
     const [paymentTime, setPaymentTime] = useState('');
     const [detailModal, setDetailModal] = useState(false);
     const [methodDetails, setMethodDetails] = useState(null);
+    
 
     const fetchWithdrawals = async () => {
         setLoading(true);

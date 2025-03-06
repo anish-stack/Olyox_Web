@@ -37,10 +37,12 @@ const DocsComponents = (props) => (
       </div>
     </div>
   </div>
+  
 )
 
 DocsComponents.propTypes = {
   href: PropTypes.string,
 }
+
 
 export default DocsComponents

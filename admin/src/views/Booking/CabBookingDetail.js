@@ -25,7 +25,9 @@ function CabBookingDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const fetchBookingDetails = async () => {
+      
       setLoading(true);
       try {
         const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rides/single_rides/${id}`);

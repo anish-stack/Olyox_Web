@@ -25,6 +25,7 @@ const Layout = () => {
           <CCardHeader>
             <strong>Layout</strong> <small>Form grid</small>
           </CCardHeader>
+          
           <CCardBody>
             <p className="text-body-secondary small">
               More complex forms can be built using our grid classes. Use these for form layouts

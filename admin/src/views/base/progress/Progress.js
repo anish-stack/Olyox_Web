@@ -22,6 +22,7 @@ const Progress = () => {
             </p>
             <DocsExample href="components/progress">
               <CProgress className="mb-3">
+                
                 <CProgressBar value={0} />
               </CProgress>
               <CProgress className="mb-3">

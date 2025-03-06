@@ -28,6 +28,7 @@ const AllEnquiry = () => {
   // Filter function
   const filterEnquiries = () => {
     let filtered = enquiries;
+    
 
     // Filter by name
     if (searchName) {

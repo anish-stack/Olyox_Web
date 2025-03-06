@@ -20,6 +20,7 @@ const Paginations = () => {
             <strong>React Pagination</strong>
           </CCardHeader>
           <CCardBody>
+            
             <p className="text-body-secondary small">
               We use a large block of connected links for our pagination, making links hard to miss
               and easily scalable—all while providing large hit areas. Pagination is built with list

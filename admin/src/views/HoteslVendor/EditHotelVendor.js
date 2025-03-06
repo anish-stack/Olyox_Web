@@ -27,6 +27,7 @@ const EditHotelVendor = () => {
             cctvCameras: false,
             diningArea: false,
             privateEntrance: false,
+            
             reception: false,
             caretaker: false,
             security: false,

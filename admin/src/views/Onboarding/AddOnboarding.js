@@ -12,6 +12,7 @@ const AddOnboarding = () => {
         slug: '',
         image: null, // for the image file
     });
+    
 
     // Handle input changes
     const handleChange = (e) => {

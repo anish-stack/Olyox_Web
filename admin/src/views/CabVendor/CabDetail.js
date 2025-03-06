@@ -16,6 +16,7 @@ function CabDetail() {
     try {
       const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rider/get_single_rider/${id}`)
       setRider(data.data);
+      
       setLoading(false);
     } catch (error) {
       console.log("Internal server error", error)

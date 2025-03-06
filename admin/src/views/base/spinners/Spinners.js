@@ -24,6 +24,7 @@ const Spinners = () => {
             </p>
             <DocsExample href="components/spinner#colors">
               <CSpinner color="primary" />
+              
               <CSpinner color="secondary" />
               <CSpinner color="success" />
               <CSpinner color="danger" />

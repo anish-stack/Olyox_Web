@@ -27,6 +27,7 @@ const AllRiderLocation = () => {
     useEffect(() => {
         fetchRidersAndVendors();
     }, []);
+    
 
     // Default center and zoom level
     const center = [28.4609853, 76.9541603]; // Example coordinates

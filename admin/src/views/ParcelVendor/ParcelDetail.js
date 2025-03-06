@@ -24,6 +24,7 @@ function ParcelDetail() {
         } finally {
             setLoading(false);
         }
+        
     };
 
     useEffect(() => {

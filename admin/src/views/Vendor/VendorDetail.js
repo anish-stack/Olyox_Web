@@ -24,6 +24,7 @@ function VendorDetail() {
             setLoading(false);
         }
     };
+    
 
     const fetchWithdrawls = async () => {
         setLoading(true);

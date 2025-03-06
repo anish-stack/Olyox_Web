@@ -27,6 +27,7 @@ const AllTiffinVendor = () => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
+            
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/tiffin/get_restaurant');
             setVendors(Array.isArray(data.data) ? data.data : []);
         } catch (error) {

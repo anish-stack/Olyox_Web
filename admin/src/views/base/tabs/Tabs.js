@@ -29,6 +29,7 @@ const Navs = () => {
             </p>
             <DocsExample href="components/tabs/#example">
               <CTabs activeItemKey="profile">
+                
                 <CTabList variant="tabs">
                   <CTab itemKey="home">Home</CTab>
                   <CTab itemKey="profile">Profile</CTab>

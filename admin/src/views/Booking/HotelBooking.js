@@ -26,6 +26,7 @@ const HotelBooking = () => {
 
     const fetchOrders = async () => {
         setLoading(true);
+        
         try {
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/hotels/get_all_hotel_booking');
             const allData = data.data.reverse();

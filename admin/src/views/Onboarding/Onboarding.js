@@ -18,6 +18,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+
 const Onboarding = () => {
     const [slides, setSlides] = useState([]);
     const [loading, setLoading] = useState(false);

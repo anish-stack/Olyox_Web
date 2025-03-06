@@ -25,6 +25,7 @@ const ChecksRadios = () => {
             <strong>React Checkbox</strong> <small>Disabled</small>
           </CCardHeader>
           <CCardBody>
+            
             <p className="text-body-secondary small">
               Add the <code>disabled</code> attribute and the associated <code>&lt;label&gt;</code>s
               are automatically styled to match with a lighter color to help indicate the

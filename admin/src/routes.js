@@ -26,6 +26,7 @@ import AddCarList from './views/CarList/AddCarList'
 import EditCarList from './views/CarList/EditCarList'
 import AllTiffinVendor from './views/TiffinVendor/AllTiffinVendor'
 import TiffinVendorDetail from './views/TiffinVendor/TiffinVendorDetail'
+
 import EditTiffinVendor from './views/TiffinVendor/EditTiffinVendor'
 import AllHoteslVendor from './views/HoteslVendor/AllHoteslVendor'
 import HotelVendor from './views/HoteslVendor/HotelVendor'

@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AllParcelVendor = () => {
     const [vendors, setVendors] = useState([]);
+    
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState(''); // For filtering

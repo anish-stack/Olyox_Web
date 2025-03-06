@@ -13,6 +13,7 @@ import {
 } from '@coreui/react'
 import { CNavLink } from '@coreui/react'
 
+
 function Table({ heading, btnText, btnURL, tableHeading, pagination, tableContent }) {
     return (
         <>
