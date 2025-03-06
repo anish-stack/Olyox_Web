@@ -22,7 +22,8 @@ const AllUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-  const itemsPerPage = 10;
+  const itemsPerPage = 10; 
+  
 
   const fetchUsers = async () => {
       setLoading(true);
