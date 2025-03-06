@@ -30,7 +30,7 @@ function AllCarList() {
     const fetchRides = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/admin/getAllSuggestions');
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/getAllSuggestions');
             setRides(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
             console.error('Error fetching rides:', error);
@@ -44,7 +44,7 @@ function AllCarList() {
     const handleDeleteRide = async () => {
         setLoading(true);
         try {
-            await axios.delete(`http://localhost:3100/api/v1/admin/deleteSuggestion/delete/${selectedRideId}`);
+            await axios.delete(`https://demoapi.olyox.com/api/v1/admin/deleteSuggestion/delete/${selectedRideId}`);
             toast.success('Ride deleted successfully!');
             fetchRides();
             setDeleteModal(false);
@@ -59,7 +59,7 @@ function AllCarList() {
     const handleStatusToggle = async (rideId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://localhost:3100/api/v1/admin/updateSuggestionStatus/${rideId}`, {
+            await axios.put(`https://demoapi.olyox.com/api/v1/admin/updateSuggestionStatus/${rideId}`, {
                 status: !currentStatus, // Toggle the status
             });
             toast.success('Status updated successfully!');

@@ -27,7 +27,7 @@ const AllUser = () => {
   const fetchUsers = async () => {
       setLoading(true);
       try {
-          const { data } = await axios.get('http://localhost:3100/api/v1/user/get_all_user');
+          const { data } = await axios.get('https://demoapi.olyox.com/api/v1/user/get_all_user');
           setUsers(Array.isArray(data.data) ? data.data : []);
       } catch (error) {
           console.error('Error fetching users:', error);
@@ -41,7 +41,7 @@ const AllUser = () => {
   const handleStatusToggle = async (userId, currentStatus) => {
       setLoading(true);
       try {
-          await axios.put(`http://localhost:3100/api/v1/user/update_user_block/${userId}`, {
+          await axios.put(`https://demoapi.olyox.com/api/v1/user/update_user_block/${userId}`, {
               isBlock: !currentStatus, // Field name adjusted based on model
           });
           toast.success('Status updated successfully!');
