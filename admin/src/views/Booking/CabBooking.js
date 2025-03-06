@@ -27,8 +27,9 @@ const CabBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rides/all_rides');
-            setOrders(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/rides/all_rides');
+            const allData = data.data.reverse();
+            setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders. Please try again.');
@@ -37,6 +38,8 @@ const CabBooking = () => {
             setLoading(false);
         }
     };
+
+    console.log("orders", orders)
 
     useEffect(() => {
         fetchOrders();

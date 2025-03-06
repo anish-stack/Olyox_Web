@@ -27,8 +27,9 @@ const AllCabVendor = () => {
     const fetchRiders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rider');
-            setRiders(Array.isArray(data) ? data : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/rider');
+            const allData = data.reverse();
+            setRiders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching riders:', error);
             toast.error('Failed to load riders. Please try again.');
@@ -41,7 +42,7 @@ const AllCabVendor = () => {
     const handleStatusToggle = async (riderId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`https://demoapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
+            await axios.put(`http://localhost:3100/api/v1/rider/updateRiderBlock/${riderId}`, {
                 isBlockByAdmin: !currentStatus,
             });
             toast.success('Status updated successfully!');
@@ -107,7 +108,7 @@ const AllCabVendor = () => {
             ) : (
                 <Table
                     heading="Riders"
-                    btnText="Add Rider"
+                    btnText=""
                     btnURL="/add-rider"
                     tableHeading={heading}
                     tableContent={

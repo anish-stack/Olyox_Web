@@ -22,13 +22,14 @@ const ParcelBooking = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const itemsPerPage = 10;
+    const itemsPerPage = 7;
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/parcel/get_parcel_order');
-            setOrders(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/parcel/get_parcel_order');
+            const allData = data.data.reverse();
+            setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders. Please try again.');
@@ -92,7 +93,7 @@ const ParcelBooking = () => {
             ) : (
                 <Table
                     heading="Rides"
-                    btnText="Add Ride"
+                    btnText=""
                     btnURL="/add-ride"
                     tableHeading={heading}
                     tableContent={currentData.map((order, index) => (

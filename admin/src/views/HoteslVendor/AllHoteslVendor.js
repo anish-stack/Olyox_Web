@@ -22,13 +22,14 @@ const AllHoteslVendor = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const itemsPerPage = 10;
+    const itemsPerPage = 7;
 
     const fetchHotels = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/hotels/get_all_hotel');
-            setHotels(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel');
+            const allData = data.data.reverse();
+            setHotels(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching hotels:', error);
             toast.error('Failed to load hotels. Please try again.');
@@ -41,7 +42,7 @@ const AllHoteslVendor = () => {
     const handleStatusToggle = async (hotelId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`https://demoapi.olyox.com/api/v1/hotels/verify_hotel_documents/${hotelId}`, {
+            await axios.put(`http://localhost:3100/api/v1/hotels/verify_hotel_documents/${hotelId}`, {
                 isVerifiedTag: !currentStatus,
             });
             toast.success('Status updated successfully!');

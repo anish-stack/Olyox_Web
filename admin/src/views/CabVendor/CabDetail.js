@@ -14,7 +14,7 @@ function CabDetail() {
   const fetchRider = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rider/get_single_rider/${id}`)
+      const { data } = await axios.get(`http://localhost:3100/api/v1/rider/get_single_rider/${id}`)
       setRider(data.data);
       setLoading(false);
     } catch (error) {
@@ -31,7 +31,7 @@ function CabDetail() {
   const handleDocumentVerifyToggle = async (id, status) => {
     try {
       const updateStatus = !status
-      const res = await axios.put(`https://demoapi.olyox.com/api/v1/rider/update_rider_document_verify/${id}`, {
+      const res = await axios.put(`http://localhost:3100/api/v1/rider/update_rider_document_verify/${id}`, {
         DocumentVerify: updateStatus
       })
       toast.success("DocumentVerify updated successfully");
@@ -270,7 +270,7 @@ function CabDetail() {
             </div>
             <div className="card-body">
               <div className="row">
-                {rider.documents.license && (
+                {rider?.documents?.license && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -294,7 +294,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.rc && (
+                {rider?.documents?.rc && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -318,7 +318,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.insurance && (
+                {rider?.documents?.insurance && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -342,7 +342,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.aadharFront && (
+                {rider?.documents?.aadharFront && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -366,7 +366,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.aadharBack && (
+                {rider?.documents?.aadharBack && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -390,7 +390,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.pancard && (
+                {rider?.documents?.pancard && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img

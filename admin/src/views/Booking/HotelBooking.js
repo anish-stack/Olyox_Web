@@ -27,8 +27,9 @@ const HotelBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/hotels/get_all_hotel_booking');
-            setOrders(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel_booking');
+            const allData = data.data.reverse();
+            setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders. Please try again.');
@@ -37,6 +38,8 @@ const HotelBooking = () => {
             setLoading(false);
         }
     };
+
+    console.log("orders", orders)
 
     useEffect(() => {
         fetchOrders();
@@ -105,7 +108,7 @@ const HotelBooking = () => {
                                 <CTableDataCell>{order.HotelUserId?.hotel_name}</CTableDataCell>
                                 <CTableDataCell>{order.Booking_id}</CTableDataCell>
                                 <CTableDataCell>{order.guest_id?.name || 'N/A'}</CTableDataCell>
-                                <CTableDataCell>{order.guest_id?.phone || 'N/A'}</CTableDataCell>
+                                <CTableDataCell>{order.guest_id?.number || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>
                                     {order.guestInformation.map(item => (
                                         <div key={item._id}>

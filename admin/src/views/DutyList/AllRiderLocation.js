@@ -13,7 +13,7 @@ const AllRiderLocation = () => {
         setLoading(true);
         try {
             // Fetch riders
-            const { data: ridersData } = await axios.get('https://demoapi.olyox.com/api/v1/rider');
+            const { data: ridersData } = await axios.get('http://localhost:3100/api/v1/rider');
             const activeRiders = ridersData.filter(rider => rider.isActive === true);
             setRiders(Array.isArray(activeRiders) ? activeRiders : []);
             
@@ -43,23 +43,28 @@ const AllRiderLocation = () => {
                     />
                     
                     {/* Render Riders */}
-                    {riders.map((rider) => (
-                        <Marker
-                            key={rider._id}
-                            position={[rider.location.coordinates[1], rider.location.coordinates[0]]}
-                            icon={L.icon({
-                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Rider icon
-                                iconSize: [32, 32],
-                                iconAnchor: [16, 32]
-                            })}
-                        >
-                            <Popup>
-                                <b>{rider.name}</b> <br />
-                                Vehicle: {rider.rideVehicleInfo.vehicleName} ({rider.rideVehicleInfo.vehicleType}) <br />
-                                Phone: {rider.phone}
-                            </Popup>
-                        </Marker>
-                    ))}
+                    {riders.map((rider) => {
+    if (!rider.location || !rider.location.coordinates) return null; // Skip if location is missing
+
+    return (
+        <Marker
+            key={rider._id}
+            position={[rider.location.coordinates[1], rider.location.coordinates[0]]}
+            icon={L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Rider icon
+                iconSize: [32, 32],
+                iconAnchor: [16, 32]
+            })}
+        >
+            <Popup>
+                <b>{rider.name}</b> <br />
+                Vehicle: {rider.rideVehicleInfo.vehicleName} ({rider.rideVehicleInfo.vehicleType}) <br />
+                Phone: {rider.phone}
+            </Popup>
+        </Marker>
+    );
+})}
+
                 </MapContainer>
             )}
         </div>
