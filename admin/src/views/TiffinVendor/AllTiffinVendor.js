@@ -80,7 +80,11 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/tiffin-listin/${vendorId}`);
     };
 
-    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Actions'];
+    const handleViewFoodListing = (vendorId) => {
+        navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
+    };
+
+    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions'];
 
     return (
         <>
@@ -146,6 +150,17 @@ const AllTiffinVendor = () => {
                                         size="sm"
                                         className="d-flex align-items-center gap-2"
                                         onClick={() => handleViewTiffinPackage(vendor._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewFoodListing(vendor._id)}
                                     >
                                         <FaEye />
                                         View Details

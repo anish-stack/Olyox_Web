@@ -81,7 +81,11 @@ const AllCabVendor = () => {
         navigate(`/cab/vendor-detail/${riderId}`);
     };
 
-    const heading = ['S.No', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Block', 'Actions'];
+    const handleRiderTiming = (riderId) => {
+        navigate(`/cab/rider-time/${riderId}`);
+    };
+
+    const heading = ['S.No', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
 
     return (
         <>
@@ -126,6 +130,17 @@ const AllCabVendor = () => {
                                         <span className="me-1">{rider.Ratings}</span>
                                         <span className="text-warning">★</span>
                                     </div>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleRiderTiming(rider._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

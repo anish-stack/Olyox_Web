@@ -8,7 +8,7 @@ const TiffinFoodListing = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/tiffin/get_all_food_listing/${id}`)
+      const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/tiffin/get_all_package_listing/${id}`)
       console.log("data", data)
       setFoodList(data.data)
     } catch (error) {

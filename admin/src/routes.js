@@ -53,6 +53,8 @@ import AddCancelReson from './views/CancelReson/AddCancelReson'
 import EditCancelReson from './views/CancelReson/EditCancelReson'
 import HotelListing from './views/HoteslVendor/HotelListing'
 import TiffinFoodListing from './views/TiffinVendor/TiffinFoodListing'
+import TiffinListing from './views/TiffinVendor/TiffinListing'
+import RiderTime from './views/CabVendor/RiderTime'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -223,6 +225,7 @@ const routes = [
   { path: '/tiffin/vendor-detail/:id', name: 'Tiffin Vendor Detail', element: TiffinVendorDetail },
   { path: '/tiffin/edit-tiffin-vendor/:id', name: 'Edit Tiffin Vendor Detail', element: EditTiffinVendor },
   { path: '/tiffin/tiffin-listin/:id', name: 'All Tiffin Listing', element: TiffinFoodListing },
+  { path: '/tiffin/tiffin-food-listin/:id', name: 'All Food Listing', element: TiffinListing },
 
   // refferal routes here 
   { path: '/Hotel', name: 'Hotel', element: Cards, exact: true },
@@ -236,6 +239,7 @@ const routes = [
   { path: '/cab/all-cab-vendor', name: 'All Cab', element: AllCabVendor },
   { path: '/cab/vendor-detail/:id', name: 'Cab Vendor Detail', element: CabDetail },
   { path: '/cab/edit-cab-vendor/:id', name: 'Edit Cab Vendor Detail', element: EditCabVendor },
+  { path: '/cab/rider-time/:id', name: 'Rider Time', element: RiderTime },
 
   // refferal routes here 
   { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
