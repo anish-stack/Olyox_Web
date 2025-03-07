@@ -29,7 +29,8 @@ const AllUser = () => {
       setLoading(true);
       try {
           const { data } = await axios.get('https://demoapi.olyox.com/api/v1/user/get_all_user');
-          setUsers(Array.isArray(data.data) ? data.data : []);
+          const reverceDAta = data.data.reverse();
+          setUsers(Array.isArray(reverceDAta) ? reverceDAta : []);
       } catch (error) {
           console.error('Error fetching users:', error);
           toast.error('Failed to load users. Please try again.');

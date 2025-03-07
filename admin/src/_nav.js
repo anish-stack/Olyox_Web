@@ -92,6 +92,18 @@ const _nav = [
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
+    component: CNavItem,
+    name: 'Heavy Transport Option',
+    to: '/all-heacy-transport-option',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Cancel Reason',
+    to: '/all-cancel-reason',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
     component: CNavGroup,
     name: 'App Vendor',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,

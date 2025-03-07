@@ -76,7 +76,11 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/vendor-detail/${vendorId}`);
     };
 
-    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'Actions'];
+    const handleViewTiffinPackage = (vendorId) => {
+        navigate(`/tiffin/tiffin-listin/${vendorId}`);
+    };
+
+    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Actions'];
 
     return (
         <>
@@ -134,6 +138,17 @@ const AllTiffinVendor = () => {
                                     >
                                         {vendor.status ? <FaToggleOn /> : <FaToggleOff />}
                                         {vendor.status ? 'Active' : 'Inactive'}
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewTiffinPackage(vendor._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
                                     </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>

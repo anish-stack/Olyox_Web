@@ -82,7 +82,11 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/vendor-detail/${hotelId}`);
     };
 
-    const heading = ['S.No', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'Actions'];
+    const handleViewListinDetails = (hotelId) => {
+        navigate(`/hotel/hotel-listin/${hotelId}`);
+    };
+
+    const heading = ['S.No', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions'];
 
     return (
         <>
@@ -131,6 +135,17 @@ const AllHoteslVendor = () => {
                                     >
                                         {hotel.isVerifiedTag ? <FaToggleOn /> : <FaToggleOff />}
                                         {hotel.isVerifiedTag ? 'Verified' : 'Unverified'}
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewListinDetails(hotel._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
                                     </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
