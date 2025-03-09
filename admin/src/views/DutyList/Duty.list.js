@@ -29,7 +29,7 @@ const Dutyist = () => {
     try {
       
       const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rider');
-      const filterData = data.filter(rider => rider.isActive === true);
+      const filterData = data.filter(rider => rider.isAvailable === true);
       setRiders(Array.isArray(filterData) ? filterData : []);
     } catch (error) {
       console.error('Error fetching riders:', error);
