@@ -7,14 +7,14 @@ const cron = require('node-cron');
 const CronJobLog = require('../model/CronJobLogSchema.js');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 const vendor = require('../model/vendor');
-
+const axios = require('axios')
 const FIRST_RECHARGE_COMMISONS = 10
 const SECOND_RECHARGE_COMMISONS = 2
 exports.DoRecharge = async (req, res) => {
     try {
         const vendor = req?.user?.id || req.query._id || req.query.BH;
         const { plan_id, trn_no } = req.body;
-        if (!plan_id) { 
+        if (!plan_id) {
             return res.status(400).json({ message: "Please select a valid plan." });
         }
 
@@ -151,11 +151,11 @@ exports.getMyRecharges = async (req, res) => {
 
         // Filter recharges based on userId
         if (req.query._id) {
-            rechargeData = rechargeData.filter(recharge => 
+            rechargeData = rechargeData.filter(recharge =>
                 recharge?.vendor_id?.myReferral?.toString() === req.query._id
             );
         } else if (req.user) {
-            rechargeData = rechargeData.filter(recharge => 
+            rechargeData = rechargeData.filter(recharge =>
                 recharge?.vendor_id?._id?.toString() === req.user.id._id
             );
         }
@@ -297,6 +297,27 @@ exports.getApprovedRecharge = async (req, res) => {
         await SendWhatsAppMessage(vendorMessage, rechargeVendor.number);
         await rechargeData.save()
         await rechargeVendor.save()
+
+        console.log("i am getting start")
+        try {
+            const responseData = await axios.post('https://demoapi.olyox.com/api/v1/admin/mark-paid', {
+                rechargePlan: rechargeData?.member_id?.title,
+                expireData: rechargeData?.end_date,
+                approveRecharge: true,
+                riderBh: rechargeVendor?.myReferral
+            })
+
+            console.log("responseData",responseData.data)
+            console.log("i am getting done")
+
+        } catch (error) {
+            console.log("responseData",error)
+
+            console.log("i am getting error")
+
+        }
+        console.log("i am getting end")
+
 
         res.status(200).json({
             success: true,

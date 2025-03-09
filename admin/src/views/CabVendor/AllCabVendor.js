@@ -68,7 +68,7 @@ const AllCabVendor = () => {
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = filteredRiders.slice(startIndex, startIndex + itemsPerPage);
+    const currentData = filteredRiders.reverse().slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredRiders.length / itemsPerPage);
 
     const handlePageChange = (page) => {
