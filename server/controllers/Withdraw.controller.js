@@ -11,7 +11,7 @@ exports.createWithdrawal = async (req, res) => {
         }
 
         const { amount, method, BankDetails, upi_details } = req.body;
-        console.log('Request Body:', req.body);
+        console.log('Request Body:', req.query);
 
         // Validate request fields
         if (!amount || !method) {
@@ -22,7 +22,7 @@ exports.createWithdrawal = async (req, res) => {
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
             return res.status(400).json({ success: false, message: 'Amount must be a valid positive number.' });
         }
-        console.log(parsedAmount);
+        console.log(userId);
 
         if (!['Bank Transfer', 'UPI'].includes(method)) {
             return res.status(400).json({ success: false, message: 'Invalid withdrawal method. Choose Bank Transfer or UPI.' });
