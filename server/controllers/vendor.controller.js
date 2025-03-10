@@ -859,6 +859,36 @@ exports.getProviderDetailsByNumber = async (req, res) => {
 
     }
 }
+exports.getProviderDetailsByBhId= async (req, res) => {
+    try {
+        const { BhId } = req.body || {}
+        console.log("BhId", BhId)
+        const provider = await Vendor_Model.findOne({ myReferral:BhId })
+
+        if (!provider) {
+            return res.status(400).json({
+                success: false,
+                message: 'Provider not founded by BH Id on website Please Register First !!',
+            })
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Provider founded by Bh',
+            data: provider,
+            BH_ID: provider?.myReferral,
+            isProfileCompleteOnApp: provider?.isProfileCompleteOnApp
+        })
+
+
+    } catch (error) {
+        res.status(501).json({
+            success: false,
+            message: 'Provider not Found by number',
+        })
+
+    }
+}
 
 exports.getCopyOfProvider = async (req, res) => {
     try {
