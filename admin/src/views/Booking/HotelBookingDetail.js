@@ -27,6 +27,7 @@ const HotelBookingDetail = () => {
         }
     };
 
+    
     useEffect(() => {
         fetchBookingDetails();
     }, []);

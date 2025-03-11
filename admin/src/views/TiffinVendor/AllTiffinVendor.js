@@ -27,6 +27,7 @@ const AllTiffinVendor = () => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
+            
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/tiffin/get_restaurant');
             setVendors(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
@@ -75,7 +76,15 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/vendor-detail/${vendorId}`);
     };
 
-    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'Actions'];
+    const handleViewTiffinPackage = (vendorId) => {
+        navigate(`/tiffin/tiffin-listin/${vendorId}`);
+    };
+
+    const handleViewFoodListing = (vendorId) => {
+        navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
+    };
+
+    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions'];
 
     return (
         <>
@@ -103,7 +112,7 @@ const AllTiffinVendor = () => {
             ) : (
                 <Table
                     heading="Tiffin Vendors"
-                    btnText="Add Tiffin Vendor"
+                    btnText=""
                     btnURL="/tiffin/add-vendor"
                     tableHeading={heading}
                     tableContent={
@@ -133,6 +142,28 @@ const AllTiffinVendor = () => {
                                     >
                                         {vendor.status ? <FaToggleOn /> : <FaToggleOff />}
                                         {vendor.status ? 'Active' : 'Inactive'}
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewTiffinPackage(vendor._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewFoodListing(vendor._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
                                     </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>

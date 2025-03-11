@@ -26,6 +26,7 @@ import AddCarList from './views/CarList/AddCarList'
 import EditCarList from './views/CarList/EditCarList'
 import AllTiffinVendor from './views/TiffinVendor/AllTiffinVendor'
 import TiffinVendorDetail from './views/TiffinVendor/TiffinVendorDetail'
+
 import EditTiffinVendor from './views/TiffinVendor/EditTiffinVendor'
 import AllHoteslVendor from './views/HoteslVendor/AllHoteslVendor'
 import HotelVendor from './views/HoteslVendor/HotelVendor'
@@ -44,10 +45,21 @@ import HotelBookingDetail from './views/Booking/HotelBookingDetail'
 import CabBooking from './views/Booking/CabBooking'
 import CabBookingDetail from './views/Booking/CabBookingDetail'
 import ParcelBooking from './views/Booking/ParcelBooking'
+import AllHeavyTransport from './views/HeavyTransport/AllHeavyTransport'
+import AddHeavyTransport from './views/HeavyTransport/AddHeavyTransport'
+import EditHeavyTransport from './views/HeavyTransport/EditHeavyTransport'
+import CancelReson from './views/CancelReson/CancelReson'
+import AddCancelReson from './views/CancelReson/AddCancelReson'
+import EditCancelReson from './views/CancelReson/EditCancelReson'
+import HotelListing from './views/HoteslVendor/HotelListing'
+import TiffinFoodListing from './views/TiffinVendor/TiffinFoodListing'
+import TiffinListing from './views/TiffinVendor/TiffinListing'
+import RiderTime from './views/CabVendor/RiderTime'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -212,18 +224,22 @@ const routes = [
   { path: '/tiffin/all-tiffin-vendor', name: 'All Tiffin', element: AllTiffinVendor },
   { path: '/tiffin/vendor-detail/:id', name: 'Tiffin Vendor Detail', element: TiffinVendorDetail },
   { path: '/tiffin/edit-tiffin-vendor/:id', name: 'Edit Tiffin Vendor Detail', element: EditTiffinVendor },
+  { path: '/tiffin/tiffin-listin/:id', name: 'All Tiffin Listing', element: TiffinFoodListing },
+  { path: '/tiffin/tiffin-food-listin/:id', name: 'All Food Listing', element: TiffinListing },
 
   // refferal routes here 
   { path: '/Hotel', name: 'Hotel', element: Cards, exact: true },
   { path: '/hotel/all-hotel-vendor', name: 'All Hotel', element: AllHoteslVendor },
   { path: '/hotel/vendor-detail/:id', name: 'Hotel Vendor Detail', element: HotelVendor },
   { path: '/hotel/edit-hotel-vendor/:id', name: 'Edit Hotel Vendor Detail', element: EditHotelVendor },
+  { path: '/hotel/hotel-listin/:id', name: 'Edit Hotel Listing', element: HotelListing },
 
   // refferal routes here 
   { path: '/Cab', name: 'Cab', element: Cards, exact: true },
   { path: '/cab/all-cab-vendor', name: 'All Cab', element: AllCabVendor },
   { path: '/cab/vendor-detail/:id', name: 'Cab Vendor Detail', element: CabDetail },
   { path: '/cab/edit-cab-vendor/:id', name: 'Edit Cab Vendor Detail', element: EditCabVendor },
+  { path: '/cab/rider-time/:id', name: 'Rider Time', element: RiderTime },
 
   // refferal routes here 
   { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
@@ -237,6 +253,17 @@ const routes = [
   { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
   { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
   { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
+
+    // refferal routes here 
+    // { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
+    { path: '/all-heacy-transport-option', name: 'All Heavy Transport', element: AllHeavyTransport },
+    { path: '/add-heacy-transport-option', name: 'Add Heavy Transport', element: AddHeavyTransport },
+    { path: '/edit-heacy-transport-option/:id', name: 'Edit Heavy Transport', element: EditHeavyTransport },
+
+
+    { path: '/all-cancel-reason', name: 'All Cancel Reason', element: CancelReson },
+    { path: '/add-cancel-reason', name: 'Add Cancel Reason', element: AddCancelReson },
+    { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
 
 ]
 

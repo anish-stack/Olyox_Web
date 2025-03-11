@@ -24,6 +24,7 @@ function EditMember() {
   useEffect(() => {
     const fetchMembershipPlan = async () => {
       try {
+        
         const res = await axios.get(`https://www.api.olyox.com/api/v1/membership-plans/${id}`);
         setFormData({
           title: res.data.data.title,

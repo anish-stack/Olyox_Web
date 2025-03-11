@@ -31,6 +31,7 @@ const EditTiffinVendor = () => {
             restaurant_adhar_front_image: null,
             restaurant_adhar_back_image: null,
         }
+        
     });
 
     // Handle input changes

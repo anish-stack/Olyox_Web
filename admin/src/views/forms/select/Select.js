@@ -26,6 +26,7 @@ const Select = () => {
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
+            
             <strong>React Select</strong> <small>Sizing</small>
           </CCardHeader>
           <CCardBody>

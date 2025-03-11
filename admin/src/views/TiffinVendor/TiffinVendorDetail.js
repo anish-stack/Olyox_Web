@@ -25,6 +25,7 @@ const TiffinVendorDetail = () => {
     const [vendor, setVendor] = useState(null);
     const [loading, setLoading] = useState(true);
     
+    
     const fetchVendorDetails = async () => {
         setLoading(true);
         try {

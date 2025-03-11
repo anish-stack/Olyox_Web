@@ -15,6 +15,7 @@ import {
 } from '@coreui/react'
 import { DocsComponents, DocsExample } from 'src/components'
 
+
 function Form({ heading, btnText, btnURL,formContent, onSubmit }) {
     return (
         <>

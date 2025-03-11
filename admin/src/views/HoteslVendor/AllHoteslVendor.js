@@ -22,13 +22,15 @@ const AllHoteslVendor = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const itemsPerPage = 10;
+    const itemsPerPage = 7;
 
     const fetchHotels = async () => {
+        
         setLoading(true);
         try {
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/hotels/get_all_hotel');
-            setHotels(Array.isArray(data.data) ? data.data : []);
+            const allData = data.data.reverse();
+            setHotels(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching hotels:', error);
             toast.error('Failed to load hotels. Please try again.');
@@ -80,7 +82,11 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/vendor-detail/${hotelId}`);
     };
 
-    const heading = ['S.No', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'Actions'];
+    const handleViewListinDetails = (hotelId) => {
+        navigate(`/hotel/hotel-listin/${hotelId}`);
+    };
+
+    const heading = ['S.No', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions'];
 
     return (
         <>
@@ -129,6 +135,17 @@ const AllHoteslVendor = () => {
                                     >
                                         {hotel.isVerifiedTag ? <FaToggleOn /> : <FaToggleOff />}
                                         {hotel.isVerifiedTag ? 'Verified' : 'Unverified'}
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleViewListinDetails(hotel._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
                                     </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>

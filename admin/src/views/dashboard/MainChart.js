@@ -25,6 +25,7 @@ const MainChart = () => {
       }
     })
   }, [chartRef])
+  
 
   const random = () => Math.round(Math.random() * 100)
 

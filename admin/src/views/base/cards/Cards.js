@@ -21,6 +21,7 @@ import {
 } from '@coreui/react'
 import { DocsComponents, DocsExample } from 'src/components'
 
+
 import ReactImg from 'src/assets/images/react.jpg'
 
 const Cards = () => {

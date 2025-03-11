@@ -17,6 +17,7 @@ const Page500 = () => {
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={6}>
+            
             <span className="clearfix">
               <h1 className="float-start display-3 me-4">500</h1>
               <h4 className="pt-3">Houston, we have a problem!</h4>

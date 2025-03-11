@@ -15,6 +15,7 @@ import {
 import { DocsComponents, DocsExample } from 'src/components'
 
 const ExampleToast = () => {
+  
   const [toast, addToast] = useState(0)
   const toaster = useRef()
   const exampleToast = (

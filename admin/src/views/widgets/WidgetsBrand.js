@@ -33,6 +33,7 @@ const WidgetsBrand = (props) => {
       },
     },
   }
+  
 
   return (
     <CRow className={props.className} xs={{ gutter: 4 }}>

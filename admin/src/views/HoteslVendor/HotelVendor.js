@@ -26,6 +26,7 @@ const HotelVendor = () => {
     
     const fetchHotelDetails = async () => {
         setLoading(true);
+        
         try {
             const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/hotels/get_hotelbyId/${id}`);
             setHotel(data.data);

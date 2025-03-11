@@ -12,18 +12,7 @@ import {
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
-  {
-    component: CNavItem,
-    name: 'Categories',
-    to: '/category/all_category',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Subscription Type',
-    to: '/membership/all_membership',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
+
   {
     component: CNavItem,
     name: 'All Vendor',
@@ -32,62 +21,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Recharge History',
-    to: '/recharge/all-recharge',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Withdraw Request',
-    to: '/withdraw/all-withdraw',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Enquiry',
-    to: '/enquiry/all-enuqiry',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Referral',
-    to: '/refferal/all-refferal',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Duty List',
-    to: '/Duty/all-Duty',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
     name: 'All Users',
     to: '/All/all-Users',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Sub Admin',
-    to: '/Sub/all-sub',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Settings',
-    to: '/settings/edit-settings',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Onboarding Slider',
-    to: '/onboarding/all-onboarding',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Car List',
-    to: '/cars/all-cars-list',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
@@ -151,6 +86,85 @@ const _nav = [
       //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       // },
     ],
+  },
+
+  {
+    component: CNavItem,
+    name: 'Car List',
+    to: '/cars/all-cars-list',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Cancel Reason',
+    to: '/all-cancel-reason',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Categories',
+    to: '/category/all_category',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Duty List',
+    to: '/Duty/all-Duty',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Enquiry',
+    to: '/enquiry/all-enuqiry',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Heavy Transport Option',
+    to: '/all-heacy-transport-option',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Onboarding Slider',
+    to: '/onboarding/all-onboarding',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Recharge History',
+    to: '/recharge/all-recharge',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Referral',
+    to: '/refferal/all-refferal',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Subscription Type',
+    to: '/membership/all_membership',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Sub Admin',
+    to: '/Sub/all-sub',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Settings',
+    to: '/settings/edit-settings',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Withdraw Request',
+    to: '/withdraw/all-withdraw',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
 ]
 

@@ -29,6 +29,7 @@ const Typography = () => {
                     <code className="highlighter-rouge">&lt;h1&gt;&lt;/h1&gt;</code>
                   </p>
                 </td>
+                
                 <td>
                   <span className="h1">h1. Bootstrap heading</span>
                 </td>

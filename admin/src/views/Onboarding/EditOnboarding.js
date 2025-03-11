@@ -16,6 +16,7 @@ const EditOnboarding = () => {
         image: null, // for the image file
         existingImageUrl: '', // to store the existing image URL
     });
+    
 
     // Handle input changes
     const handleChange = (e) => {

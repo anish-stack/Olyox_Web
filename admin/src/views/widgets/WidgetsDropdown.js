@@ -27,6 +27,7 @@ const WidgetsDropdown = (props) => {
           widgetChartRef1.current.update()
         })
       }
+      
 
       if (widgetChartRef2.current) {
         setTimeout(() => {

@@ -20,6 +20,7 @@ const EditParcelVendor = () => {
             year: '',
             licensePlate: ''
         },
+        
         existingDocuments: {
             license: '',
             rc: '',

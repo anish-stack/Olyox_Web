@@ -21,6 +21,7 @@ const AddCarList = () => {
         setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
     };
 
+    
     // Handle checkbox change for status
     const handleStatusChange = (e) => {
         setFormData((prevFormData) => ({ ...prevFormData, status: e.target.checked }));

@@ -24,6 +24,7 @@ const Navs = () => {
           <CCardHeader>
             <strong>React Navs</strong> <small>Base navs</small>
           </CCardHeader>
+          
           <CCardBody>
             <p className="text-body-secondary small">
               The base <code>.nav</code> component is built with flexbox and provide a strong
