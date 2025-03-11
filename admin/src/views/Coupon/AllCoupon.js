@@ -117,7 +117,7 @@ const AllCoupon = () => {
                             </CTableDataCell>
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    <CNavLink href={`#coupon/edit/${item._id}`} className="edit">
+                                    <CNavLink href={`#coupon/edit-coupon/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
                                     </CNavLink>
                                     <div className="delete" onClick={() => confirmDelete(item._id)}>
