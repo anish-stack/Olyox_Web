@@ -58,7 +58,7 @@ Whether you're looking for an easy ride, booking a hotel, ordering meals, or arr
         try {
             const token = sessionStorage.getItem('token');
             await axios.post(
-                'https://www.api.olyox.com/api/v1/do-Reffer',
+                'https://api.olyox.com/api/v1/do-Reffer',
                 formData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );

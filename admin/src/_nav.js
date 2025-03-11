@@ -108,6 +108,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Coupons',
+    to: '/coupon/all_coupon',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Duty List',
     to: '/Duty/all-Duty',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
@@ -143,10 +149,35 @@ const _nav = [
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
-    component: CNavItem,
+    component: CNavGroup,
     name: 'Subscription Type',
-    to: '/membership/all_membership',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Tiffin Subscription',
+        to: '/subscription/all_tiffin',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Cab Subscription',
+        to: '/subscription/all_cab',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcel Subscription',
+        to: '/subscription/all_parcel',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcel Booking',
+        to: '/parcel/all-parcel-booking',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+    ],
   },
   {
     component: CNavItem,

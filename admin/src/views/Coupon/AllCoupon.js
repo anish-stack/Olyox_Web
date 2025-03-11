@@ -13,68 +13,56 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
-function AllMembership() {
-    const [membershipPlans, setMembershipPlans] = React.useState([]); // Changed name to represent membership
+const AllCoupon = () => {
+    const [coupons, setCoupons] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
 
-    const handleFetchMembershipPlans = async () => {
+    const fetchCoupons = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://api.olyox.com/api/v1/membership-plans');
-            setMembershipPlans(data.data || []); // Ensure default empty array
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/all_getCoupon');
+            setCoupons(data.data.reverse() || []);
         } catch (error) {
-            console.error('Error fetching membership plans:', error);
-            toast.error('Failed to load membership plans. Please try again.');
+            console.error('Error fetching coupons:', error);
+            toast.error('Failed to load coupons. Please try again.');
         } finally {
             setLoading(false);
         }
     };
-    
 
-    // Update Active Status
-    const handleUpdateActive = async (id, currentStatus) => {
+    const handleUpdateStatus = async (id, currentStatus) => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://api.olyox.com/api/v1/update_membership_status/${id}`, {
+            const res = await axios.put(`https://demoapi.olyox.com/api/v1/admin/updateCouponStatus/${id}`, {
                 active: updatedStatus,
             });
             toast.success(res?.data?.message);
-            handleFetchMembershipPlans();
+            fetchCoupons();
         } catch (error) {
             console.error('Error updating status:', error);
-            toast.error(
-                error?.response?.data?.errors?.[0] ||
-                error?.response?.data?.message ||
-                'Failed to update the status. Please try again.',
-            );
+            toast.error('Failed to update status. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Delete Membership Plan
-    const handleDeleteMembershipPlan = async (id) => {
+    const handleDeleteCoupon = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`https://api.olyox.com/api/v1/membership-plans/${id}`);
+            const res = await axios.delete(`https://demoapi.olyox.com/api/v1/admin/deleteCoupon/${id}`);
             toast.success(res?.data?.message);
-            handleFetchMembershipPlans();
+            fetchCoupons();
         } catch (error) {
-            console.error('Error deleting:', error);
-            toast.error(
-                error?.response?.data?.errors?.[0] ||
-                error?.response?.data?.message ||
-                'Internal server error',
-            );
+            console.error('Error deleting coupon:', error);
+            toast.error('Failed to delete coupon. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Confirm Delete
     const confirmDelete = (id) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -86,28 +74,21 @@ function AllMembership() {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                handleDeleteMembershipPlan(id);
+                handleDeleteCoupon(id);
             }
         });
     };
 
     React.useEffect(() => {
-        handleFetchMembershipPlans();
+        fetchCoupons();
     }, []);
 
-    // Calculate paginated data
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = membershipPlans.slice(startIndex, startIndex + itemsPerPage);
+    const currentData = coupons.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(coupons.length / itemsPerPage);
+    const handlePageChange = (page) => setCurrentPage(page);
 
-    // Calculate total pages
-    const totalPages = Math.ceil(membershipPlans.length / itemsPerPage);
-
-    // Handle page change
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const heading = ['S.No', 'Title', 'Price', 'Level', 'Is Active', 'Action'];
+    const heading = ['S.No', 'Code', 'Discount (%)', 'Expiry Date', 'Active', 'Action'];
 
     return (
         <>
@@ -115,38 +96,31 @@ function AllMembership() {
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
                 </div>
-            ) : membershipPlans.length === 0 ? (
-                <div className="no-data">
-                    <p>No membership plans available</p>
-                </div>
             ) : (
                 <Table
-                    heading="All Membership Plans"
-                    btnText="Add Membership Plan"
-                    btnURL="/membership/add-membership"
+                    heading="All Coupons"
+                    btnText="Add New Coupon"
+                    btnURL="/coupon/add-coupon"
                     tableHeading={heading}
                     tableContent={currentData.map((item, index) => (
                         <CTableRow key={item._id}>
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                            <CTableDataCell>{item.title}</CTableDataCell>
-                            <CTableDataCell>{item.price} INR</CTableDataCell>
-                            <CTableDataCell>{item.level}</CTableDataCell>
+                            <CTableDataCell>{item.code}</CTableDataCell>
+                            <CTableDataCell>{item.discount}%</CTableDataCell>
+                            <CTableDataCell>{new Date(item.expiryDate).toLocaleDateString()}</CTableDataCell>
                             <CTableDataCell>
                                 <CFormSwitch
                                     id={`formSwitch-${item._id}`}
-                                    checked={item?.active}
-                                    onChange={() => handleUpdateActive(item._id, item.active)}
+                                    checked={item.active}
+                                    onChange={() => handleUpdateStatus(item._id, item.active)}
                                 />
                             </CTableDataCell>
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    <CNavLink href={`#membership/edit-membership/${item._id}`} className="edit">
+                                    <CNavLink href={`#coupon/edit/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
                                     </CNavLink>
-                                    <div
-                                        className="delete"
-                                        onClick={() => confirmDelete(item._id)}
-                                    >
+                                    <div className="delete" onClick={() => confirmDelete(item._id)}>
                                         <i className="ri-delete-bin-fill"></i>
                                     </div>
                                 </div>
@@ -182,6 +156,6 @@ function AllMembership() {
             )}
         </>
     );
-}
+};
 
-export default AllMembership;
+export default AllCoupon;

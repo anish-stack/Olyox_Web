@@ -55,6 +55,21 @@ import HotelListing from './views/HoteslVendor/HotelListing'
 import TiffinFoodListing from './views/TiffinVendor/TiffinFoodListing'
 import TiffinListing from './views/TiffinVendor/TiffinListing'
 import RiderTime from './views/CabVendor/RiderTime'
+import TiffinSubscription from './views/Subscription/TiffinSubscription'
+import AddTiffinSubscription from './views/Subscription/AddTiffinSubscription'
+import EditTiffinSubscription from './views/Subscription/EditTiffinSubscription'
+import CabSubscription from './views/Subscription/CabSubscription'
+import AddCabSubscription from './views/Subscription/AddCabSubscription'
+import EditCabSubscription from './views/Subscription/EditCabSubscription'
+import ParcelSubscription from './views/Subscription/ParcelSubscription'
+import AddParcelSubscription from './views/Subscription/AddParcelSubscription'
+import EditParcelSubscription from './views/Subscription/EditParcelSubscription'
+import TransportSubscription from './views/Subscription/TransportSubscription'
+import AddTransportSubscription from './views/Subscription/AddTransportSubscription'
+import EditTransportSubscription from './views/Subscription/EditTransportSubscription'
+import AllCoupon from './views/Coupon/AllCoupon'
+import AddCoupon from './views/Coupon/AddCoupon'
+import EditCoupon from './views/Coupon/EditCoupon'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -220,6 +235,21 @@ const routes = [
   { path: '/cars/edit-cars-list/:id', name: 'Edit Cars List', element: EditCarList },
 
   // refferal routes here 
+  { path: '/Subscription List', name: 'Subscription List', element: Cards, exact: true },
+  { path: '/subscription/all_tiffin', name: 'All Tiffin Subscription', element: TiffinSubscription },
+  { path: '/subscription/add-tiffin', name: 'Add Tiffin Subscription', element: AddTiffinSubscription },
+  { path: '/subscription/edit-tiffin/:id', name: 'Edit Tiffin Subscription', element: EditTiffinSubscription },
+  { path: '/subscription/all_cab', name: 'All Cab Subscription', element: CabSubscription },
+  { path: '/subscription/add-cab', name: 'Add Cab Subscription', element: AddCabSubscription },
+  { path: '/subscription/edit-cab/:id', name: 'Edit Cab Subscription', element: EditCabSubscription },
+  { path: '/subscription/all_parcel', name: 'All Parcel Subscription', element: ParcelSubscription },
+  { path: '/subscription/add-parcel', name: 'Add Parcel Subscription', element: AddParcelSubscription },
+  { path: '/subscription/edit-parcel/:id', name: 'Edit Parcel Subscription', element: EditParcelSubscription },
+  { path: '/subscription/all_transport', name: 'All Transport Subscription', element: TransportSubscription },
+  { path: '/subscription/add-transport', name: 'Add Transport Subscription', element: AddTransportSubscription },
+  { path: '/subscription/edit-transport/:id', name: 'Edit Transport Subscription', element: EditTransportSubscription },
+
+  // refferal routes here 
   { path: '/Tiffin', name: 'Tiffin', element: Cards, exact: true },
   { path: '/tiffin/all-tiffin-vendor', name: 'All Tiffin', element: AllTiffinVendor },
   { path: '/tiffin/vendor-detail/:id', name: 'Tiffin Vendor Detail', element: TiffinVendorDetail },
@@ -264,6 +294,10 @@ const routes = [
     { path: '/all-cancel-reason', name: 'All Cancel Reason', element: CancelReson },
     { path: '/add-cancel-reason', name: 'Add Cancel Reason', element: AddCancelReson },
     { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
+
+    { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
+    { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
+    { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
 
 ]
 

@@ -27,6 +27,10 @@ const MembershipPlanSchema = new mongoose.Schema({
     active: {
         type: Boolean,
         default: true
+    },
+    category: {
+        type: String,
+        enum: ['tiffin', 'cab', 'parcel', 'transport'],
     }
 }, { timestamps: true });
 
