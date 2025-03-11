@@ -7,31 +7,31 @@ const cluster = require("cluster");
 const os = require("os");
 const PORT = process.env.PORT || 5000;
 const app = express();
-// const redis = require("redis");
+const redis = require("redis");
 const connectDb = require("./config/db");
 const router = require("./routes/routes");
-// const setupBullBoard = require('./bullBoard');
+const setupBullBoard = require('./bullBoard');
 
 // Redis client setup
-// const redisClient = redis.createClient({
-//     url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
-// });
+const redisClient = redis.createClient({
+    url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
+});
 
-// (async () => {
-//     redisClient.on("error", (err) => {
-//         console.log(err);
-//     });
+(async () => {
+    redisClient.on("error", (err) => {
+        console.log(err);
+    });
 
-//     redisClient.on("ready", () => console.log("Redis is ready"));
+    redisClient.on("ready", () => console.log("Redis is ready"));
 
-//     try {
-//         await redisClient.connect();
-//         await redisClient.ping();
-//         app.locals.redis = redisClient;
-//     } catch (err) {
-//         console.log(err);
-//     }
-// })();
+    try {
+        await redisClient.connect();
+        await redisClient.ping();
+        app.locals.redis = redisClient;
+    } catch (err) {
+        console.log(err);
+    }
+})();
 
 // // Middleware for custom headers
 app.use((req, res, next) => {
@@ -59,28 +59,28 @@ app.get("/", (req, res) => {
     res.send("Hello World I am From Olyox !");
 });
 
-// app.get("/Flush-all-Redis-Cached", async (req, res) => {
-//     try {
-//         const redisClient = req.app.locals.redis;
+app.get("/Flush-all-Redis-Cached", async (req, res) => {
+    try {
+        const redisClient = req.app.locals.redis;
 
-//         if (!redisClient) {
-//             return res.status(500).json({
-//                 success: false,
-//                 message: "Redis client is not available.",
-//             });
-//         }
+        if (!redisClient) {
+            return res.status(500).json({
+                success: false,
+                message: "Redis client is not available.",
+            });
+        }
 
-//         await redisClient.flushAll(); 
-//         res.redirect("/");
-//     } catch (err) {
-//         console.log("Error in flushing Redis cache:", err);
-//         res.status(500).json({
-//             success: false,
-//             message: "An error occurred while clearing the Redis cache.",
-//             error: err.message,
-//         });
-//     }
-// });
+        await redisClient.flushAll(); 
+        res.redirect("/");
+    } catch (err) {
+        console.log("Error in flushing Redis cache:", err);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while clearing the Redis cache.",
+            error: err.message,
+        });
+    }
+});
 
 app.use("/api/v1", router);
 
@@ -115,29 +115,29 @@ app.use((err, req, res, next) => {
     }
 });
 
-// setupBullBoard(app);
+setupBullBoard(app);
 
-// if (cluster.isMaster) {
-//     // Fork workers for each CPU core
-//     const numCores = os.cpus().length;
-//     console.log(`Master process is running on ${process.pid}`);
-//     console.log(`Forking ${numCores} workers`);
+if (cluster.isMaster) {
+    // Fork workers for each CPU core
+    const numCores = os.cpus().length;
+    console.log(`Master process is running on ${process.pid}`);
+    console.log(`Forking ${numCores} workers`);
 
-//     for (let i = 0; i < numCores; i++) {
-//         cluster.fork(); // Create a new worker for each CPU core
-//     }
+    for (let i = 0; i < numCores; i++) {
+        cluster.fork(); // Create a new worker for each CPU core
+    }
 
-//     cluster.on("exit", (worker, code, signal) => {
-//         console.log(`Worker ${worker.process.pid} died`);
-//     });
+    cluster.on("exit", (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died`);
+    });
 
-// } else {
-//     // Worker processes have a HTTP server
-//     app.listen(PORT, () => {
-//         console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
-//         console.log('Server is running on port', PORT);
-//     });
-// }
+} else {
+    // Worker processes have a HTTP server
+    app.listen(PORT, () => {
+        console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
+        console.log('Server is running on port', PORT);
+    });
+}
 
 
 app.listen(PORT, () => {
