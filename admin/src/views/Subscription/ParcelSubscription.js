@@ -13,7 +13,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
-function AllMembership() {
+const ParcelSubscription = () => {
     const [membershipPlans, setMembershipPlans] = React.useState([]); // Changed name to represent membership
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
@@ -23,7 +23,8 @@ function AllMembership() {
         setLoading(true);
         try {
             const { data } = await axios.get('https://api.olyox.com/api/v1/membership-plans');
-            setMembershipPlans(data.data || []); // Ensure default empty array
+            const filteredData = data.data.filter(plan => plan.category === 'parcel');
+            setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
         } catch (error) {
             console.error('Error fetching membership plans:', error);
             toast.error('Failed to load membership plans. Please try again.');
@@ -31,7 +32,7 @@ function AllMembership() {
             setLoading(false);
         }
     };
-    
+
 
     // Update Active Status
     const handleUpdateActive = async (id, currentStatus) => {
@@ -115,15 +116,11 @@ function AllMembership() {
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
                 </div>
-            ) : membershipPlans.length === 0 ? (
-                <div className="no-data">
-                    <p>No membership plans available</p>
-                </div>
             ) : (
                 <Table
-                    heading="All Membership Plans"
-                    btnText="Add Membership Plan"
-                    btnURL="/membership/add-membership"
+                    heading="All Parcel Plans"
+                    btnText="Add New Plan"
+                    btnURL="/subscription/add-parcel"
                     tableHeading={heading}
                     tableContent={currentData.map((item, index) => (
                         <CTableRow key={item._id}>
@@ -140,7 +137,7 @@ function AllMembership() {
                             </CTableDataCell>
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    <CNavLink href={`#membership/edit-membership/${item._id}`} className="edit">
+                                    <CNavLink href={`#subscription/edit-tiffin/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
                                     </CNavLink>
                                     <div
@@ -184,4 +181,4 @@ function AllMembership() {
     );
 }
 
-export default AllMembership;
+export default ParcelSubscription

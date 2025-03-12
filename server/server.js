@@ -70,7 +70,7 @@ app.get("/Flush-all-Redis-Cached", async (req, res) => {
             });
         }
 
-        await redisClient.flushAll(); // Flush all the Redis data
+        await redisClient.flushAll(); 
         res.redirect("/");
     } catch (err) {
         console.log("Error in flushing Redis cache:", err);
@@ -138,3 +138,9 @@ if (cluster.isMaster) {
         console.log('Server is running on port', PORT);
     });
 }
+
+
+app.listen(PORT, () => {
+    console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
+    console.log('Server is running on port', PORT);
+});
