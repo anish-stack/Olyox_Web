@@ -147,7 +147,7 @@ exports.registerVendor = async (req, res) => {
             aadharNumber,
             panNumber,
             myReferral: genreateReferral,
-          
+
             referral_code_which_applied,
             is_referral_applied,
             otp_: otp,
@@ -238,7 +238,11 @@ exports.registerVendor = async (req, res) => {
 
         const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
 
-        await SendWhatsAppMessage(message, number)
+        console.log("Message sent", message)
+
+        const dataMessage = await SendWhatsAppMessage(message, number)
+        console.log("Message sent", number)
+        console.log("Data Message sent", dataMessage)
 
 
         await insertBh.save();
@@ -501,7 +505,10 @@ exports.resendOtp = async (req, res) => {
 
         // Send WhatsApp message
         try {
-            await SendWhatsAppMessage(message, vendor?.number);
+            console.log("Message sent", message)
+            console.log("Message sent Number", vendor?.number)
+            const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
+            console.log("Data Message sent", dataMessage)
         } catch (error) {
             console.error('Error sending WhatsApp message:', error);
             return res.status(500).json({ success: false, message: 'Failed to send WhatsApp message' });
@@ -859,79 +866,79 @@ exports.getProviderDetailsByNumber = async (req, res) => {
 
     }
 }
-exports.getProviderDetailsByBhId= async (req, res) => {
+exports.getProviderDetailsByBhId = async (req, res) => {
     try {
         const { BhId } = req.body || req.query || {}
-        console.log("BhId", req.query )
-        const provider = await Vendor_Model.findOne({ myReferral:BhId })
-        .select('-password')
-        .populate('category')
-        .populate('member_id')
-        .populate('payment_id')
-        .populate('copyParentId')
-        .populate({
-            path: 'Level1',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level2',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level3',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level4',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level5',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level6',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        })
-        .populate({
-            path: 'Level7',
-            populate: [
-                { path: 'Child_referral_ids' },
-                { path: 'category' },
-                { path: 'payment_id' },
-                { path: 'member_id' }
-            ],
-        });
+        console.log("BhId", req.query)
+        const provider = await Vendor_Model.findOne({ myReferral: BhId })
+            .select('-password')
+            .populate('category')
+            .populate('member_id')
+            .populate('payment_id')
+            .populate('copyParentId')
+            .populate({
+                path: 'Level1',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level2',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level3',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level4',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level5',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level6',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            })
+            .populate({
+                path: 'Level7',
+                populate: [
+                    { path: 'Child_referral_ids' },
+                    { path: 'category' },
+                    { path: 'payment_id' },
+                    { path: 'member_id' }
+                ],
+            });
 
 
         if (!provider) {
