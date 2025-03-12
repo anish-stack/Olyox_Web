@@ -517,7 +517,7 @@ exports.resendOtp = async (req, res) => {
         // Send appropriate response
         const successMessage =
             type === 'email'
-                ? 'OTP sent successfully for email verification'
+                ? 'OTP sent successfully for  number verification'
                 : 'Password change OTP sent successfully';
 
         return res.status(200).json({ success: true, message: successMessage });
