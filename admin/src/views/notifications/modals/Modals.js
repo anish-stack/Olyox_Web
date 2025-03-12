@@ -17,6 +17,7 @@ import {
 } from '@coreui/react'
 import { DocsComponents, DocsExample } from 'src/components'
 
+
 const LiveDemo = () => {
   const [visible, setVisible] = useState(false)
   return (

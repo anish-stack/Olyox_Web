@@ -19,3 +19,4 @@ const CoreUIIcons = () => {
 }
 
 export default CoreUIIcons
+

@@ -21,6 +21,7 @@ const Popovers = () => {
                 <CButton color="danger" size="lg">
                   Click to toggle popover
                 </CButton>
+                
               </CPopover>
             </DocsExample>
           </CCardBody>

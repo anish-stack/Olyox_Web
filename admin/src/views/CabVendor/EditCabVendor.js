@@ -18,6 +18,7 @@ const EditCabVendor = () => {
             PricePerKm: '',
             VehicleNumber: ''
         },
+        
         existingDocuments: {
             license: '',
             rc: '',

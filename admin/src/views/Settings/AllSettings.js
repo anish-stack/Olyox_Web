@@ -17,6 +17,7 @@ const Settings = () => {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    
 
     const fetchSettings = async () => {
         setLoading(true);

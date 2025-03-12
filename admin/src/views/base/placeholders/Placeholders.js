@@ -22,6 +22,7 @@ const Placeholders = () => {
         <DocsComponents href="components/placeholder/" />
         <CCard className="mb-4">
           <CCardHeader>
+            
             <strong>React Placeholder</strong>
           </CCardHeader>
           <CCardBody>

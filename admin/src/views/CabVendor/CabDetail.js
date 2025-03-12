@@ -16,6 +16,7 @@ function CabDetail() {
     try {
       const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rider/get_single_rider/${id}`)
       setRider(data.data);
+      
       setLoading(false);
     } catch (error) {
       console.log("Internal server error", error)
@@ -270,7 +271,7 @@ function CabDetail() {
             </div>
             <div className="card-body">
               <div className="row">
-                {rider.documents.license && (
+                {rider?.documents?.license && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -294,7 +295,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.rc && (
+                {rider?.documents?.rc && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -318,7 +319,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.insurance && (
+                {rider?.documents?.insurance && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -342,7 +343,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.aadharFront && (
+                {rider?.documents?.aadharFront && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -366,7 +367,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.aadharBack && (
+                {rider?.documents?.aadharBack && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img
@@ -390,7 +391,7 @@ function CabDetail() {
                   </div>
                 )}
 
-                {rider.documents.pancard && (
+                {rider?.documents?.pancard && (
                   <div className="col-md-4 mb-4">
                     <div className="card">
                       <img

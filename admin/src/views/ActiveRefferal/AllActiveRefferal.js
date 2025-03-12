@@ -31,6 +31,7 @@ function AllActiveRefferal() {
       setLoading(false)
     }
   }
+  
 
   React.useEffect(() => {
     handleFetchReferrals()

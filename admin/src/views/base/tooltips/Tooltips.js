@@ -29,6 +29,7 @@ const Tooltips = () => {
                 thundercats. Tofu biodiesel williamsburg marfa, four loko mcsweeney&#39;&#39;s
                 cleanse vegan chambray. A really ironic artisan
                 <CTooltip content="Tooltip text">
+                  
                   <CLink> whatever keytar </CLink>
                 </CTooltip>
                 scenester farm-to-table banksy Austin

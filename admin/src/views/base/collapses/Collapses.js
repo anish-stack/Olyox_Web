@@ -21,6 +21,7 @@ const Collapses = () => {
             <DocsExample href="components/collapse">
               <CButton
                 color="primary"
+                
                 href="#"
                 onClick={(e) => {
                   e.preventDefault()

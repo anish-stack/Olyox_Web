@@ -25,13 +25,15 @@ function CabBookingDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const fetchBookingDetails = async () => {
+      
       setLoading(true);
       try {
         const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rides/single_rides/${id}`);
         setBooking(data.data);
       } catch (error) {
-        console.error('Error fetching booking details:', error);
+        console.log('Error fetching booking details:', error);
         alert('Failed to load booking details. Please try again.');
       } finally {
         setLoading(false);
@@ -263,10 +265,10 @@ function CabBookingDetail() {
                     <div className="bg-secondary bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '96px', height: '96px' }}>
                       <User size={40} className="text-secondary" />
                     </div>
-                    <h3 className="h5 mb-1">{booking.rider.name}</h3>
-                    <p className="text-muted mb-2">{booking.rider.phone}</p>
+                    <h3 className="h5 mb-1">{booking?.rider?.name}</h3>
+                    <p className="text-muted mb-2">{booking?.rider?.phone}</p>
                     <span className="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
-                      BH: {booking.rider.BH}
+                      BH: {booking?.rider?.BH}
                     </span>
                   </div>
                 </div>
@@ -280,19 +282,19 @@ function CabBookingDetail() {
                       <div className="card-body">
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Vehicle</span>
-                          <span className="fw-medium">{booking.rider.rideVehicleInfo.vehicleName}</span>
+                          <span className="fw-medium">{booking?.rider?.rideVehicleInfo?.vehicleName}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Type</span>
-                          <span className="fw-medium">{booking.rider.rideVehicleInfo.vehicleType}</span>
+                          <span className="fw-medium">{booking?.rider?.rideVehicleInfo?.vehicleType}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Number</span>
-                          <span className="fw-medium">{booking.rider.rideVehicleInfo.VehicleNumber}</span>
+                          <span className="fw-medium">{booking?.rider?.rideVehicleInfo?.VehicleNumber}</span>
                         </div>
                         <div className="d-flex justify-content-between">
                           <span className="text-muted">Price/km</span>
-                          <span className="fw-medium">₹{booking.rider.rideVehicleInfo.PricePerKm}</span>
+                          <span className="fw-medium">₹{booking?.rider?.rideVehicleInfo?.PricePerKm}</span>
                         </div>
                       </div>
                     </div>
@@ -304,33 +306,34 @@ function CabBookingDetail() {
                       <div className="card-body">
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Total Rides</span>
-                          <span className="fw-medium">{booking.rider.TotalRides}</span>
+                          <span className="fw-medium">{booking?.rider?.TotalRides}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Ratings</span>
-                          <span className="fw-medium">{booking.rider.Ratings || 'No ratings'}</span>
+                          <span className="fw-medium">{booking?.rider?.Ratings || 'No ratings'}</span>
                         </div>
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">Status</span>
-                          <span className={`fw-medium ${booking.rider.isActive ? 'text-success' : 'text-danger'}`}>
-                            {booking.rider.isActive ? 'Active' : 'Inactive'}
+                          <span className={`fw-medium ${booking?.rider?.isActive ? 'text-success' : 'text-danger'}`}>
+                            {booking?.rider?.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </div>
                         <div className="d-flex justify-content-between">
                           <span className="text-muted">Verified</span>
-                          <span className={`fw-medium ${booking.rider.DocumentVerify ? 'text-success' : 'text-danger'}`}>
-                            {booking.rider.DocumentVerify ? 'Yes' : 'No'}
+                          <span className={`fw-medium ${booking?.rider?.DocumentVerify ? 'text-success' : 'text-danger'}`}>
+                            {booking?.rider?.DocumentVerify ? 'Yes' : 'No'}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                
-                <div>
+
+                {booking?.rider?.documents && (
+                  <div>
                   <h3 className="h6 text-muted mb-3">Documents</h3>
                   <div className="row">
-                    {Object.entries(booking.rider.documents).map(([key, value]) => (
+                    {Object.entries(booking?.rider?.documents).map(([key, value]) => (
                       <div key={key} className="col-md-4 col-sm-6 mb-3">
                         <div className="card bg-light text-center">
                           <div className="card-body py-2 px-3">
@@ -349,6 +352,9 @@ function CabBookingDetail() {
                     ))}
                   </div>
                 </div>
+                )}
+                
+                
               </div>
             </div>
           </div>

@@ -28,6 +28,7 @@ const Dropdowns = () => {
             <p className="text-body-secondary small">
               Here&#39;s how you can put them to work with either <code>&lt;button&gt;</code>{' '}
               elements:
+              
             </p>
             <DocsExample href="components/dropdown#single-button">
               <CDropdown>

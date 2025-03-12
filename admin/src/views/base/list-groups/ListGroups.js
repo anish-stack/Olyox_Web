@@ -22,6 +22,7 @@ const ListGroups = () => {
             <strong>React List Group</strong> <small>Basic example</small>
           </CCardHeader>
           <CCardBody>
+            
             <p className="text-body-secondary small">
               The default list group is an unordered list with items and the proper CSS classes.
               Build upon it with the options that follow, or with your CSS as required.

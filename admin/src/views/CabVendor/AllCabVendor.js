@@ -12,6 +12,7 @@ import {
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
+
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +29,8 @@ const AllCabVendor = () => {
         setLoading(true);
         try {
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rider');
-            setRiders(Array.isArray(data) ? data : []);
+            const allData = data.reverse();
+            setRiders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching riders:', error);
             toast.error('Failed to load riders. Please try again.');
@@ -79,7 +81,11 @@ const AllCabVendor = () => {
         navigate(`/cab/vendor-detail/${riderId}`);
     };
 
-    const heading = ['S.No', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Block', 'Actions'];
+    const handleRiderTiming = (riderId) => {
+        navigate(`/cab/rider-time/${riderId}`);
+    };
+
+    const heading = ['S.No', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
 
     return (
         <>
@@ -107,7 +113,7 @@ const AllCabVendor = () => {
             ) : (
                 <Table
                     heading="Riders"
-                    btnText="Add Rider"
+                    btnText=""
                     btnURL="/add-rider"
                     tableHeading={heading}
                     tableContent={
@@ -124,6 +130,17 @@ const AllCabVendor = () => {
                                         <span className="me-1">{rider.Ratings}</span>
                                         <span className="text-warning">★</span>
                                     </div>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="info"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2"
+                                        onClick={() => handleRiderTiming(rider._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

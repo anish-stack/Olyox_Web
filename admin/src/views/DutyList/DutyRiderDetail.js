@@ -29,6 +29,7 @@ const DutyRiderDetail = () => {
   useEffect(() => {
     fetchRider();
   }, []);
+  
 
   useEffect(() => {
     if (!rider || !rider.location || !Array.isArray(rider.location.coordinates) || rider.location.coordinates.length < 2) {

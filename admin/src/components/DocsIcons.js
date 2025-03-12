@@ -25,7 +25,9 @@ const DocsIcons = () => (
         </a>
       </div>
     </div>
+    
   </div>
 )
 
 export default DocsIcons
+

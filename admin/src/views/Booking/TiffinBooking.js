@@ -10,7 +10,6 @@ import {
     CInputGroupText,
     CFormInput,
 } from '@coreui/react';
-import { FaEye } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -23,12 +22,14 @@ const TiffinBooking = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const itemsPerPage = 10;
+    
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
             const { data } = await axios.get('https://demoapi.olyox.com/api/v1/tiffin/get_all_orders');
-            setOrders(Array.isArray(data.data) ? data.data : []);
+            const allData = data.data.reverse();
+            setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
             toast.error('Failed to load orders. Please try again.');
@@ -101,7 +102,7 @@ const TiffinBooking = () => {
                                 <CTableDataCell>{order.restaurant?.restaurant_name}</CTableDataCell>
                                 <CTableDataCell>{order.Order_Id}</CTableDataCell>
                                 <CTableDataCell>{order.user?.name || 'N/A'}</CTableDataCell>
-                                <CTableDataCell>{order.user?.phone || 'N/A'}</CTableDataCell>
+                                <CTableDataCell>{order.user?.number || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>
                                     {order.items.map(item => (
                                         <div key={item._id}>

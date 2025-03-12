@@ -13,6 +13,7 @@ const Badges = () => {
           <CCardHeader>
             <strong>React Badges</strong> <small>Dismissing</small>
           </CCardHeader>
+          
           <CCardBody>
             <p className="text-body-secondary small">
               Bootstrap badge scale to suit the size of the parent element by using relative font
