@@ -17,6 +17,8 @@ const SendWhatsAppMessage = async (Message, MobileNumber) => {
                 message: `Invalid mobile number. Please provide a valid mobile number: ${MobileNumber}`,
             };
         }
+        console.log("MobileNumber",MobileNumber)
+        console.log("process.env.WHATSAPP_API_KEY",process.env.WHATSAPP_API_KEY)
 
         if (!process.env.WHATSAPP_API_KEY) {
             return {
@@ -33,6 +35,7 @@ const SendWhatsAppMessage = async (Message, MobileNumber) => {
             },
         });
 
+        console.log("response",response)
         if (response.status === 200) {
             return {
                 success: true,
