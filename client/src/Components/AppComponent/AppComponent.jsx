@@ -1,14 +1,15 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
 
 function AppComponent() {
+    const [showDropdown, setShowDropdown] = useState(false);
+
     return (
-        <div className=' bg-[#FFF4F4] sm:p-12 py-12'>
+        <div className='bg-[#FFF4F4] sm:p-12 py-12'>
             <div className="container mx-auto px-6">
-                <div className=' text-center'>
-                    <h2 className=' text-4xl font-bold mb-4'>Download App For Best Experience</h2>
+                <div className='text-center'>
+                    <h2 className='text-4xl font-bold mb-4'>Download App For Best Experience</h2>
                     <p className="text-gray-600 mb-4">Download the Olyox app for the best experience, offering tailored solutions for both users and vendors alike.</p>
-                    <div className='flex flex-col sm:flex-row items-center justify-center gap-3'>
+                    <div className='flex flex-col sm:flex-row items-center justify-center gap-3 relative'>
                         <a
                             href={'https://drive.google.com/file/d/1hRmNgJuy9sMs4sGibVWwbVT9TZzrbvfh/view?usp=sharing'}
                             download
@@ -18,18 +19,25 @@ function AppComponent() {
                         >
                             Download User App
                         </a>
-                        <a
-                            href={''}
-                            className='w-full sm:w-auto text-center font-bold text-[#A91E1B] bg-white py-3 px-6 border border-[#A91E1B] rounded-xl hover:text-white hover:bg-[#A91E1B]'
+                        <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className='w-full sm:w-auto text-center font-bold text-[#A91E1B] bg-white py-3 px-6 border border-[#A91E1B] rounded-xl hover:text-white hover:bg-[#A91E1B] relative'
                         >
                             Download Vendor App
-                        </a>
+                        </button>
+                        {showDropdown && (
+                            <div className='absolute top-full z-10 mt-2 bg-white border border-[#A91E1B] rounded-xl shadow-lg flex flex-col w-full sm:w-auto'>
+                                <a href='https://drive.google.com/file/d/1XvEbOGkT7N2nxNKkLVdNN5RRd93vrVh1/view?usp=drive_link' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Cab APK</a>
+                                <a href='https://drive.google.com/file/d/1JuN46wKIAxzFMvABC-Rj8rOmO99kQxTi/view?usp=sharing' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Hotel APK</a>
+                                <a href='https://drive.google.com/file/d/1zyK2tJys3SCd-1f3NBZAK97qNKw9kffG/view?usp=sharing' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Tiffin APK</a>
+                                <a href='#' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Transport APK</a>
+                            </div>
+                        )}
                     </div>
-
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default AppComponent
+export default AppComponent;
