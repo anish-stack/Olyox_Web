@@ -84,7 +84,7 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
     };
 
-    const heading = ['S.No', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions'];
 
     return (
         <>
@@ -119,6 +119,7 @@ const AllTiffinVendor = () => {
                         currentData.map((vendor, index) => (
                             <CTableRow key={vendor._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                                <CTableDataCell>{vendor.restaurant_BHID}</CTableDataCell>
                                 <CTableDataCell>{vendor.restaurant_name}</CTableDataCell>
                                 <CTableDataCell>{vendor.restaurant_category}</CTableDataCell>
                                 <CTableDataCell>

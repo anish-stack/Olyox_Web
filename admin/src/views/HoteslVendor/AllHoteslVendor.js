@@ -86,7 +86,7 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/hotel-listin/${hotelId}`);
     };
 
-    const heading = ['S.No', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions'];
 
     return (
         <>
@@ -121,6 +121,7 @@ const AllHoteslVendor = () => {
                         currentData.map((hotel, index) => (
                             <CTableRow key={hotel._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                                <CTableDataCell>{hotel.bh}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_name}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_zone}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_address}</CTableDataCell>

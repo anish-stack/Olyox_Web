@@ -85,7 +85,7 @@ const AllCabVendor = () => {
         navigate(`/cab/rider-time/${riderId}`);
     };
 
-    const heading = ['S.No', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
 
     return (
         <>
@@ -120,6 +120,7 @@ const AllCabVendor = () => {
                         currentData.map((rider, index) => (
                             <CTableRow key={rider._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                                <CTableDataCell>{rider.BH}</CTableDataCell>
                                 <CTableDataCell>{rider.name}</CTableDataCell>
                                 <CTableDataCell>{rider.phone}</CTableDataCell>
                                 <CTableDataCell>{rider.rideVehicleInfo.vehicleName}</CTableDataCell>
