@@ -13,143 +13,127 @@ import {
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
-
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const AllCabVendor = () => {
-    const [riders, setRiders] = useState([]);
+const AllHeavyTransportVendor = () => {
+    const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const itemsPerPage = 10;
+    const itemsPerPage = 7;
 
-    const fetchRiders = async () => {
+    const fetchVendors = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/rider');
-            const allData = data.reverse();
-            setRiders(Array.isArray(allData) ? allData : []);
+            const { data } = await axios.get('http://localhost:3100/api/v1/heavy/get_all_hv_vendor');
+            const allData = data.data.reverse();
+            setVendors(Array.isArray(allData) ? allData : []);
         } catch (error) {
-            console.error('Error fetching riders:', error);
-            toast.error('Failed to load riders. Please try again.');
-            setRiders([]);
+            console.error('Error fetching vendors:', error);
+            toast.error('Failed to load vendors. Please try again.');
+            setVendors([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleStatusToggle = async (riderId, currentStatus) => {
+    const handleStatusToggle = async (vendorId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://localhost:3100/api/v1/rider/updateRiderBlock/${riderId}`, {
-                isBlockByAdmin: !currentStatus,
+            await axios.put(`http://localhost:3100/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
+                is_blocked: !currentStatus,
             });
-            toast.success('Status updated successfully!');
-            fetchRiders();
+            toast.success('Block status updated!');
+            fetchVendors();
         } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Failed to update rider status. Please try again.');
+            console.error('Error updating block status:', error);
+            toast.error('Failed to update status. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchRiders();
+        fetchVendors();
     }, []);
 
-    // Filter riders by name or phone based on the searchTerm
-    const filteredRiders = riders.filter(rider => {
+    const filteredVendors = vendors.filter(vendor => {
         const searchQuery = searchTerm.toLowerCase();
         return (
-            rider.name?.toLowerCase().includes(searchQuery) ||
-            rider.phone?.toLowerCase().includes(searchQuery)
+            vendor.name?.toLowerCase().includes(searchQuery) ||
+            vendor.phone_number?.toLowerCase().includes(searchQuery) ||
+            vendor.email?.toLowerCase().includes(searchQuery)
         );
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = filteredRiders.reverse().slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(filteredRiders.length / itemsPerPage);
+    const currentData = filteredVendors.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredVendors.length / itemsPerPage);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    const handleViewDetails = (riderId) => {
-        navigate(`/cab/vendor-detail/${riderId}`);
-    };
-
-    const handleRiderTiming = (riderId) => {
-        navigate(`/cab/rider-time/${riderId}`);
-    };
-
-    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
+    const heading = ['S.No', 'BH ID', 'Name', 'Phone', 'Email', 'Vehicles', 'Service Areas', 'Call Timing', 'Blocked', 'Actions'];
 
     return (
         <>
-            {/* Filter Section - Search input */}
             <div className="filter-container mb-3">
                 <CInputGroup>
                     <CInputGroupText>Search</CInputGroupText>
                     <CFormInput
-                        placeholder="Search by rider name or phone"
+                        placeholder="Search by name, email, or phone"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </CInputGroup>
             </div>
 
-            {/* Loader or No Data */}
             {loading ? (
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
                 </div>
-            ) : filteredRiders.length === 0 ? (
+            ) : filteredVendors.length === 0 ? (
                 <div className="no-data">
-                    <p>No riders available</p>
+                    <p>No vendors found</p>
                 </div>
             ) : (
                 <Table
-                    heading="Riders"
-                    btnText=""
-                    btnURL="/add-rider"
+                    heading="Heavy Transport Vendors"
                     tableHeading={heading}
                     tableContent={
-                        currentData.map((rider, index) => (
-                            <CTableRow key={rider._id}>
+                        currentData.map((vendor, index) => (
+                            <CTableRow key={vendor._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                                <CTableDataCell>{rider.BH}</CTableDataCell>
-                                <CTableDataCell>{rider.name}</CTableDataCell>
-                                <CTableDataCell>{rider.phone}</CTableDataCell>
-                                <CTableDataCell>{rider.rideVehicleInfo.vehicleName}</CTableDataCell>
-                                <CTableDataCell>{rider.rideVehicleInfo.vehicleType}</CTableDataCell>
-                                <CTableDataCell>{rider.TotalRides}</CTableDataCell>
+                                <CTableDataCell>{vendor.Bh_Id}</CTableDataCell>
+                                <CTableDataCell>{vendor.name}</CTableDataCell>
+                                <CTableDataCell>{vendor.phone_number}</CTableDataCell>
+                                <CTableDataCell>{vendor.email}</CTableDataCell>
                                 <CTableDataCell>
-                                    <div className="d-flex align-items-center">
-                                        <span className="me-1">{rider.Ratings}</span>
-                                        <span className="text-warning">★</span>
-                                    </div>
+                                    {vendor.vehicle_info.length > 1
+                                        ? `${vendor.vehicle_info[0].name}, ...`
+                                        : vendor.vehicle_info[0]?.name || ''}
+
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                    <CButton
-                                        color="info"
-                                        size="sm"
-                                        className="d-flex align-items-center gap-2"
-                                        onClick={() => handleRiderTiming(rider._id)}
-                                    >
-                                        <FaEye />
-                                        View Details
-                                    </CButton>
+                                    {vendor.service_areas.length > 1
+                                        ? `${vendor.service_areas[0].name}, ...`
+                                        : vendor.service_areas[0]?.name || ''}
+
+                                    {/* {vendor.service_areas.map(area => area.name).slice(0, 1).join('; ')} */}
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    {vendor.call_timing?.start_time} - {vendor.call_timing?.end_time}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CFormSwitch
-                                        id={`blockSwitch-${rider._id}`}
+                                        id={`blockSwitch-${vendor._id}`}
                                         label=""
-                                        checked={rider.isBlockByAdmin}
-                                        onChange={() => handleStatusToggle(rider._id, rider.isBlockByAdmin)}
+                                        checked={vendor.is_blocked}
+                                        onChange={() => handleStatusToggle(vendor._id, vendor.is_blocked)}
                                     />
                                 </CTableDataCell>
                                 <CTableDataCell>
@@ -157,10 +141,10 @@ const AllCabVendor = () => {
                                         color="info"
                                         size="sm"
                                         className="d-flex align-items-center gap-2"
-                                        onClick={() => handleViewDetails(rider._id)}
+                                        onClick={() => navigate(`/vendor/detail/${vendor._id}`)}
                                     >
                                         <FaEye />
-                                        View Details
+                                        View
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>
@@ -197,4 +181,4 @@ const AllCabVendor = () => {
     );
 };
 
-export default AllCabVendor;
+export default AllHeavyTransportVendor;

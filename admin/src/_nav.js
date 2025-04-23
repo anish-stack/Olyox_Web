@@ -50,6 +50,12 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Heavy Transport Vendor',
+        to: '/heavy/all-heavy-transport-vendor',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
         name: 'Parcel Vendor',
         to: '/parcel/all-parcel-vendor',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,

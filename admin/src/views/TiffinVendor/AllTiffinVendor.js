@@ -9,6 +9,7 @@ import {
     CInputGroup,
     CInputGroupText,
     CFormInput,
+    CFormSwitch,
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -27,7 +28,7 @@ const AllTiffinVendor = () => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
-            
+
             const { data } = await axios.get('http://localhost:3100/api/v1/tiffin/get_restaurant');
             setVendors(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
@@ -99,7 +100,7 @@ const AllTiffinVendor = () => {
                     />
                 </CInputGroup>
             </div>
-            
+
             {/* Loader or No Data */}
             {loading ? (
                 <div className="spin-style">
@@ -135,15 +136,12 @@ const AllTiffinVendor = () => {
                                     ₹{vendor.minPrice} - ₹{vendor.priceForTwoPerson}
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                    <CButton
-                                        color={vendor.status ? 'success' : 'secondary'}
-                                        size="sm"
-                                        className="d-flex align-items-center gap-2"
-                                        onClick={() => handleStatusToggle(vendor._id, vendor.status)}
-                                    >
-                                        {vendor.status ? <FaToggleOn /> : <FaToggleOff />}
-                                        {vendor.status ? 'Active' : 'Inactive'}
-                                    </CButton>
+                                    <CFormSwitch
+                                        id={`blockSwitch-${vendor._id}`}
+                                        label=""
+                                        checked={vendor.status}
+                                        onChange={() => handleStatusToggle(vendor._id, vendor.status)}
+                                    />
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

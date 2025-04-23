@@ -9,6 +9,7 @@ import {
     CInputGroup,
     CInputGroupText,
     CFormInput,
+    CFormSwitch,
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -25,7 +26,7 @@ const AllHoteslVendor = () => {
     const itemsPerPage = 7;
 
     const fetchHotels = async () => {
-        
+
         setLoading(true);
         try {
             const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel');
@@ -128,7 +129,13 @@ const AllHoteslVendor = () => {
                                 <CTableDataCell>{hotel.hotel_owner}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_phone}</CTableDataCell>
                                 <CTableDataCell>
-                                    <CButton
+                                    <CFormSwitch
+                                        id={`blockSwitch-${hotel._id}`}
+                                        label=""
+                                        checked={hotel.isVerifiedTag}
+                                        onChange={() => handleStatusToggle(hotel._id, hotel.isVerifiedTag)}
+                                    />
+                                    {/* <CButton
                                         color={hotel.isVerifiedTag ? 'success' : 'secondary'}
                                         size="sm"
                                         className="d-flex align-items-center gap-2"
@@ -136,7 +143,7 @@ const AllHoteslVendor = () => {
                                     >
                                         {hotel.isVerifiedTag ? <FaToggleOn /> : <FaToggleOff />}
                                         {hotel.isVerifiedTag ? 'Verified' : 'Unverified'}
-                                    </CButton>
+                                    </CButton> */}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

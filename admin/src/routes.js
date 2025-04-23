@@ -75,6 +75,7 @@ import AllLoginBugReport from './views/LoginBugReport/AllLoginBugReport'
 import AllPrivacyPolicy from './views/PrivacyPolicy/AllPrivacyPolicy'
 import AddPrivacyPolicy from './views/PrivacyPolicy/AddPrivacyPolicy'
 import EditPrivacyPolucy from './views/PrivacyPolicy/EditPrivacyPolucy'
+import AllHeavyTransportVendor from './views/HeavyTransportVendor/AllHeavyTransportVendor'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -289,6 +290,15 @@ const routes = [
   { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
   { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
   { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
+  
+  // heavy transport routes here
+
+  { path: '/heavy/all-heavy-transport-vendor', name: 'All Heavy Transport Vendor', element: AllHeavyTransportVendor },
+  // { path: '/hotel/all-hotel-booking', name: 'All Hotel Booking', element: HotelBooking },
+  // { path: '/hotel/booking-detail/:id', name: 'Hotel Booking Detail', element: HotelBookingDetail },
+  // { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
+  // { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
+  // { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
 
     // refferal routes here 
     // { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
