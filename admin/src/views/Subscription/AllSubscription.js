@@ -13,36 +13,37 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
-function AllCategory() {
-    const [category, setCategory] = React.useState([]);
+const AllSubscription = () => {
+    const [membershipPlans, setMembershipPlans] = React.useState([]); // Changed name to represent membership
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
 
-    const handleFetchBanner = async () => {
+    const handleFetchMembershipPlans = async () => {
         setLoading(true);
-        
         try {
-            const { data } = await axios.get('http://localhost:7000/api/v1/categories_get');
-            setCategory(data.data || []); // Ensure default empty array
+            const { data } = await axios.get('http://localhost:7000/api/v1/membership-plans');
+            // const filteredData = data.data.filter(plan => plan.category === 'cab');
+            setMembershipPlans(data.data.reverse() || []); // Ensure default empty array
         } catch (error) {
-            console.error('Error fetching blogs:', error);
-            toast.error('Failed to load blogs. Please try again.');
+            console.error('Error fetching membership plans:', error);
+            toast.error('Failed to load membership plans. Please try again.');
         } finally {
             setLoading(false);
         }
     };
+
 
     // Update Active Status
     const handleUpdateActive = async (id, currentStatus) => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`http://localhost:7000/api/v1/update_category_status/${id}`, {
-                isActive: updatedStatus,
+            const res = await axios.put(`http://localhost:7000/api/v1/update_membership_status/${id}`, {
+                active: updatedStatus,
             });
             toast.success(res?.data?.message);
-            handleFetchBanner()
+            handleFetchMembershipPlans();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(
@@ -55,13 +56,13 @@ function AllCategory() {
         }
     };
 
-    // Delete Banner
-    const handleDeleteBanner = async (id) => {
+    // Delete Membership Plan
+    const handleDeleteMembershipPlan = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`http://localhost:7000/api/v1/categories/${id}`);
+            const res = await axios.delete(`http://localhost:7000/api/v1/membership-plans/${id}`);
             toast.success(res?.data?.message);
-            handleFetchBanner();
+            handleFetchMembershipPlans();
         } catch (error) {
             console.error('Error deleting:', error);
             toast.error(
@@ -86,28 +87,28 @@ function AllCategory() {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                handleDeleteBanner(id);
+                handleDeleteMembershipPlan(id);
             }
         });
     };
 
     React.useEffect(() => {
-        handleFetchBanner();
+        handleFetchMembershipPlans();
     }, []);
 
     // Calculate paginated data
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = category.slice(startIndex, startIndex + itemsPerPage);
+    const currentData = membershipPlans.slice(startIndex, startIndex + itemsPerPage);
 
     // Calculate total pages
-    const totalPages = Math.ceil(category.length / itemsPerPage);
+    const totalPages = Math.ceil(membershipPlans.length / itemsPerPage);
 
     // Handle page change
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    const heading = ['S.No', 'Icon', 'Title', 'Is Active', 'Action'];
+    const heading = ['S.No', 'Title', 'Price', 'Level', 'Is Active', 'Action'];
 
     return (
         <>
@@ -115,49 +116,40 @@ function AllCategory() {
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
                 </div>
-            ) : category.length === 0 ? (
-                <div className="no-data">
-                    <p>No data available</p>
-                </div>
             ) : (
                 <Table
-                    heading="All Category"
-                    btnText="Add Category"
-                    btnURL="/category/add-category"
+                    heading="All Subscription"
+                    btnText=""
+                    btnURL=""
                     tableHeading={heading}
-                    tableContent={
-                        currentData.map((item, index) => (
-                            <CTableRow key={item._id}>
-                                <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                                <CTableDataCell>
-                                    <img src={item.icon} alt="icon" width={50} height={50} />
-                                </CTableDataCell>
-                                <CTableDataCell>{item.title}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CFormSwitch
-                                        id={`formSwitch-${item._id}`}
-                                        checked={item?.isActive}
-                                        onChange={() =>
-                                            handleUpdateActive(item._id, item.isActive)
-                                        }
-                                    />
-                                </CTableDataCell>
-                                <CTableDataCell>
-                                    <div className="action-parent">
-                                        <CNavLink href={`#/category/edit-category/${item._id}`} className='edit'>
-                                            <i class="ri-pencil-fill"></i>
-                                        </CNavLink>
-                                        <div
-                                            className="delete"
-                                            onClick={() => confirmDelete(item._id)}
-                                        >
-                                            <i className="ri-delete-bin-fill"></i>
-                                        </div>
+                    tableContent={currentData.map((item, index) => (
+                        <CTableRow key={item._id}>
+                            <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                            <CTableDataCell>{item.title}</CTableDataCell>
+                            <CTableDataCell>{item.price} INR</CTableDataCell>
+                            <CTableDataCell>{item.level}</CTableDataCell>
+                            <CTableDataCell>
+                                <CFormSwitch
+                                    id={`formSwitch-${item._id}`}
+                                    checked={item?.active}
+                                    onChange={() => handleUpdateActive(item._id, item.active)}
+                                />
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <div className="action-parent">
+                                    <CNavLink href={`#subscription/edit-cab/${item._id}`} className="edit">
+                                        <i className="ri-pencil-fill"></i>
+                                    </CNavLink>
+                                    <div
+                                        className="delete"
+                                        onClick={() => confirmDelete(item._id)}
+                                    >
+                                        <i className="ri-delete-bin-fill"></i>
                                     </div>
-                                </CTableDataCell>
-                            </CTableRow>
-                        ))
-                    }
+                                </div>
+                            </CTableDataCell>
+                        </CTableRow>
+                    ))}
                     pagination={
                         <CPagination className="justify-content-center">
                             <CPaginationItem
@@ -189,4 +181,4 @@ function AllCategory() {
     );
 }
 
-export default AllCategory
+export default AllSubscription

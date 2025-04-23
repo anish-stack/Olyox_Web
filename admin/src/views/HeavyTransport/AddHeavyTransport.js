@@ -51,7 +51,7 @@ const AddHeavyTransport = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('https://demoapi.olyox.com/api/v1/admin/create-heavy', formDataToSend, {
+            const res = await axios.post('http://localhost:3100/api/v1/admin/create-heavy', formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast.success(res.data.message);

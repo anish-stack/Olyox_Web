@@ -27,7 +27,7 @@ const CancelReason = () => {
     const fetchCancelReasons = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/get-All-Cancel-Reasons-Admin');
+            const { data } = await axios.get('http://localhost:3100/api/v1/admin/get-All-Cancel-Reasons-Admin');
             setReasons(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching cancel reasons:', error);
@@ -41,7 +41,7 @@ const CancelReason = () => {
     const handleToggleStatus = async (id, currentStatus) => {
         try {
             const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            const { data } = await axios.put(`https://demoapi.olyox.com/api/v1/admin/toggle-cancel-reasons/${id}`, { status: newStatus });
+            const { data } = await axios.put(`http://localhost:3100/api/v1/admin/toggle-cancel-reasons/${id}`, { status: newStatus });
             toast.success(data.message);
             fetchCancelReasons();
         } catch (error) {
@@ -52,7 +52,7 @@ const CancelReason = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://demoapi.olyox.com/api/v1/admin/cancel-reasons/${id}`);
+            await axios.delete(`http://localhost:3100/api/v1/admin/cancel-reasons/${id}`);
             toast.success('Cancel reason deleted successfully');
             fetchCancelReasons();
         } catch (error) {

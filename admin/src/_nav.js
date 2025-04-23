@@ -132,8 +132,20 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Login Bug Report',
+    to: '/all-login-bug-report',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Onboarding Slider',
     to: '/onboarding/all-onboarding',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Privacy Policy',
+    to: '/all-privacy-policy',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
@@ -155,6 +167,12 @@ const _nav = [
     items: [
       {
         component: CNavItem,
+        name: 'All Subscription',
+        to: '/subscription/all_subscription',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
         name: 'Tiffin Subscription',
         to: '/subscription/all_tiffin',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
@@ -173,8 +191,8 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Parcel Booking',
-        to: '/parcel/all-parcel-booking',
+        name: 'Transport Subscription',
+        to: '/subscription/all_transport',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       },
     ],

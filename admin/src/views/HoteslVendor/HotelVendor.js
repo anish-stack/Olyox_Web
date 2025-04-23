@@ -28,7 +28,7 @@ const HotelVendor = () => {
         setLoading(true);
         
         try {
-            const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/hotels/get_hotelbyId/${id}`);
+            const { data } = await axios.get(`http://localhost:3100/api/v1/hotels/get_hotelbyId/${id}`);
             setHotel(data.data);
         } catch (error) {
             console.error('Error fetching hotel details:', error);
@@ -45,7 +45,7 @@ const HotelVendor = () => {
     const handleStatusToggle = async (id,status) => {
         const updateStatus = !status
         try {
-            const res = await axios.put(`https://demoapi.olyox.com/api/v1/hotels/update_hotel_block_status/${id}`,{
+            const res = await axios.put(`http://localhost:3100/api/v1/hotels/update_hotel_block_status/${id}`,{
                 isBlockByAdmin:updateStatus
             });
             toast.success('Hotel status updated successfully.');
@@ -59,7 +59,7 @@ const HotelVendor = () => {
     const handleDocumentVerifiedToggle = async (id,DocumentUploadedVerified) => {
         const updateStatus = !DocumentUploadedVerified
         try {
-            const res = await axios.put(`https://demoapi.olyox.com/api/v1/hotels/verify_hotel_documents/${id}`,{
+            const res = await axios.put(`http://localhost:3100/api/v1/hotels/verify_hotel_documents/${id}`,{
                 DocumentUploadedVerified:updateStatus
             });
             toast.success('Hotel status updated successfully.');

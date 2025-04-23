@@ -37,7 +37,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
     const fetchMembershipPlan = async () => {
         try {
-            const { data } = await axios.get('https://api.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('http://localhost:7000/api/v1/membership-plans');
             setMemberships(data.data);
         } catch (err) {
             console.error('Error fetching membership plans:', err);
@@ -65,7 +65,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const handleRecharge = async () => {
         setLoading(true)
         try {
-            const { data } = await axios.post('https://api.olyox.com/api/v1/do-recharge', {
+            const { data } = await axios.post('http://localhost:7000/api/v1/do-recharge', {
                 plan_id: selectedMember_id,
                 trn_no: transactionId
             }, {

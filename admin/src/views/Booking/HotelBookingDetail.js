@@ -16,7 +16,7 @@ const HotelBookingDetail = () => {
         try {
 
             // In a real implementation, you would use axios like this:
-            const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/hotels/get_single_hotel_booking/${id}`);
+            const { data } = await axios.get(`http://localhost:3100/api/v1/hotels/get_single_hotel_booking/${id}`);
             console.log("data",data)
             setBooking(data.data);
         } catch (error) {

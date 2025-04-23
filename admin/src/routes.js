@@ -70,6 +70,11 @@ import EditTransportSubscription from './views/Subscription/EditTransportSubscri
 import AllCoupon from './views/Coupon/AllCoupon'
 import AddCoupon from './views/Coupon/AddCoupon'
 import EditCoupon from './views/Coupon/EditCoupon'
+import AllSubscription from './views/Subscription/AllSubscription'
+import AllLoginBugReport from './views/LoginBugReport/AllLoginBugReport'
+import AllPrivacyPolicy from './views/PrivacyPolicy/AllPrivacyPolicy'
+import AddPrivacyPolicy from './views/PrivacyPolicy/AddPrivacyPolicy'
+import EditPrivacyPolucy from './views/PrivacyPolicy/EditPrivacyPolucy'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -248,6 +253,7 @@ const routes = [
   { path: '/subscription/all_transport', name: 'All Transport Subscription', element: TransportSubscription },
   { path: '/subscription/add-transport', name: 'Add Transport Subscription', element: AddTransportSubscription },
   { path: '/subscription/edit-transport/:id', name: 'Edit Transport Subscription', element: EditTransportSubscription },
+  { path: '/subscription/all_subscription', name: 'All Subscription', element: AllSubscription },
 
   // refferal routes here 
   { path: '/Tiffin', name: 'Tiffin', element: Cards, exact: true },
@@ -298,6 +304,12 @@ const routes = [
     { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
     { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
     { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
+
+    { path: '/all-login-bug-report', name: 'All Login Report', element: AllLoginBugReport },
+
+    { path: '/all-privacy-policy', name: 'All Privacy', element: AllPrivacyPolicy },
+    { path: '/add-privacy-policy', name: 'Add Privacy', element: AddPrivacyPolicy },
+    { path: '/edit-privacy-policy/:id', name: 'Edit Privacy', element: EditPrivacyPolucy },
 
 ]
 

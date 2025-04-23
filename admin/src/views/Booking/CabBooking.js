@@ -28,7 +28,7 @@ const CabBooking = () => {
         
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rides/all_rides');
+            const { data } = await axios.get('http://localhost:3100/api/v1/rides/all_rides');
             const allData = data.data.reverse();
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {

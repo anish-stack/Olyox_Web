@@ -27,7 +27,7 @@ const TiffinBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/tiffin/get_all_orders');
+            const { data } = await axios.get('http://localhost:3100/api/v1/tiffin/get_all_orders');
             const allData = data.data.reverse();
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {

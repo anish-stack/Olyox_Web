@@ -28,7 +28,7 @@ const AllCabVendor = () => {
     const fetchRiders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/rider');
+            const { data } = await axios.get('http://localhost:3100/api/v1/rider');
             const allData = data.reverse();
             setRiders(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -43,7 +43,7 @@ const AllCabVendor = () => {
     const handleStatusToggle = async (riderId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`https://demoapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
+            await axios.put(`http://localhost:3100/api/v1/rider/updateRiderBlock/${riderId}`, {
                 isBlockByAdmin: !currentStatus,
             });
             toast.success('Status updated successfully!');

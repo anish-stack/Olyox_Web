@@ -18,7 +18,7 @@ const EditCoupon = () => {
     useEffect(() => {
         const fetchCoupon = async () => {
             try {
-                const res = await axios.get(`https://demoapi.olyox.com/api/v1/admin/getSingleCoupon/${id}`);
+                const res = await axios.get(`http://localhost:3100/api/v1/admin/getSingleCoupon/${id}`);
                 setFormData({
                     code: res.data.data.code,
                     discount: res.data.data.discount,
@@ -42,7 +42,7 @@ const EditCoupon = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await axios.put(`https://demoapi.olyox.com/api/v1/admin/updateCoupon/${id}`, formData);
+            const res = await axios.put(`http://localhost:3100/api/v1/admin/updateCoupon/${id}`, formData);
             toast.success(res.data.message);
         } catch (error) {
             console.error('Error updating coupon:', error);
