@@ -1210,6 +1210,36 @@ exports.updateVendorDetails = async (req, res) => {
     }
 };
 
+exports.updateVendorDetailByAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const findVendor = await Vendor_Model.findById(id);
+        if (!findVendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found'
+            })
+        }
+        const { name, email, number, category} = req.body;
+        if(name) findVendor.name = name;
+        if(email) findVendor.email = email;
+        if(number) findVendor.number = number;
+        if(category) findVendor.category = category;
+        await findVendor.save();
+        res.status(200).json({
+            success: true,
+            message: 'Vendor details updated successfully',
+            vendor: findVendor 
+        })
+    } catch (error) {
+        console.log("Internal server error", error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update vendor details',
+        })
+    }
+}
+
 exports.updatePassword = async (req, res) => {
     try {
         const { id } = req.params;

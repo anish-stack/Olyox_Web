@@ -132,6 +132,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Heavy Transport Category',
+    to: '/all-heacy-transport-category',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Heavy Transport Option',
     to: '/all-heacy-transport-option',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,

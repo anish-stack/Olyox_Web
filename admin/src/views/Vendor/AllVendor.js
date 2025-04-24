@@ -59,19 +59,6 @@ function AllVendor() {
             setLoading(false);
         }
     };
-    // const handleFetchPlans = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const { data } = await axios.get('http://localhost:7000/api/v1/membership-plans');
-    //         const allData = data.data;
-    //         setPlans(allData || []);
-    //     } catch (error) {
-    //         console.error('Error fetching data:', error);
-    //         toast.error('Failed to load data. Please try again.');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     const handleFetchRecharge = async () => {
         try {
@@ -273,23 +260,6 @@ function AllVendor() {
                             <CTableDataCell>{item?.myReferral}</CTableDataCell>
                             <CTableDataCell>{item.email}</CTableDataCell>
                             <CTableDataCell>{item.number}</CTableDataCell>
-                            {/* <CTableDataCell>{item?.category?.title}</CTableDataCell> */}
-                            {/* <CTableDataCell>{item?.member_id?.title}</CTableDataCell> */}
-                            {/* <CTableDataCell>{item?.wallet ? `Rs.${item.wallet}` : 'Rs.0'}</CTableDataCell> */}
-                            {/* <CTableDataCell>
-                                <CButton color="info" onClick={() => handleModalOpen(item.address, 'Address')}>
-                                    View Address
-                                </CButton>
-                            </CTableDataCell> */}
-                            {/* <CTableDataCell>{item.Child_referral_ids.length}</CTableDataCell> */}
-                            {/* <CTableDataCell>
-                                <CButton
-                                    color="primary"
-                                    onClick={() => handleModalOpen(item.Child_referral_ids, 'Referrals')}
-                                >
-                                    View Referrals
-                                </CButton>
-                            </CTableDataCell> */}
                             <CTableDataCell>
                                 <CButton
                                     color="warning"
@@ -316,9 +286,9 @@ function AllVendor() {
                             </CTableDataCell>
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    {/* <CNavLink href={`#/vendor/edit-vendor/${item._id}`} className="edit">
+                                    <CNavLink href={`#/vendor/edit-vendor/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
-                                    </CNavLink> */}
+                                    </CNavLink>
                                     <div className="delete" onClick={() => confirmDelete(item.email)}>
                                         <i className="ri-delete-bin-fill"></i>
                                     </div>

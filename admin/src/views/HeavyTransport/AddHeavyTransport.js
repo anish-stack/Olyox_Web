@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { CCol, CFormInput, CFormLabel, CButton, CFormTextarea, CFormCheck } from '@coreui/react';
+import React, { useEffect, useState } from 'react';
+import { CCol, CFormInput, CFormLabel, CButton, CFormTextarea, CFormCheck, CInputGroup, CInputGroupText } from '@coreui/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Form from '../../components/Form/Form';
 
 const AddHeavyTransport = () => {
     const [loading, setLoading] = useState(false);
+    const [heavyVehicalTitle, setHeavyVehicalTitle] = useState([]);
+    const [selectedTitle, setSelectedTitle] = useState('');
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -30,6 +32,19 @@ const AddHeavyTransport = () => {
         setFormData((prevFormData) => ({ ...prevFormData, active: e.target.checked }));
     };
 
+    const fetchVehicalTitle = async () => {
+        try {
+            const { data } = await axios.get('http://localhost:3100/api/v1/heavy/heavy-category');
+            setHeavyVehicalTitle(data.data.reverse());
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
+    useEffect(() => {
+        fetchVehicalTitle();
+    }, [])
+
     // Submit the form
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,13 +52,13 @@ const AddHeavyTransport = () => {
         const { title, category, backgroundColour, active, image } = formData;
 
         // Validate required fields
-        if (!title || !category || !backgroundColour || !image) {
+        if (!category || !backgroundColour || !image) {
             toast.error('All fields including image are required.');
             return;
         }
 
         const formDataToSend = new FormData();
-        formDataToSend.append('title', title);
+        formDataToSend.append('title', selectedTitle);
         formDataToSend.append('category', category);
         formDataToSend.append('backgroundColour', backgroundColour);
         formDataToSend.append('active', active);
@@ -82,15 +97,20 @@ const AddHeavyTransport = () => {
                 onSubmit={handleSubmit}
                 formContent={
                     <>
-                        <CCol md={12}>
+                        <CCol md={12} className="mt-3">
                             <CFormLabel htmlFor="title">Title</CFormLabel>
-                            <CFormInput
-                                id="title"
-                                name="title"
-                                placeholder="Enter title"
-                                value={formData.title}
-                                onChange={handleChange}
-                            />
+                            <select
+                                className="form-select"
+                                value={selectedTitle}
+                                onChange={(e) => setSelectedTitle(e.target.value)}
+                            >
+                                <option value="">-- Select a Title --</option>
+                                {heavyVehicalTitle.map((item) => (
+                                    <option key={item._id} value={item.title}>
+                                        {item.title}
+                                    </option>
+                                ))}
+                            </select>
                         </CCol>
                         <CCol md={12} className="mt-3">
                             <CFormLabel htmlFor="category">Category</CFormLabel>

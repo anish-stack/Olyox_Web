@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { CCol, CFormInput, CFormLabel, CButton, CFormCheck, CImage } from '@coreui/react';
+import {
+    CCol, CFormInput, CFormLabel, CButton, CFormCheck, CImage, CFormSelect
+} from '@coreui/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Form from '../../components/Form/Form';
@@ -8,6 +10,7 @@ import { useParams } from 'react-router-dom';
 const EditHeavyTransport = () => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
+    const [heavyVehicalTitle, setHeavyVehicalTitle] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -19,7 +22,17 @@ const EditHeavyTransport = () => {
 
     useEffect(() => {
         handleFetchData();
+        fetchHeavyTitles();
     }, []);
+
+    const fetchHeavyTitles = async () => {
+        try {
+            const res = await axios.get('http://localhost:3100/api/v1/heavy/heavy-category');
+            setHeavyVehicalTitle(res.data.data.reverse());
+        } catch (error) {
+            console.log("Error fetching title list:", error);
+        }
+    };
 
     const handleFetchData = async () => {
         try {
@@ -33,22 +46,22 @@ const EditHeavyTransport = () => {
                 existingImage: data.image?.url || '',
             });
         } catch (error) {
-            console.error('Error fetching heavy transport data:', error);
-            toast.error(error?.response?.data?.message || 'Failed to fetch data.');
+            console.error('Error fetching data:', error);
+            toast.error('Failed to fetch data.');
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleFileChange = (e) => {
-        setFormData((prevFormData) => ({ ...prevFormData, image: e.target.files[0] }));
+        setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
     };
 
     const handleStatusChange = (e) => {
-        setFormData((prevFormData) => ({ ...prevFormData, active: e.target.checked }));
+        setFormData((prev) => ({ ...prev, active: e.target.checked }));
     };
 
     const handleSubmit = async (e) => {
@@ -75,8 +88,8 @@ const EditHeavyTransport = () => {
             toast.success(res.data.message);
             handleFetchData();
         } catch (error) {
-            console.error('Error updating heavy transport:', error);
-            toast.error(error?.response?.data?.message || 'Update failed.');
+            console.error('Update error:', error);
+            toast.error('Update failed.');
         } finally {
             setLoading(false);
         }
@@ -93,7 +106,19 @@ const EditHeavyTransport = () => {
                     <>
                         <CCol md={12}>
                             <CFormLabel htmlFor="title">Title</CFormLabel>
-                            <CFormInput id="title" name="title" value={formData.title} onChange={handleChange} />
+                            <CFormSelect
+                                id="title"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Title</option>
+                                {heavyVehicalTitle.map((item) => (
+                                    <option key={item._id} value={item.title}>
+                                        {item.title}
+                                    </option>
+                                ))}
+                            </CFormSelect>
                         </CCol>
                         <CCol md={12} className="mt-3">
                             <CFormLabel htmlFor="category">Category</CFormLabel>
@@ -110,7 +135,7 @@ const EditHeavyTransport = () => {
                         {formData.existingImage && (
                             <CCol md={12} className="mt-3">
                                 <CFormLabel>Current Image</CFormLabel>
-                                <CImage src={formData.existingImage} fluid alt="Existing Heavy Transport" width={200} />
+                                <CImage src={formData.existingImage} fluid width={200} alt="Current Vehicle" />
                             </CCol>
                         )}
                         <CCol md={12} className="mt-3">

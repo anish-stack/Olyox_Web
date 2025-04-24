@@ -78,6 +78,9 @@ import EditPrivacyPolucy from './views/PrivacyPolicy/EditPrivacyPolucy'
 import AllHeavyTransportVendor from './views/HeavyTransportVendor/AllHeavyTransportVendor'
 import HeavyTransportVendorDetail from './views/HeavyTransportVendor/HeavyTransportVendorDetail'
 import EditHeavyTransportVendor from './views/HeavyTransportVendor/EditHeavyTransportVendor'
+import AllHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/AllHeavyVehicalTransportCategory'
+import AddHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/AddHeavyVehicalTransportCategory'
+import EditHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/EditHeavyVehicalTransportCategory'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -307,6 +310,11 @@ const routes = [
   { path: '/all-heacy-transport-option', name: 'All Heavy Transport', element: AllHeavyTransport },
   { path: '/add-heacy-transport-option', name: 'Add Heavy Transport', element: AddHeavyTransport },
   { path: '/edit-heacy-transport-option/:id', name: 'Edit Heavy Transport', element: EditHeavyTransport },
+
+
+  { path: '/all-heacy-transport-category', name: 'All Heavy Transport Category', element: AllHeavyVehicalTransportCategory },
+  { path: '/add-heacy-transport-category', name: 'Add Heavy Transport Category', element: AddHeavyVehicalTransportCategory },
+  { path: '/edit-heacy-transport-category/:id', name: 'Edit Heavy Transport', element: EditHeavyVehicalTransportCategory },
 
 
   { path: '/all-cancel-reason', name: 'All Cancel Reason', element: CancelReson },
