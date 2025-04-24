@@ -15,6 +15,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const CabBooking = () => {
     const [orders, setOrders] = useState([]);
@@ -25,7 +26,7 @@ const CabBooking = () => {
     const itemsPerPage = 10;
 
     const fetchOrders = async () => {
-        
+
         setLoading(true);
         try {
             const { data } = await axios.get('http://localhost:3100/api/v1/rides/all_rides');
@@ -40,7 +41,28 @@ const CabBooking = () => {
         }
     };
 
-    console.log("orders", orders)
+    const handleDelete = async (vendorId) => {
+        try {
+            const res = await axios.delete(`http://localhost:3100/api/v1/rides/delete_rider_ride/${vendorId}`);
+            toast.success(res.data.message);
+            fetchOrders();
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
+    const handleUpdateOrderStatus = async (orderId, status) => {
+        try {
+            const res = await axios.put(`http://localhost:3100/api/v1/rides/update_rider_ride_status/${orderId}`, { status });
+            toast.success(res.data.message);
+            fetchOrders(); // refetch after update
+        } catch (error) {
+            console.log("Internal server error", error);
+            toast.error("Failed to update order status");
+        }
+    };
+
+    // console.log("orders", orders)
 
     useEffect(() => {
         fetchOrders();
@@ -63,6 +85,8 @@ const CabBooking = () => {
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    const statusOptions = ['pending', 'accepted', 'in_progress', 'completed', 'cancelled'];
 
     const handleViewDetails = (id) => {
         navigate(`/cab/all-cab-detail/${id}`);
@@ -111,16 +135,40 @@ const CabBooking = () => {
                             <CTableDataCell>{order?.user?.name || 'N/A'}</CTableDataCell>
                             <CTableDataCell>{order?.user?.number}</CTableDataCell>
                             <CTableDataCell>{order.kmOfRide} km</CTableDataCell>
-                            <CTableDataCell>{order.rideStatus}</CTableDataCell>
+                            {/* <CTableDataCell>{order.rideStatus}</CTableDataCell> */}
+                            <CTableDataCell>
+                                <select
+                                    value={order.rideStatus}
+                                    onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                                    style={{ padding: '4px 8px', borderRadius: '4px' }}
+                                >
+                                    {statusOptions.map((status) => (
+                                        <option key={status} value={status}>
+                                            {status}
+                                        </option>
+                                    ))}
+                                </select>
+                            </CTableDataCell>
                             <CTableDataCell>
                                 <CButton
                                     color="info"
                                     size="sm"
-                                    className="d-flex align-items-center gap-2"
+                                    className="d-flex text-white align-items-center gap-2"
                                     onClick={() => handleViewDetails(order._id)}
                                 >
                                     <FaEye />
                                     View Details
+                                </CButton>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <CButton
+                                    color="danger"
+                                    size="sm"
+                                    className="d-flex text-white align-items-center gap-2"
+                                    onClick={() => handleDelete(order._id)}
+                                >
+                                    <Delete />
+                                    Delete
                                 </CButton>
                             </CTableDataCell>
                         </CTableRow>

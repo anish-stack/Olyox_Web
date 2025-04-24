@@ -14,6 +14,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const TiffinBooking = () => {
     const [orders, setOrders] = useState([]);
@@ -22,7 +23,7 @@ const TiffinBooking = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const itemsPerPage = 10;
-    
+
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -38,6 +39,28 @@ const TiffinBooking = () => {
             setLoading(false);
         }
     };
+
+    const handleDelete = async (vendorId) => {
+        try {
+            const res = await axios.delete(`http://localhost:3100/api/v1/tiffin/delete_tiffin_order/${vendorId}`);
+            toast.success(res.data.message);
+            fetchOrders();
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
+    const handleUpdateOrderStatus = async (orderId, status) => {
+        try {
+            const res = await axios.put(`http://localhost:3100/api/v1/tiffin/update_tiffin_order_status/${orderId}`, { status });
+            toast.success(res.data.message);
+            fetchOrders(); // refetch after update
+        } catch (error) {
+            console.log("Internal server error", error);
+            toast.error("Failed to update order status");
+        }
+    };
+
 
     useEffect(() => {
         fetchOrders();
@@ -56,6 +79,9 @@ const TiffinBooking = () => {
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
+    const statusOptions = ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'];
+
+
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -64,7 +90,7 @@ const TiffinBooking = () => {
         navigate(`/order/detail/${orderId}`);
     };
 
-    const heading = ['S.No', 'Restaurant Name', 'Order ID', 'User Name', 'User Number', 'Items', 'Total Price', 'Status', 'Payment Method'];
+    const heading = ['S.No', 'Restaurant Name', 'Order ID', 'User Name', 'User Number', 'Items', 'Total Price', 'Status', 'Payment Method', 'Delete'];
 
     return (
         <>
@@ -100,30 +126,42 @@ const TiffinBooking = () => {
                             <CTableRow key={order._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                                 <CTableDataCell>{order.restaurant?.restaurant_name}</CTableDataCell>
-                                <CTableDataCell>{order.Order_Id}</CTableDataCell>
+                                <CTableDataCell>{order?.Order_Id}</CTableDataCell>
                                 <CTableDataCell>{order.user?.name || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>{order.user?.number || 'N/A'}</CTableDataCell>
                                 <CTableDataCell>
                                     {order.items.map(item => (
                                         <div key={item._id}>
-                                            {item.foodItem_id.food_name} - {item.quantity} x {item.price} INR
+                                            {item?.foodItem_id?.food_name} - {item?.quantity} x {item?.price} INR
                                         </div>
                                     ))}
                                 </CTableDataCell>
-                                <CTableDataCell>{order.totalPrice} INR</CTableDataCell>
-                                <CTableDataCell>{order.status}</CTableDataCell>
-                                <CTableDataCell>{order.paymentMethod}</CTableDataCell>
-                                {/* <CTableDataCell>
+                                <CTableDataCell>{order?.totalPrice} INR</CTableDataCell>
+                                <CTableDataCell>
+                                    <select
+                                        value={order.status}
+                                        onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                                        style={{ padding: '4px 8px', borderRadius: '4px' }}
+                                    >
+                                        {statusOptions.map((status) => (
+                                            <option key={status} value={status}>
+                                                {status}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </CTableDataCell>
+                                <CTableDataCell>{order?.paymentMethod}</CTableDataCell>
+                                <CTableDataCell>
                                     <CButton
-                                        color="info"
+                                        color="danger"
                                         size="sm"
                                         className="d-flex align-items-center gap-2"
-                                        onClick={() => handleViewDetails(order.Order_Id)}
+                                        onClick={() => handleDelete(order._id)}
                                     >
-                                        <FaEye />
-                                        View Details
+                                        <Delete />
+                                        Delete
                                     </CButton>
-                                </CTableDataCell> */}
+                                </CTableDataCell>
                             </CTableRow>
                         ))
                     }

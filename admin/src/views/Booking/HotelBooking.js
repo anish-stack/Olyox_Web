@@ -26,7 +26,7 @@ const HotelBooking = () => {
 
     const fetchOrders = async () => {
         setLoading(true);
-        
+
         try {
             const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel_booking');
             const allData = data.data.reverse();
@@ -40,7 +40,28 @@ const HotelBooking = () => {
         }
     };
 
-    console.log("orders", orders)
+    const handleDelete = async (vendorId) => {
+        try {
+            const res = await axios.delete(`http://localhost:3100/api/v1/hotels/delete_hotel_order/${vendorId}`);
+            toast.success(res.data.message);
+            fetchOrders();
+        } catch (error) {
+            console.log("Internal server error", error)
+        }
+    }
+
+    const handleUpdateOrderStatus = async (orderId, status) => {
+        try {
+            const res = await axios.put(`http://localhost:3100/api/v1/hotels/update_status_hotel_order/${orderId}`, { status });
+            toast.success(res.data.message);
+            fetchOrders(); // refetch after update
+        } catch (error) {
+            console.log("Internal server error", error);
+            toast.error("Failed to update order status");
+        }
+    };
+
+    // console.log("orders", orders)
 
     useEffect(() => {
         fetchOrders();
@@ -56,16 +77,18 @@ const HotelBooking = () => {
             order.Booking_id?.toLowerCase().includes(searchQuery)
         );
     });
-    console.log("filteredOrders",filteredOrders)
+    console.log("filteredOrders", filteredOrders)
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-    console.log("currentData",currentData)
+    // console.log("currentData", currentData)
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+    const statusOptions = ['Pending', 'Confirmed', 'Checkout', 'CheckIn', 'Cancelled'];
 
     const handleViewDetails = (id) => {
         navigate(`/hotel/booking-detail/${id}`);
@@ -118,14 +141,37 @@ const HotelBooking = () => {
                                     ))}
                                 </CTableDataCell>
                                 {/* <CTableDataCell>{order.totalPrice} INR</CTableDataCell> */}
-                                <CTableDataCell>{order.status}</CTableDataCell>
+                                <CTableDataCell>
+                                    <select
+                                        value={order.status}
+                                        onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                                        style={{ padding: '4px 8px', borderRadius: '4px' }}
+                                    >
+                                        {statusOptions.map((status) => (
+                                            <option key={status} value={status}>
+                                                {status}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </CTableDataCell>
                                 <CTableDataCell>{order.paymentMode}</CTableDataCell>
                                 <CTableDataCell>
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex text-white align-items-center gap-2"
                                         onClick={() => handleViewDetails(order._id)}
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="danger"
+                                        size="sm"
+                                        className="d-flex text-white align-items-center gap-2"
+                                        onClick={() => handleDelete(order._id)}
                                     >
                                         <FaEye />
                                         View Details

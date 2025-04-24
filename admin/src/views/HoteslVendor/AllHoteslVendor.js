@@ -16,6 +16,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const AllHoteslVendor = () => {
     const [hotels, setHotels] = useState([]);
@@ -57,6 +58,17 @@ const AllHoteslVendor = () => {
         }
     };
 
+    const handleDelete = async(vendorId) => {
+        try {
+            const data = await axios.delete(`http://localhost:3100/api/v1/hotels/delete_hotel_vendor/${vendorId}`);    
+            toast.success(data.data.message);
+            fetchHotels();
+        } catch (error) {
+            console.log("Internal server error",error)
+        }
+
+    }
+
     useEffect(() => {
         fetchHotels();
     }, []);
@@ -87,7 +99,7 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/hotel-listin/${hotelId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions','Delete'];
 
     return (
         <>
@@ -135,21 +147,12 @@ const AllHoteslVendor = () => {
                                         checked={hotel.isVerifiedTag}
                                         onChange={() => handleStatusToggle(hotel._id, hotel.isVerifiedTag)}
                                     />
-                                    {/* <CButton
-                                        color={hotel.isVerifiedTag ? 'success' : 'secondary'}
-                                        size="sm"
-                                        className="d-flex align-items-center gap-2"
-                                        onClick={() => handleStatusToggle(hotel._id, hotel.isVerifiedTag)}
-                                    >
-                                        {hotel.isVerifiedTag ? <FaToggleOn /> : <FaToggleOff />}
-                                        {hotel.isVerifiedTag ? 'Verified' : 'Unverified'}
-                                    </CButton> */}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex align-items-center gap-2 text-white"
                                         onClick={() => handleViewListinDetails(hotel._id)}
                                     >
                                         <FaEye />
@@ -160,11 +163,22 @@ const AllHoteslVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex align-items-center gap-2 text-white"
                                         onClick={() => handleViewDetails(hotel._id)}
                                     >
                                         <FaEye />
                                         View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="danger"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2 text-white"
+                                        onClick={() => handleDelete(hotel._id)}
+                                    >
+                                        <Delete />
+                                        Delete
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>

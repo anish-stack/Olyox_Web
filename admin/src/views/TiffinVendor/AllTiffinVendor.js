@@ -16,6 +16,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const AllTiffinVendor = () => {
     const [vendors, setVendors] = useState([]);
@@ -30,7 +31,7 @@ const AllTiffinVendor = () => {
         try {
 
             const { data } = await axios.get('http://localhost:3100/api/v1/tiffin/get_restaurant');
-            setVendors(Array.isArray(data.data) ? data.data : []);
+            setVendors(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching vendors:', error);
             toast.error('Failed to load tiffin vendors. Please try again.');
@@ -55,6 +56,16 @@ const AllTiffinVendor = () => {
             setLoading(false);
         }
     };
+
+    const handleDelete = async (vendorId) => {
+        try {
+            const res = await axios.delete(`http://localhost:3100/api/v1/tiffin/delete_tiffin_vendor/${vendorId}`);
+            toast.success(res.data.message);
+            fetchVendors();
+        } catch (error) {
+            console.log("Internal server error",error)
+        }
+    }
 
     useEffect(() => {
         fetchVendors();
@@ -85,7 +96,7 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions', 'Delete'];
 
     return (
         <>
@@ -147,7 +158,7 @@ const AllTiffinVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex align-items-center gap-2 text-white"
                                         onClick={() => handleViewTiffinPackage(vendor._id)}
                                     >
                                         <FaEye />
@@ -158,7 +169,7 @@ const AllTiffinVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex align-items-center gap-2 text-white"
                                         onClick={() => handleViewFoodListing(vendor._id)}
                                     >
                                         <FaEye />
@@ -169,11 +180,22 @@ const AllTiffinVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex align-items-center gap-2 text-white"
                                         onClick={() => handleViewDetails(vendor._id)}
                                     >
                                         <FaEye />
                                         View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="danger"
+                                        size="sm"
+                                        className="d-flex align-items-center gap-2 text-white"
+                                        onClick={() => handleDelete(vendor._id)}
+                                    >
+                                        <Delete />
+                                        Delete
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>

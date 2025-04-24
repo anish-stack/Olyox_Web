@@ -101,7 +101,7 @@ const EditCarList = () => {
             <Form
                 heading="Edit Car List"
                 btnText="Back"
-                btnURL="/rides/all-ride-suggestions"
+                btnURL="/cars/all-cars-list"
                 onSubmit={handleSubmit}
                 formContent={
                     <>

@@ -16,6 +16,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const AllHeavyTransportVendor = () => {
     const [vendors, setVendors] = useState([]);
@@ -55,6 +56,15 @@ const AllHeavyTransportVendor = () => {
             setLoading(false);
         }
     };
+
+    const handleDelete = async(vendorId) => {
+        try {
+            const data = await axios.delete(`http://localhost:3100/api/v1/heavy/heavy_vehicle_profile_delete/${vendorId}`);
+            toast.success('Vendor deleted successfully');
+        } catch (error) {
+            console.log("Internal Server Error: Failed to delete vendor.",error)
+        }
+    }
 
     useEffect(() => {
         fetchVendors();
@@ -140,11 +150,22 @@ const AllHeavyTransportVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
-                                        onClick={() => navigate(`/vendor/detail/${vendor._id}`)}
+                                        className="d-flex text-white align-items-center gap-2"
+                                        onClick={() => navigate(`/heavy/heavy-transport-vendor-detail/${vendor._id}`)}
                                     >
                                         <FaEye />
                                         View
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="danger"
+                                        size="sm"
+                                        className="d-flex text-white align-items-center gap-2"
+                                        onClick={() => handleDelete(vendor._id)}
+                                    >
+                                        <Delete />
+                                        Delete
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>

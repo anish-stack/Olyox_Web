@@ -17,6 +17,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Delete } from 'lucide-react';
 
 const AllCabVendor = () => {
     const [riders, setRiders] = useState([]);
@@ -56,6 +57,16 @@ const AllCabVendor = () => {
             setLoading(false);
         }
     };
+
+    const handleDelete = async(vendorId) => {
+        try {
+            const data = await axios.delete(`http://localhost:3100/api/v1/rider/delete_rider_vendor/${vendorId}`);
+            toast.success(data.data.message);
+            fetchRiders();
+        } catch (error) {
+            console.log("Internal server error",error)
+        }
+    }
 
     useEffect(() => {
         fetchRiders();
@@ -137,7 +148,7 @@ const AllCabVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex text-white align-items-center gap-2"
                                         onClick={() => handleRiderTiming(rider._id)}
                                     >
                                         <FaEye />
@@ -156,11 +167,22 @@ const AllCabVendor = () => {
                                     <CButton
                                         color="info"
                                         size="sm"
-                                        className="d-flex align-items-center gap-2"
+                                        className="d-flex text-white align-items-center gap-2"
                                         onClick={() => handleViewDetails(rider._id)}
                                     >
                                         <FaEye />
                                         View Details
+                                    </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        color="danger"
+                                        size="sm"
+                                        className="d-flex text-white align-items-center gap-2"
+                                        onClick={() => handleDelete(rider._id)}
+                                    >
+                                        <Delete />
+                                        Delete
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>

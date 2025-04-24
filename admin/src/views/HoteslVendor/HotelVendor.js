@@ -268,29 +268,6 @@ const HotelVendor = () => {
                 </CCol>
 
                 <CCol md={6}>
-                        {/* <CCard className="mb-4 border-0 shadow-sm">
-                            <CCardHeader className="bg-light">
-                                <h4 className="mb-0">OTP Information</h4>
-                            </CCardHeader>
-                            <CCardBody>
-                                <CListGroup flush>
-                                    <CListGroupItem>
-                                        <div className="d-flex justify-content-between">
-                                            <span>Current OTP:</span>
-                                            <span className="fw-bold">{hotel.otp || 'N/A'}</span>
-                                        </div>
-                                    </CListGroupItem>
-                                    {hotel.otp_expires && (
-                                        <CListGroupItem>
-                                            <div className="d-flex justify-content-between">
-                                                <span>OTP Expires:</span>
-                                                <span>{new Date(hotel.otp_expires).toLocaleString()}</span>
-                                            </div>
-                                        </CListGroupItem>
-                                    )}
-                                </CListGroup>
-                            </CCardBody>
-                        </CCard> */}
 
                     <CCard className="mb-4 border-0 shadow-sm">
                         <CCardHeader className="bg-light">

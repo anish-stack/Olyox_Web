@@ -76,6 +76,8 @@ import AllPrivacyPolicy from './views/PrivacyPolicy/AllPrivacyPolicy'
 import AddPrivacyPolicy from './views/PrivacyPolicy/AddPrivacyPolicy'
 import EditPrivacyPolucy from './views/PrivacyPolicy/EditPrivacyPolucy'
 import AllHeavyTransportVendor from './views/HeavyTransportVendor/AllHeavyTransportVendor'
+import HeavyTransportVendorDetail from './views/HeavyTransportVendor/HeavyTransportVendorDetail'
+import EditHeavyTransportVendor from './views/HeavyTransportVendor/EditHeavyTransportVendor'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -194,10 +196,10 @@ const routes = [
 
   // vendor routes here 
   { path: '/vendor', name: 'Vendor', element: Cards, exact: true },
-  { path: '/vendor/add-vendor', name: 'Add Category', element: AddVendor },
-  { path: '/vendor/edit-vendor/:id', name: 'Edit Category', element: EditVendor },
-  { path: '/vendor/all_vendor', name: 'All Category', element: AllVendor },
-  { path: '/vendor/vendor_detail/:id', name: 'All Category', element: VendorDetail },
+  { path: '/vendor/add-vendor', name: 'Add Vendor', element: AddVendor },
+  { path: '/vendor/edit-vendor/:id', name: 'Edit Vendor', element: EditVendor },
+  { path: '/vendor/all_vendor', name: 'All Vendor', element: AllVendor },
+  { path: '/vendor/vendor_detail/:id', name: 'All Vendor', element: VendorDetail },
 
 
   // vendor qnwuire here 
@@ -283,43 +285,43 @@ const routes = [
   { path: '/parcel/all-parcel-vendor', name: 'All Parcel', element: AllParcelVendor },
   { path: '/parcel/vendor-detail/:id', name: 'Parcel Vendor Detail', element: ParcelDetail },
   { path: '/parcel/edit-parcel-vendor/:id', name: 'Edit Parcel Vendor Detail', element: EditParcelVendor },
-  
+
   { path: '/tiffin/all-tiffin-booking', name: 'All Tiffin Booking', element: TiffinBooking },
   { path: '/hotel/all-hotel-booking', name: 'All Hotel Booking', element: HotelBooking },
   { path: '/hotel/booking-detail/:id', name: 'Hotel Booking Detail', element: HotelBookingDetail },
   { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
   { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
   { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
-  
+
   // heavy transport routes here
 
   { path: '/heavy/all-heavy-transport-vendor', name: 'All Heavy Transport Vendor', element: AllHeavyTransportVendor },
   // { path: '/hotel/all-hotel-booking', name: 'All Hotel Booking', element: HotelBooking },
-  // { path: '/hotel/booking-detail/:id', name: 'Hotel Booking Detail', element: HotelBookingDetail },
-  // { path: '/cab/all-cab-booking', name: 'All Cab Booking', element: CabBooking },
+  { path: '/heavy/heavy-transport-vendor-detail/:id', name: 'Heavy Transport Vendor Detail', element: HeavyTransportVendorDetail },
+  { path: '/heavy/edit-heavy-transport-vendor/:id', name: 'Edit Heavy Transport Vendor', element: EditHeavyTransportVendor },
   // { path: '/cab/all-cab-detail/:id', name: 'All Cab Details', element: CabBookingDetail },
   // { path: '/parcel/all-parcel-booking', name: 'All Parcel Booking', element: ParcelBooking },
 
-    // refferal routes here 
-    // { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
-    { path: '/all-heacy-transport-option', name: 'All Heavy Transport', element: AllHeavyTransport },
-    { path: '/add-heacy-transport-option', name: 'Add Heavy Transport', element: AddHeavyTransport },
-    { path: '/edit-heacy-transport-option/:id', name: 'Edit Heavy Transport', element: EditHeavyTransport },
+  // refferal routes here 
+  // { path: '/Parcel', name: 'Parcel', element: Cards, exact: true },
+  { path: '/all-heacy-transport-option', name: 'All Heavy Transport', element: AllHeavyTransport },
+  { path: '/add-heacy-transport-option', name: 'Add Heavy Transport', element: AddHeavyTransport },
+  { path: '/edit-heacy-transport-option/:id', name: 'Edit Heavy Transport', element: EditHeavyTransport },
 
 
-    { path: '/all-cancel-reason', name: 'All Cancel Reason', element: CancelReson },
-    { path: '/add-cancel-reason', name: 'Add Cancel Reason', element: AddCancelReson },
-    { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
+  { path: '/all-cancel-reason', name: 'All Cancel Reason', element: CancelReson },
+  { path: '/add-cancel-reason', name: 'Add Cancel Reason', element: AddCancelReson },
+  { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
 
-    { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
-    { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
-    { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
+  { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
+  { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
+  { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
 
-    { path: '/all-login-bug-report', name: 'All Login Report', element: AllLoginBugReport },
+  { path: '/all-login-bug-report', name: 'All Login Report', element: AllLoginBugReport },
 
-    { path: '/all-privacy-policy', name: 'All Privacy', element: AllPrivacyPolicy },
-    { path: '/add-privacy-policy', name: 'Add Privacy', element: AddPrivacyPolicy },
-    { path: '/edit-privacy-policy/:id', name: 'Edit Privacy', element: EditPrivacyPolucy },
+  { path: '/all-privacy-policy', name: 'All Privacy', element: AllPrivacyPolicy },
+  { path: '/add-privacy-policy', name: 'Add Privacy', element: AddPrivacyPolicy },
+  { path: '/edit-privacy-policy/:id', name: 'Edit Privacy', element: EditPrivacyPolucy },
 
 ]
 
