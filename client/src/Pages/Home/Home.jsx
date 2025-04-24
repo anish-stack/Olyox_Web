@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Hero from '../../Components/Hero/Hero'
 import Services from '../../Components/services/services'
 import Features from '../../Components/Features/Features'
@@ -9,6 +9,12 @@ import AboutComponent from '../../Components/AboutComponent/AboutComponent'
 import AppComponent from '../../Components/AppComponent/AppComponent'
 
 function Home() {
+  useEffect(() => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          })
+      },[])
   return (
     <>
       <Hero />

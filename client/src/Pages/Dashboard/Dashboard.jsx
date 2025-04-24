@@ -19,6 +19,12 @@ function Dashboard() {
 
     const SessionData = sessionStorage.getItem('user');
     const token = sessionStorage.getItem('token');
+    useEffect(() => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        },[])
 
     if (!token) {
         return <LoginAlert />;
@@ -49,7 +55,7 @@ function Dashboard() {
     const fetchProvider = async () => {
         try {
             setIsLoading(true);
-            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`);
+            const { data } = await axios.get(`api/v1/get_Single_Provider/${providerId}`);
             const levelLengths = Array.from({ length: 7 }, (_, i) => data.data?.[`Level${i + 1}`]?.length);
             const totalLength = levelLengths.reduce((sum, length) => sum + length, 0);
             setAllRefreal(totalLength)
@@ -64,7 +70,7 @@ function Dashboard() {
 
     // const fetchReferralsDetaisl = async () => {
     //     try {
-    //         const { data } = await axios.get(`http://localhost:7000/api/v1/get-refer-data?id=${allProvider?.myReferral}`)
+    //         const { data } = await axios.get(`api/v1/get-refer-data?id=${allProvider?.myReferral}`)
     //         console.log(data.data)
     //         setAllRefreal(data.data)
     //     } catch (error) {

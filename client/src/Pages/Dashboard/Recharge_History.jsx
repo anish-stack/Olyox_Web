@@ -11,6 +11,12 @@ const RechargeHistory = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [dateFilter, setDateFilter] = useState('');
   const [filteredHistory, setFilteredHistory] = useState([]);
+  useEffect(() => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          })
+      },[])
 
   useEffect(() => {
     const tokenExtract = sessionStorage.getItem('token');
@@ -27,7 +33,7 @@ const RechargeHistory = () => {
   const fetchPastRechargeDetails = async (authToken) => {
     try {
       setLoading(true);
-      const { data } = await axios.get('http://localhost:7000/api/v1/get-recharge', {
+      const { data } = await axios.get('api/v1/get-recharge', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },

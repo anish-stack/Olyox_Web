@@ -9,6 +9,12 @@ function DoneRefer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeLevelTab, setActiveLevelTab] = useState('Level1');
+  useEffect(() => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          })
+      },[])
   
   // Pagination state for each level
   const [pagination, setPagination] = useState({});
@@ -28,7 +34,7 @@ function DoneRefer() {
   const fetchVendor = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${id}`);
+      const { data } = await axios.get(`api/v1/get_Single_Provider/${id}`);
       setVendor(data.data);
     } catch (error) {
       

@@ -24,15 +24,15 @@ function AllCarList() {
     const [currentPage, setCurrentPage] = useState(1);
     const [deleteModal, setDeleteModal] = useState(false);
     const [selectedRideId, setSelectedRideId] = useState(null);
-    
+
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
     const fetchRides = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/admin/getAllSuggestions');
-            setRides(Array.isArray(data.data) ? data.data : []);
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/getAllSuggestions');
+            setRides(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching rides:', error);
             toast.error('Failed to load rides suggestions. Please try again.');
@@ -45,7 +45,7 @@ function AllCarList() {
     const handleDeleteRide = async () => {
         setLoading(true);
         try {
-            await axios.delete(`http://localhost:3100/api/v1/admin/deleteSuggestion/delete/${selectedRideId}`);
+            await axios.delete(`https://demoapi.olyox.com/api/v1/admin/deleteSuggestion/delete/${selectedRideId}`);
             toast.success('Ride deleted successfully!');
             fetchRides();
             setDeleteModal(false);
@@ -60,7 +60,7 @@ function AllCarList() {
     const handleStatusToggle = async (rideId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://localhost:3100/api/v1/admin/updateSuggestionStatus/${rideId}`, {
+            await axios.put(`https://demoapi.olyox.com/api/v1/admin/updateSuggestionStatus/${rideId}`, {
                 status: !currentStatus, // Toggle the status
             });
             toast.success('Status updated successfully!');
@@ -90,17 +90,13 @@ function AllCarList() {
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
     };
 
-    const heading = ['S.No', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status', 'Actions'];
+    const heading = ['S.No', 'Image', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status', 'Actions'];
 
     return (
         <>
             {loading ? (
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
-                </div>
-            ) : rides.length === 0 ? (
-                <div className="no-data">
-                    <p>No data available</p>
                 </div>
             ) : (
                 <Table
@@ -112,6 +108,17 @@ function AllCarList() {
                         currentData.map((item, index) => (
                             <CTableRow key={item._id}>
                                 <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
+                                <CTableDataCell>
+                                    {item.icons_image?.url ? (
+                                        <img
+                                            src={item.icons_image.url}
+                                            alt={item.name}
+                                            style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: '6px' }}
+                                        />
+                                    ) : (
+                                        'No Image'
+                                    )}
+                                </CTableDataCell>
                                 <CTableDataCell>{item.name}</CTableDataCell>
                                 <CTableDataCell>{item.type}</CTableDataCell>
                                 <CTableDataCell>{truncateText(item.description, 6)}</CTableDataCell>

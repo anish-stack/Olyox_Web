@@ -12,13 +12,19 @@ const AllReferral = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  useEffect(() => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          })
+      },[])
 
   const fetchReferrals = async () => {
     setLoading(true);
     setError('');
     try {
       const token = sessionStorage.getItem('token');
-      const response = await axios.get('http://localhost:7000/api/v1/get-my-referral', {
+      const response = await axios.get('api/v1/get-my-referral', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReferrals(response.data.data);

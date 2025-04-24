@@ -23,7 +23,7 @@ function AllCategory() {
         setLoading(true);
         
         try {
-            const { data } = await axios.get('http://localhost:7000/api/v1/categories_get');
+            const { data } = await axios.get('api/v1/categories_get');
             setCategory(data.data || []); // Ensure default empty array
         } catch (error) {
             console.error('Error fetching blogs:', error);
@@ -38,7 +38,7 @@ function AllCategory() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`http://localhost:7000/api/v1/update_category_status/${id}`, {
+            const res = await axios.put(`api/v1/update_category_status/${id}`, {
                 isActive: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -59,7 +59,7 @@ function AllCategory() {
     const handleDeleteBanner = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`http://localhost:7000/api/v1/categories/${id}`);
+            const res = await axios.delete(`api/v1/categories/${id}`);
             toast.success(res?.data?.message);
             handleFetchBanner();
         } catch (error) {

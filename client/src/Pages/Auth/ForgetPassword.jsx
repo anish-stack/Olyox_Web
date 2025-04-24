@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 function ForgetPassword() {
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    },[])
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         number: '',
@@ -34,7 +40,7 @@ function ForgetPassword() {
         }
 
         try {
-            const response = await axios.post('http://localhost:7000/api/v1/forget-password', formData);
+            const response = await axios.post('api/v1/forget-password', formData);
             console.log(response.data)
             const { email, time } = response.data
             setLoading(false);

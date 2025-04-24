@@ -9,6 +9,12 @@ function UpdateProfile() {
     const SessionData = sessionStorage.getItem('user');
     const Provider = JSON.parse(SessionData);
     const providerId = Provider._id;
+    useEffect(() => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        },[])
     const [category, setCategory] = useState(null)
     const [formData, setFormData] = useState({
         name: '',
@@ -29,7 +35,7 @@ function UpdateProfile() {
 
     const fetchProvider = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:7000/api/v1/get_Single_Provider/${providerId}`,{
+            const { data } = await axios.get(`api/v1/get_Single_Provider/${providerId}`,{
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -132,7 +138,7 @@ function UpdateProfile() {
         // });
 
         try {
-            const response = await axios.put(`http://localhost:7000/api/v1/update_account/${providerId}`, formData);
+            const response = await axios.put(`api/v1/update_account/${providerId}`, formData);
             if (response.data.success) {
                 toast.success('Profile updated successfully');
             }

@@ -132,6 +132,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Food Coupon',
+    to: '/all-food-coupon',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Heavy Transport Category',
     to: '/all-heacy-transport-category',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
@@ -209,12 +215,12 @@ const _nav = [
       },
     ],
   },
-  {
-    component: CNavItem,
-    name: 'Sub Admin',
-    to: '/Sub/all-sub',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Sub Admin',
+  //   to: '/Sub/all-sub',
+  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  // },
   {
     component: CNavItem,
     name: 'Settings',

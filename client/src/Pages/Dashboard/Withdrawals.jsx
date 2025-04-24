@@ -16,6 +16,12 @@ import {
 } from 'lucide-react';
 
 const Withdrawals = () => {
+  useEffect(() => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          })
+      },[])
   const [showModal, setShowModal] = useState(false);
   const [withdrawals, setWithdrawals] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,7 +83,7 @@ const Withdrawals = () => {
   const fetchWithdrawals = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:7000/api/v1/withdrawal', {
+      const response = await axios.get('api/v1/withdrawal', {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         }
@@ -154,7 +160,7 @@ const Withdrawals = () => {
 
     setSubmitting(true);
     try {
-      await axios.post('http://localhost:7000/api/v1/create-withdrawal', formData, {
+      await axios.post('api/v1/create-withdrawal', formData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('token')}`

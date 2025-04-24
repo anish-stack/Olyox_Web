@@ -16,7 +16,7 @@ const upload = multer({
 });
 
 
-const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive, verifyDocument, copyVendor, getCopyOfProvider, manuallyRegisterVendor, getProviderDetailsByNumber, getProviderDetailsByBhId } = require('../controllers/vendor.controller');
+const { registerVendor, verifyVendorEmail, resendOtp, loginVendor, logoutVendor, changeVendorPassword, changeVendorCategory, deleteVendorAccount, updateVendorDetails, getSingleProvider, updatePassword, forgetPassword, getAllVendor, updateVendorIsActive, verifyDocument, copyVendor, getCopyOfProvider, manuallyRegisterVendor, getProviderDetailsByNumber, getProviderDetailsByBhId, updateVendorDetailByAdmin } = require('../controllers/vendor.controller');
 const { createCategory, getAllCategories, getCategoryById, updateCategory, deleteCategory, updateCategoryToggle } = require('../controllers/category.controller');
 const { createMembershipPlan, getAllMembershipPlans, getMembershipPlanById, updateMembershipPlan, deleteMembershipPlan, updateMembershipStatus } = require('../controllers/Member_ship.controller');
 const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelRecharge, getAllOfAnyIdRecharge, assignFreePlan } = require('../controllers/Recharge_controller');
@@ -53,6 +53,7 @@ router.get('/get_Single_Provider/:id', getSingleProvider);
 router.get('/get_Copy_Provider/:id', getCopyOfProvider);
 router.get('/all_vendor', getAllVendor)
 router.put('/update_vendor_status/:id', updateVendorIsActive)
+router.put('/update_vendor_detail_by_admin/:id',updateVendorDetailByAdmin)
 
 
 router.post('/forget-password', forgetPassword);

@@ -81,6 +81,9 @@ import EditHeavyTransportVendor from './views/HeavyTransportVendor/EditHeavyTran
 import AllHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/AllHeavyVehicalTransportCategory'
 import AddHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/AddHeavyVehicalTransportCategory'
 import EditHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCategory/EditHeavyVehicalTransportCategory'
+import AllFoodCoupon from './views/FoodCoupon/AllFoodCoupon'
+import AddFoodCoupon from './views/FoodCoupon/AddFoodCoupon'
+import EditFoodCoupon from './views/FoodCoupon/EditFoodCoupon'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -330,6 +333,10 @@ const routes = [
   { path: '/all-privacy-policy', name: 'All Privacy', element: AllPrivacyPolicy },
   { path: '/add-privacy-policy', name: 'Add Privacy', element: AddPrivacyPolicy },
   { path: '/edit-privacy-policy/:id', name: 'Edit Privacy', element: EditPrivacyPolucy },
+
+  { path: '/all-food-coupon', name: 'All Food Coupon', element: AllFoodCoupon },
+  { path: '/add-food-coupon', name: 'Add Food Coupon', element: AddFoodCoupon },
+  { path: '/edit-food-coupon/:id', name: 'Edit Food Coupon', element: EditFoodCoupon },
 
 ]
 

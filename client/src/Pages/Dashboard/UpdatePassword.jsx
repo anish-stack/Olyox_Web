@@ -15,6 +15,12 @@ function UpdatePassword() {
     });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    useEffect(() => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            })
+        },[])
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -42,7 +48,7 @@ function UpdatePassword() {
         setLoading(true);
 
         try {
-            await axios.post(`http://localhost:7000/api/v1/change_Vendor_Password`, {
+            await axios.post(`api/v1/change_Vendor_Password`, {
                 oldPassword: formData.oldPassword,
                 newPassword: formData.newPassword,
                 email: formData.email

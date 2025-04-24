@@ -38,7 +38,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:7000/api/v1/verify_email",
+                "api/v1/verify_email",
                 formData
             );
 
@@ -60,7 +60,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "http://localhost:7000/api/v1/resend_Otp",
+                "api/v1/resend_Otp",
                 { email, type }
             );
             toast.success(response.data.message || "OTP sent successfully!");
