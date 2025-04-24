@@ -16,7 +16,7 @@ const DutyRiderDetail = () => {
   const fetchRider = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`http://localhost:3100/api/v1/rider/get_single_rider/${id}`)
+      const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/rider/get_single_rider/${id}`)
       setRider(data.data);
       setLoading(false);
     } catch (error) {
@@ -61,7 +61,7 @@ const DutyRiderDetail = () => {
   const handleDocumentVerifyToggle = async (id, status) => {
     try {
       const updateStatus = !status
-      const res = await axios.put(`http://localhost:3100/api/v1/rider/update_rider_document_verify/${id}`, {
+      const res = await axios.put(`https://demoapi.olyox.com/api/v1/rider/update_rider_document_verify/${id}`, {
         DocumentVerify: updateStatus
       })
       toast.success("DocumentVerify updated successfully");

@@ -31,7 +31,7 @@ const AddHeavyVehicalTransportCategory = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:3100/api/v1/heavy/heavy-category', {
+      const res = await axios.post('https://demoapi.olyox.com/api/v1/heavy/heavy-category', {
         title,
         active,
       });

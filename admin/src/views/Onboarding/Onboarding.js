@@ -31,7 +31,7 @@ const Onboarding = () => {
     const fetchSlides = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/admin/get_onboarding_slides');
+            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/get_onboarding_slides');
 
             // Ensure slides is always an array
             setSlides(Array.isArray(data.data) ? data.data : []);
@@ -48,7 +48,7 @@ const Onboarding = () => {
     const handleDeleteSlide = async () => {
         setLoading(true);
         try {
-            await axios.delete(`http://localhost:3100/api/v1/admin/delete_onboarding_slide/${selectedSlideId}`);
+            await axios.delete(`https://demoapi.olyox.com/api/v1/admin/delete_onboarding_slide/${selectedSlideId}`);
             toast.success('Slide deleted successfully!');
             fetchSlides();
             setDeleteModal(false);
