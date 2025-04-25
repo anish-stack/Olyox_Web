@@ -25,7 +25,7 @@ const EditHeavyVehicalTransportCategory = () => {
 
   const fetchCategory = async () => {
     try {
-      const res = await axios.get(`http://www.appapi.olyox.com/api/v1/heavy/heavy-category/${id}`);
+      const res = await axios.get(`https://www.appapi.olyox.com/api/v1/heavy/heavy-category/${id}`);
       const data = res.data.data;
       setFormData({
         title: data.title || '',
@@ -58,7 +58,7 @@ const EditHeavyVehicalTransportCategory = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `http://www.appapi.olyox.com/api/v1/heavy/heavy-category/${id}`,
+        `https://www.appapi.olyox.com/api/v1/heavy/heavy-category/${id}`,
         { title, active }
       );
       toast.success(res.data.message);

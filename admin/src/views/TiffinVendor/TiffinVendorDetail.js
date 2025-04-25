@@ -29,7 +29,7 @@ const TiffinVendorDetail = () => {
     const fetchVendorDetails = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`http://www.appapi.olyox.com/api/v1/tiffin/get_single_restaurant/${id}`);
+            const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/tiffin/get_single_restaurant/${id}`);
             setVendor(data.data);
         } catch (error) {
             console.error('Error fetching vendor details:', error);
@@ -47,7 +47,7 @@ const TiffinVendorDetail = () => {
     const handleStatusToggle = async (id,status) => {
         const updateStatus = !status
         try {
-            const res = await axios.put(`http://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${id}`,{
+            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${id}`,{
                 status: updateStatus
             })
             toast.success('Vendor status updated successfully.');
@@ -60,7 +60,7 @@ const TiffinVendorDetail = () => {
     const handleDocumentVerifyToggle = async (id,status) => {
         const updateStatus = !status
         try {
-            const res = await axios.put(`http://www.appapi.olyox.com/api/v1/tiffin/verify_tiffin_document/${id}`,{
+            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/verify_tiffin_document/${id}`,{
                 documentVerify: updateStatus
             })
             toast.success('Vendor status updated successfully.');

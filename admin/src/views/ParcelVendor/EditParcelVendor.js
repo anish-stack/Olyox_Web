@@ -39,7 +39,7 @@ const EditParcelVendor = () => {
         const fetchParcelUser = async () => {
             setLoading(true);
             try {
-                const { data } = await axios.get(`http://www.appapi.olyox.com/api/v1/parcel/get_single_parcel/${id}`);
+                const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/parcel/get_single_parcel/${id}`);
                 setFormData({
                     name: data.data.name,
                     phone: data.data.phone,
@@ -103,7 +103,7 @@ const EditParcelVendor = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `http://www.appapi.olyox.com/api/v1/parcel/update_parcel_data/${id}`,
+                `https://www.appapi.olyox.com/api/v1/parcel/update_parcel_data/${id}`,
                 formDataToSend,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );

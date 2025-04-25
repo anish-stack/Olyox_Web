@@ -11,7 +11,7 @@ const TiffinListing = () => {
   const fetchData = async () => {
     try {
       const { data } = await axios.get(
-        `http://www.appapi.olyox.com/api/v1/tiffin/get_all_food_listing/${id}`
+        `https://www.appapi.olyox.com/api/v1/tiffin/get_all_food_listing/${id}`
       );
       console.log('data', data);
       setFoodList(data.data);

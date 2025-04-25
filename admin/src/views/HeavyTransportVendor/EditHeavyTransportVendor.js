@@ -47,7 +47,7 @@ const EditHeavyTransportVendor = () => {
   const fetchPartnerData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://www.appapi.olyox.com/api/v1/heavy/heavy-vehicle-profile/${id}`);
+      const res = await axios.get(`https://www.appapi.olyox.com/api/v1/heavy/heavy-vehicle-profile/${id}`);
       const partner = res.data.data;
 
       setFormData({
@@ -92,7 +92,7 @@ const EditHeavyTransportVendor = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `http://www.appapi.olyox.com/api/v1/heavy/heavy-vehicle-profile-update-by-admin/${id}`,
+        `https://www.appapi.olyox.com/api/v1/heavy/heavy-vehicle-profile-update-by-admin/${id}`,
         payload
       );
 

@@ -30,7 +30,7 @@ const AllHoteslVendor = () => {
 
         setLoading(true);
         try {
-            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/hotels/get_all_hotel');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/hotels/get_all_hotel');
             const allData = data.data.reverse();
             setHotels(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -45,7 +45,7 @@ const AllHoteslVendor = () => {
     const handleStatusToggle = async (hotelId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://www.appapi.olyox.com/api/v1/hotels/verify_hotel_documents/${hotelId}`, {
+            await axios.put(`https://www.appapi.olyox.com/api/v1/hotels/verify_hotel_documents/${hotelId}`, {
                 isVerifiedTag: !currentStatus,
             });
             toast.success('Status updated successfully!');
@@ -60,7 +60,7 @@ const AllHoteslVendor = () => {
 
     const handleDelete = async(vendorId) => {
         try {
-            const data = await axios.delete(`http://www.appapi.olyox.com/api/v1/hotels/delete_hotel_vendor/${vendorId}`);    
+            const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_vendor/${vendorId}`);    
             toast.success(data.data.message);
             fetchHotels();
         } catch (error) {

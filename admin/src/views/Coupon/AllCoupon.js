@@ -22,7 +22,7 @@ const AllCoupon = () => {
     const fetchCoupons = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/admin/all_getCoupon');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/admin/all_getCoupon');
             setCoupons(data.data.reverse() || []);
         } catch (error) {
             console.error('Error fetching coupons:', error);
@@ -36,7 +36,7 @@ const AllCoupon = () => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`http://www.appapi.olyox.com/api/v1/admin/updateCouponStatus/${id}`, {
+            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/updateCouponStatus/${id}`, {
                 active: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -52,7 +52,7 @@ const AllCoupon = () => {
     const handleDeleteCoupon = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`http://www.appapi.olyox.com/api/v1/admin/deleteCoupon/${id}`);
+            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/admin/deleteCoupon/${id}`);
             toast.success(res?.data?.message);
             fetchCoupons();
         } catch (error) {

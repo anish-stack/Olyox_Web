@@ -29,7 +29,7 @@ const CabBooking = () => {
 
         setLoading(true);
         try {
-            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/rides/all_rides');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/rides/all_rides');
             const allData = data.data.reverse();
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -43,7 +43,7 @@ const CabBooking = () => {
 
     const handleDelete = async (vendorId) => {
         try {
-            const res = await axios.delete(`http://www.appapi.olyox.com/api/v1/rides/delete_rider_ride/${vendorId}`);
+            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/rides/delete_rider_ride/${vendorId}`);
             toast.success(res.data.message);
             fetchOrders();
         } catch (error) {
@@ -53,7 +53,7 @@ const CabBooking = () => {
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
-            const res = await axios.put(`http://www.appapi.olyox.com/api/v1/rides/update_rider_ride_status/${orderId}`, { status });
+            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/rides/update_rider_ride_status/${orderId}`, { status });
             toast.success(res.data.message);
             fetchOrders(); // refetch after update
         } catch (error) {

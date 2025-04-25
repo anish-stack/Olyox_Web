@@ -30,7 +30,7 @@ const EditPrivacyPolicy = () => {
   const fetchPolicy = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`http://www.appapi.olyox.com/api/v1/admin/policy/${id}`);
+      const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/admin/policy/${id}`);
       const { title, description, content, category } = data;
       setFormData({ title, description, content, category });
     } catch (error) {
@@ -52,7 +52,7 @@ const EditPrivacyPolicy = () => {
 
     setLoading(true);
     try {
-      const res = await axios.put(`http://www.appapi.olyox.com/api/v1/admin/policy/${id}`, formData);
+      const res = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/policy/${id}`, formData);
       toast.success(res.data.message || 'Policy updated successfully.');
       navigate('/all-privacy-policy');
     } catch (error) {

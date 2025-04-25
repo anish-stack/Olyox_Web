@@ -53,7 +53,7 @@ const AddCarList = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://www.appapi.olyox.com/api/v1/admin/createSuggestion', formPayload, {
+      const res = await axios.post('https://www.appapi.olyox.com/api/v1/admin/createSuggestion', formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

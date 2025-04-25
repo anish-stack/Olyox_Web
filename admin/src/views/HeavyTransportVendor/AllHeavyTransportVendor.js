@@ -29,7 +29,7 @@ const AllHeavyTransportVendor = () => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/heavy/get_all_hv_vendor');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/heavy/get_all_hv_vendor');
             const allData = data.data.reverse();
             setVendors(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -44,7 +44,7 @@ const AllHeavyTransportVendor = () => {
     const handleStatusToggle = async (vendorId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
+            await axios.put(`https://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
                 is_blocked: !currentStatus,
             });
             toast.success('Block status updated!');
@@ -59,7 +59,7 @@ const AllHeavyTransportVendor = () => {
 
     const handleDelete = async(vendorId) => {
         try {
-            const data = await axios.delete(`http://www.appapi.olyox.com/api/v1/heavy/heavy_vehicle_profile_delete/${vendorId}`);
+            const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/heavy/heavy_vehicle_profile_delete/${vendorId}`);
             toast.success('Vendor deleted successfully');
         } catch (error) {
             console.log("Internal Server Error: Failed to delete vendor.",error)
