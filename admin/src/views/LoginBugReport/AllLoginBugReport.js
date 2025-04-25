@@ -35,7 +35,7 @@ const AllLoginBugReport = () => {
     const fetchBugReports = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/reports');
+            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/admin/reports');
             setBugReports(data.data.reverse() || []);
         } catch (error) {
             toast.error('Failed to load bug reports.');
@@ -47,7 +47,7 @@ const AllLoginBugReport = () => {
     const deleteBugReport = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`https://demoapi.olyox.com/api/v1/admin/report/${id}`);
+            const res = await axios.delete(`http://www.appapi.olyox.com/api/v1/admin/report/${id}`);
             toast.success(res?.data?.message || 'Bug report deleted.');
             fetchBugReports();
         } catch (error) {
@@ -83,7 +83,7 @@ const AllLoginBugReport = () => {
     const handleUpdate = async () => {
         if (!selectedReport) return;
         try {
-            const { data } = await axios.put(`https://demoapi.olyox.com/api/v1/admin/report/${selectedReport._id}`, {
+            const { data } = await axios.put(`http://www.appapi.olyox.com/api/v1/admin/report/${selectedReport._id}`, {
                 status,
                 bugFix,
             });

@@ -22,7 +22,7 @@ const ParcelSubscription = () => {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('api/v1/membership-plans');
+            const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/membership-plans');
             const filteredData = data.data.filter(plan => plan.category === 'parcel');
             setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
         } catch (error) {
@@ -39,7 +39,7 @@ const ParcelSubscription = () => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`api/v1/update_membership_status/${id}`, {
+            const res = await axios.put(`http://www.webapi.olyox.com/api/v1//update_membership_status/${id}`, {
                 active: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -60,7 +60,7 @@ const ParcelSubscription = () => {
     const handleDeleteMembershipPlan = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`api/v1/membership-plans/${id}`);
+            const res = await axios.delete(`http://www.webapi.olyox.com/api/v1//membership-plans/${id}`);
             toast.success(res?.data?.message);
             handleFetchMembershipPlans();
         } catch (error) {

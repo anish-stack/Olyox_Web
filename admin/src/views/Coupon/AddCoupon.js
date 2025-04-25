@@ -29,7 +29,7 @@ const AddCoupon = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await axios.post('https://demoapi.olyox.com/api/v1/admin/createCoupon', formData);
+            const res = await axios.post('http://www.appapi.olyox.com/api/v1/admin/createCoupon', formData);
             toast.success(res.data.message);
             // Reset the form
             setFormData({

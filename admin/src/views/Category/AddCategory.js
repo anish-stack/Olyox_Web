@@ -24,7 +24,7 @@ function AddCategory() {
 
         setLoading(true);
         try {
-            const res = await axios.post('api/v1/categories_create', formData);
+            const res = await axios.post('http://www.webapi.olyox.com/api/v1/categories_create', formData);
             toast.success(res.data.message);
             // Reset the form
             setFormData({

@@ -26,7 +26,7 @@ const EditCabSubscription = () => {
         const fetchMembershipPlan = async () => {
             try {
 
-                const res = await axios.get(`api/v1/membership-plans/${id}`);
+                const res = await axios.get(`http://www.webapi.olyox.com/api/v1//membership-plans/${id}`);
                 setFormData({
                     title: res.data.data.title,
                     price: res.data.data.price,
@@ -64,7 +64,7 @@ const EditCabSubscription = () => {
 
         setLoading(true);
         try {
-            const res = await axios.put(`api/v1/membership-plans/${id}`, formDataToSend);
+            const res = await axios.put(`http://www.webapi.olyox.com/api/v1//membership-plans/${id}`, formDataToSend);
             toast.success(res.data.message);
             // history.push('/membership-plans'); // Redirect to the membership plans list page
         } catch (error) {

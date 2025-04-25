@@ -22,7 +22,7 @@ const Settings = () => {
     const fetchSettings = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/get_Setting');
+            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/admin/get_Setting');
             console.log("data.data", data)
             setSettings(data || {});
         } catch (error) {

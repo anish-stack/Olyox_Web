@@ -22,7 +22,7 @@ function AllActiveRefferal() {
   const handleFetchReferrals = async () => {
     setLoading(true)
     try {
-      const { data } = await axios.get('api/v1/get-all-referral')
+      const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/get-all-referral')
       setReferrals(data.data || []) // Ensure default empty array
     } catch (error) {
       console.error('Error fetching referral:', error)

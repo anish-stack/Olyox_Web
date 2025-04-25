@@ -22,7 +22,7 @@ const AllFoodCoupon = () => {
   const fetchCoupons = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get('https://demoapi.olyox.com/api/v1/tiffin/tiffin-coupons');
+      const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/tiffin/tiffin-coupons');
       setCoupons(data.data.reverse() || []);
     } catch (error) {
       console.error('Error fetching coupons:', error);
@@ -35,7 +35,7 @@ const AllFoodCoupon = () => {
   const handleToggleStatus = async (id) => {
     setLoading(true);
     try {
-      const res = await axios.patch(`https://demoapi.olyox.com/api/v1/tiffin/tiffin-coupons/toggle/${id}`);
+      const res = await axios.patch(`http://www.appapi.olyox.com/api/v1/tiffin/tiffin-coupons/toggle/${id}`);
       toast.success(res?.data?.message);
       fetchCoupons();
     } catch (error) {
@@ -49,7 +49,7 @@ const AllFoodCoupon = () => {
   const handleDeleteCoupon = async (id) => {
     setLoading(true);
     try {
-      const res = await axios.delete(`https://demoapi.olyox.com/api/v1/tiffin/tiffin-coupons/${id}`);
+      const res = await axios.delete(`http://www.appapi.olyox.com/api/v1/tiffin/tiffin-coupons/${id}`);
       toast.success(res?.data?.message);
       fetchCoupons();
     } catch (error) {

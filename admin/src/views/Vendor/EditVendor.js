@@ -19,7 +19,7 @@ function EditVendor() {
 
   const handleFetchCategory = async () => {
     try {
-      const { data } = await axios.get('api/v1/categories_get');
+      const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/categories_get');
       setCategories(data.data.reverse());
     } catch (error) {
       console.log("Error fetching categories", error);
@@ -29,7 +29,7 @@ function EditVendor() {
   const fetchVendorData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`api/v1/get_Single_Provider/${id}`);
+      const res = await axios.get(`http://www.webapi.olyox.com/api/v1//get_Single_Provider/${id}`);
       const vendor = res.data.data;
       setFormData({
         name: vendor.name || '',

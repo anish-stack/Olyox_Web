@@ -27,7 +27,7 @@ const AllPrivacyPolicy = () => {
     const fetchPolicies = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/policies');
+            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/admin/policies');
             setPolicies(data.reverse() || []);
         } catch (error) {
             console.error('Error fetching policies:', error);
@@ -61,7 +61,7 @@ const AllPrivacyPolicy = () => {
     const deletePolicy = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`https://demoapi.olyox.com/api/v1/admin/policy/${id}`);
+            const res = await axios.delete(`http://www.appapi.olyox.com/api/v1/admin/policy/${id}`);
             toast.success(res?.data?.message || 'Policy deleted successfully.');
             fetchPolicies();
         } catch (error) {

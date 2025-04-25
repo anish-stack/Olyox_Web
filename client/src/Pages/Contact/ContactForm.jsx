@@ -32,7 +32,7 @@ const ContactForm = () => {
 
     try {
       // Send POST request to your API
-      const response = await axios.post('api/v1/enquiries', formData);
+      const response = await axios.post('http://www.webapi.olyox.com/api/v1/enquiries', formData);
 console.log(response.data)
       // On success, display success message
     

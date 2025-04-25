@@ -45,7 +45,7 @@ const AddPrivacyPolicy = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('https://demoapi.olyox.com/api/v1/admin/policy', {
+            const res = await axios.post('http://www.appapi.olyox.com/api/v1/admin/policy', {
                 title,
                 description,
                 content,

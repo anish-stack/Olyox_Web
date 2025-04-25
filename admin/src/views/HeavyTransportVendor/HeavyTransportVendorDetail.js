@@ -28,7 +28,7 @@ const HeavyTransportVendorDetail = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.get(`https://demoapi.olyox.com/api/v1/heavy/heavy-vehicle-profile/${id}`);
+      const { data } = await axios.get(`http://www.appapi.olyox.com/api/v1/heavy/heavy-vehicle-profile/${id}`);
       // console.log("data.data",data.data)
       setVendor(data.data);
     } catch (error) {
@@ -46,7 +46,7 @@ const HeavyTransportVendorDetail = () => {
   const handleDocumentVerifiedToggle = async (id, isAlldocumentsVerified) => {
     const updateStatus = !isAlldocumentsVerified;
     try {
-      const res = await axios.put(`https://demoapi.olyox.com/api/v1/heavy/update_hv_vendor_document_verify/${id}`, {
+      const res = await axios.put(`http://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_document_verify/${id}`, {
         isAlldocumentsVerified: updateStatus
       });
       toast.success('Vendor documents verification status updated successfully.');

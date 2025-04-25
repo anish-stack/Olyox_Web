@@ -49,7 +49,7 @@ function AllVendor() {
     const handleFetchBanner = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('api/v1/all_vendor');
+            const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/all_vendor');
             const allData = data.data;
             setCategory(allData.reverse() || []);
         } catch (error) {
@@ -62,7 +62,7 @@ function AllVendor() {
 
     const handleFetchRecharge = async () => {
         try {
-            const { data } = await axios.get('api/v1/membership-plans')
+            const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/membership-plans')
             setRechargeData(data.data)
         } catch (error) {
             console.log("Internal server error", error)
@@ -78,7 +78,7 @@ function AllVendor() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`api/v1/update_vendor_status/${id}`, {
+            const res = await axios.put(`http://www.webapi.olyox.com/api/v1//update_vendor_status/${id}`, {
                 isActive: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -94,7 +94,7 @@ function AllVendor() {
     const handleSaveChanges = async () => {
         setLoading(true)
         try {
-            const { data } = await axios.put('api/v1/free_plan_approve', {
+            const { data } = await axios.put('http://www.webapi.olyox.com/api/v1/free_plan_approve', {
                 vendor_id: vendorId,
                 plan_id: selectedPlan
             })
@@ -116,7 +116,7 @@ function AllVendor() {
     const handleDeleteBanner = async (email) => {
         setLoading(true);
         try {
-            const res = await axios.delete('api/v1/delete_account', {
+            const res = await axios.delete('http://www.webapi.olyox.com/api/v1/delete_account', {
                 data: { email },
             });
             toast.success(res?.data?.message);
@@ -133,7 +133,7 @@ function AllVendor() {
         console.log(selected)
         setLoading(true);
         try {
-            const res = await axios.post(`api/v1/verify_document?id=${selected}`);
+            const res = await axios.post(`http://www.webapi.olyox.com/api/v1//verify_document?id=${selected}`);
             console.log(res?.data);
             toast.success(res?.data?.message);
             handleFetchBanner();

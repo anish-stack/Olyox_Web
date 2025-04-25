@@ -26,7 +26,7 @@ const AllHeavyTransport = () => {
     const fetchVehicles = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://demoapi.olyox.com/api/v1/admin/get-heavy');
+            const { data } = await axios.get('http://www.appapi.olyox.com/api/v1/admin/get-heavy');
             setVehicles(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching vehicles:', error);
@@ -39,7 +39,7 @@ const AllHeavyTransport = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://demoapi.olyox.com/api/v1/admin/delete-heavy/${id}`);
+            await axios.delete(`http://www.appapi.olyox.com/api/v1/admin/delete-heavy/${id}`);
             toast.success('Vehicle deleted successfully');
             fetchVehicles();
         } catch (error) {

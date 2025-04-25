@@ -37,7 +37,7 @@ const AddCancelReason = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('https://demoapi.olyox.com/api/v1/admin/cancel-reasons', { name, description, status: status ? 'active' : 'inactive' });
+            const res = await axios.post('http://www.appapi.olyox.com/api/v1/admin/cancel-reasons', { name, description, status: status ? 'active' : 'inactive' });
             toast.success(res.data.message);
             // Reset the form
             setFormData({

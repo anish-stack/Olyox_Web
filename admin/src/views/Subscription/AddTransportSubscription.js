@@ -37,7 +37,7 @@ const AddTransportSubscription = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('api/v1/membership-plans-create', formDataToSend);
+            const res = await axios.post('http://www.webapi.olyox.com/api/v1/membership-plans-create', formDataToSend);
             toast.success(res.data.message);
             // Reset the form
             setFormData({
