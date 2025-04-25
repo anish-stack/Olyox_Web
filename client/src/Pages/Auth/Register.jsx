@@ -47,7 +47,7 @@ const Register = () => {
     const checkBhId = async () => {
         try {
 
-            const { data } = await axios.post('http://www.webapi.olyox.com/api/v1/check-bh-id', { bh: bh_id });
+            const { data } = await axios.post('https://www.webapi.olyox.com/api/v1/check-bh-id', { bh: bh_id });
             const status = data.success
             if (status) {
                 setIsverify(true)
@@ -190,7 +190,7 @@ const Register = () => {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/categories_get');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/categories_get');
             setCategories(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -227,7 +227,7 @@ const Register = () => {
         });
 
         try {
-            const response = await axios.post('http://www.webapi.olyox.com/api/v1/register_vendor', updatedData, {
+            const response = await axios.post('https://www.webapi.olyox.com/api/v1/register_vendor', updatedData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 

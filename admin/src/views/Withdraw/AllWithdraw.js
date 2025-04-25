@@ -33,7 +33,7 @@ function AllWithdraw() {
         setLoading(true);
         try {
             // Change to the withdrawal endpoint
-            const { data } = await axios.get('http://www.webapi.olyox.com/api/v1/withdrawals');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/withdrawals');
 
             setWithdrawals(data.withdrawals || []); // Ensure you handle the correct data
         } catch (error) {
@@ -82,7 +82,7 @@ function AllWithdraw() {
         }
         setLoading(true);
         try {
-            const res = await axios.put(`http://www.webapi.olyox.com/api/v1//reject-withdrawal/${selectedWithdrawalId}`, {
+            const res = await axios.put(`https://www.webapi.olyox.com/api/v1//reject-withdrawal/${selectedWithdrawalId}`, {
                 cancelReason
             });
             toast.success(res?.data?.message);
