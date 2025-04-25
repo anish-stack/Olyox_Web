@@ -24,6 +24,7 @@ const AllCabVendor = () => {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('all');
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
@@ -58,15 +59,15 @@ const AllCabVendor = () => {
         }
     };
 
-    const handleDelete = async(vendorId) => {
+    const handleDelete = async (vendorId) => {
         try {
             const data = await axios.delete(`http://www.appapi.olyox.com/api/v1/rider/delete_rider_vendor/${vendorId}`);
             toast.success(data.data.message);
             fetchRiders();
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
         }
-    }
+    }      
 
     useEffect(() => {
         fetchRiders();
@@ -75,11 +76,18 @@ const AllCabVendor = () => {
     // Filter riders by name or phone based on the searchTerm
     const filteredRiders = riders.filter(rider => {
         const searchQuery = searchTerm.toLowerCase();
-        return (
-            rider.name?.toLowerCase().includes(searchQuery) ||
-            rider.phone?.toLowerCase().includes(searchQuery)
-        );
-    });
+        const matchesSearch =
+          rider.name?.toLowerCase().includes(searchQuery) ||
+          rider.phone?.toLowerCase().includes(searchQuery);
+      
+        const matchesCategory =
+          categoryFilter === 'all' ||
+          (categoryFilter === 'parcel' && rider.category === 'parcel') ||
+          (categoryFilter === 'non-parcel' && rider.category !== 'parcel');
+      
+        return matchesSearch && matchesCategory;
+      });
+      
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredRiders.reverse().slice(startIndex, startIndex + itemsPerPage);
@@ -102,8 +110,8 @@ const AllCabVendor = () => {
     return (
         <>
             {/* Filter Section - Search input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
+            <div className="d-flex gap-3 mb-3">
+                <CInputGroup style={{ maxWidth: '400px' }}>
                     <CInputGroupText>Search</CInputGroupText>
                     <CFormInput
                         placeholder="Search by rider name or phone"
@@ -111,7 +119,19 @@ const AllCabVendor = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </CInputGroup>
+
+                <select
+                    className="form-select"
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                    style={{ maxWidth: '200px' }}
+                >
+                    <option value="all">All</option>
+                    <option value="parcel">Parcel</option>
+                    <option value="non-parcel">Without Parcel</option>
+                </select>
             </div>
+
 
             {/* Loader or No Data */}
             {loading ? (
