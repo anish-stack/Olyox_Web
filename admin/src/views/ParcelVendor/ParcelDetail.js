@@ -16,7 +16,7 @@ function ParcelDetail() {
         setLoading(true);
         try {
             // In a real implementation, you would use axios like this:
-            const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/parcel/get_single_parcel/${id}`);
+            const { data } = await axios.get(`http://localhost:3100/api/v1/parcel/get_single_parcel/${id}`);
             setVendor(data.data);
         } catch (error) {
             console.error('Error fetching parcel delivery person details:', error);
@@ -34,7 +34,7 @@ function ParcelDetail() {
     const handleDocumentVerifyToggle = async (id, status) => {
         // In a real implementation, you would use axios like this:
         try {
-          const res = await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_document_verify/${id}`, {
+          const res = await axios.put(`http://localhost:3100/api/v1/parcel/update_parcel_document_verify/${id}`, {
             documentVerify: !status
           });
           toast.success('Vendor status updated successfully.');

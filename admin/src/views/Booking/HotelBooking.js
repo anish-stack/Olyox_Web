@@ -28,7 +28,7 @@ const HotelBooking = () => {
         setLoading(true);
 
         try {
-            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/hotels/get_all_hotel_booking');
+            const { data } = await axios.get('http://localhost:3100/api/v1/hotels/get_all_hotel_booking');
             const allData = data.data.reverse();
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -42,7 +42,7 @@ const HotelBooking = () => {
 
     const handleDelete = async (vendorId) => {
         try {
-            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_order/${vendorId}`);
+            const res = await axios.delete(`http://localhost:3100/api/v1/hotels/delete_hotel_order/${vendorId}`);
             toast.success(res.data.message);
             fetchOrders();
         } catch (error) {
@@ -52,7 +52,7 @@ const HotelBooking = () => {
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
-            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/hotels/update_status_hotel_order/${orderId}`, { status });
+            const res = await axios.put(`http://localhost:3100/api/v1/hotels/update_status_hotel_order/${orderId}`, { status });
             toast.success(res.data.message);
             fetchOrders(); // refetch after update
         } catch (error) {

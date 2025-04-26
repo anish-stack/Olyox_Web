@@ -13,7 +13,7 @@ const AllRiderLocation = () => {
     const fetchRiders = async () => {
         setLoading(true);
         try {
-            const { data: ridersData } = await axios.get('https://www.appapi.olyox.com/api/v1/rider');
+            const { data: ridersData } = await axios.get('http://localhost:3100/api/v1/rider');
             const activeRiders = ridersData.filter(rider => rider.isActive === true);
             setRiders(Array.isArray(activeRiders) ? activeRiders : []);
         } catch (error) {

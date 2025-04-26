@@ -300,7 +300,7 @@ exports.getApprovedRecharge = async (req, res) => {
 
         console.log("i am getting start")
         try {
-            const responseData = await axios.post('https://www.appapi.olyox.com/api/v1/admin/mark-paid', {
+            const responseData = await axios.post('http://localhost:3100/api/v1/admin/mark-paid', {
                 rechargePlan: rechargeData?.member_id?.title,
                 expireData: rechargeData?.end_date,
                 approveRecharge: true,

@@ -27,7 +27,7 @@ const EditHeavyTransport = () => {
 
     const fetchHeavyTitles = async () => {
         try {
-            const res = await axios.get('https://www.appapi.olyox.com/api/v1/heavy/heavy-category');
+            const res = await axios.get('http://localhost:3100/api/v1/heavy/heavy-category');
             setHeavyVehicalTitle(res.data.data.reverse());
         } catch (error) {
             console.log("Error fetching title list:", error);
@@ -36,7 +36,7 @@ const EditHeavyTransport = () => {
 
     const handleFetchData = async () => {
         try {
-            const res = await axios.get(`https://www.appapi.olyox.com/api/v1/admin/get-single-heavy/${id}`);
+            const res = await axios.get(`http://localhost:3100/api/v1/admin/get-single-heavy/${id}`);
             const data = res.data.data;
             setFormData({
                 title: data.title,
@@ -82,7 +82,7 @@ const EditHeavyTransport = () => {
 
         setLoading(true);
         try {
-            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/update-heavy/${id}`, formDataToSend, {
+            const res = await axios.put(`http://localhost:3100/api/v1/admin/update-heavy/${id}`, formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast.success(res.data.message);

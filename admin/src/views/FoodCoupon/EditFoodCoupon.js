@@ -27,7 +27,7 @@ const EditFoodCoupon = () => {
   useEffect(() => {
     const fetchCoupon = async () => {
       try {
-        const res = await axios.get(`https://www.appapi.olyox.com/api/v1/tiffin/tiffin-coupons/${id}`);
+        const res = await axios.get(`http://localhost:3100/api/v1/tiffin/tiffin-coupons/${id}`);
         const coupon = res.data.data;
 
         setFormData({
@@ -61,7 +61,7 @@ const EditFoodCoupon = () => {
     setLoading(true);
 
     try {
-      const res = await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/tiffin-coupons/${id}`, formData);
+      const res = await axios.put(`http://localhost:3100/api/v1/tiffin/tiffin-coupons/${id}`, formData);
       toast.success(res.data.message);
     } catch (error) {
       console.error('Error updating coupon:', error);

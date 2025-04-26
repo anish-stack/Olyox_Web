@@ -12,7 +12,7 @@ const HotelListing = () => {
     const fetchListings = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/hotels/get_hotel_listing_by_hotel_user/${id}`);
+            const { data } = await axios.get(`http://localhost:3100/api/v1/hotels/get_hotel_listing_by_hotel_user/${id}`);
             setListings(data.data);
         } catch (error) {
             console.error("Error fetching listings:", error);

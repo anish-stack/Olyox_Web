@@ -20,7 +20,7 @@ const EditCancelReason = () => {
 
   const handleFetchData = async () => {
     try {
-      const res = await axios.get(`https://www.appapi.olyox.com/api/v1/admin/cancel-reasons/${id}`);
+      const res = await axios.get(`http://localhost:3100/api/v1/admin/cancel-reasons/${id}`);
       const data = res.data.data;
       setFormData({
         name: data.name || '',
@@ -54,7 +54,7 @@ const EditCancelReason = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `https://www.appapi.olyox.com/api/v1/admin/cancel-reasons/${id}`,
+        `http://localhost:3100/api/v1/admin/cancel-reasons/${id}`,
         { name, description, status: status ? 'active' : 'inactive' }
       );
 

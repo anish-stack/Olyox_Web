@@ -33,7 +33,7 @@ const EditOnboarding = () => {
     const handleFetchSlide = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/admin/get_single_onboarding_slides/${id}`);
+            const { data } = await axios.get(`http://localhost:3100/api/v1/admin/get_single_onboarding_slides/${id}`);
             setFormData({
                 title: data.data.title,
                 description: data.data.description,
@@ -71,7 +71,7 @@ const EditOnboarding = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `https://www.appapi.olyox.com/api/v1/admin/update_onboarding_slide/${id}`,
+                `http://localhost:3100/api/v1/admin/update_onboarding_slide/${id}`,
                 formDataToSend,
                 {
                     headers: {

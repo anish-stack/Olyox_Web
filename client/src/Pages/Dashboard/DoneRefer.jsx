@@ -34,7 +34,7 @@ function DoneRefer() {
   const fetchVendor = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1//get_Single_Provider/${id}`);
+      const { data } = await axios.get(`http://localhost:7000/api/v1//get_Single_Provider/${id}`);
       setVendor(data.data);
     } catch (error) {
       

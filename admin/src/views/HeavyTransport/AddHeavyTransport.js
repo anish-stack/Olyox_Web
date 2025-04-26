@@ -34,7 +34,7 @@ const AddHeavyTransport = () => {
 
     const fetchVehicalTitle = async () => {
         try {
-            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/heavy/heavy-category');
+            const { data } = await axios.get('http://localhost:3100/api/v1/heavy/heavy-category');
             setHeavyVehicalTitle(data.data.reverse());
         } catch (error) {
             console.log("Internal server error", error)
@@ -66,7 +66,7 @@ const AddHeavyTransport = () => {
 
         setLoading(true);
         try {
-            const res = await axios.post('https://www.appapi.olyox.com/api/v1/admin/create-heavy', formDataToSend, {
+            const res = await axios.post('http://localhost:3100/api/v1/admin/create-heavy', formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             toast.success(res.data.message);
