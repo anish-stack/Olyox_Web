@@ -28,7 +28,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await axios.post('https://www.sec.olyox.com/api/v1/login', formData,{
+      const response = await axios.post('https://www.webapi.olyox.com/api/v1/login', formData,{
         headers: {
           'Content-Type': 'application/json',
           
