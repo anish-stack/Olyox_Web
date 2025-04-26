@@ -41,7 +41,7 @@ const EditCabVendor = () => {
         const fetchRiderDetails = async () => {
             setLoading(true);
             try {
-                const { data } = await axios.get(`http://localhost:3100/api/v1/rider/get_single_rider/${id}`);
+                const { data } = await axios.get(`https://www.appapi.olyox.com/api/v1/rider/get_single_rider/${id}`);
                 setFormData({
                     name: data.data.name || '',
                     phone: data.data.phone || '',
@@ -101,7 +101,7 @@ const EditCabVendor = () => {
         setLoading(true);
         try {
             const res = await axios.put(
-                `http://localhost:3100/api/v1/rider/update_rider_detail/${id}`,
+                `https://www.appapi.olyox.com/api/v1/rider/update_rider_detail/${id}`,
                 formDataToSend,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );

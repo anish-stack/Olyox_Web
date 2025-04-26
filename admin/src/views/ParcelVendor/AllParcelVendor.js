@@ -28,7 +28,7 @@ const AllParcelVendor = () => {
     const fetchVendors = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/parcel/get_all_parcel_user');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/parcel/get_all_parcel_user');
             setVendors(Array.isArray(data.data) ? data.data : []);
         } catch (error) {
             console.error('Error fetching vendors:', error);
@@ -42,7 +42,7 @@ const AllParcelVendor = () => {
     const handleStatusToggle = async (vendorId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`http://localhost:3100/api/v1/parcel/update_parcel_is_block_status/${vendorId}`, {
+            await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_is_block_status/${vendorId}`, {
                 isBlockByAdmin: !currentStatus,
             });
             toast.success('Status updated successfully!');

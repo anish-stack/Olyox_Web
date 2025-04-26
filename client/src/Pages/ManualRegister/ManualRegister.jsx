@@ -26,7 +26,7 @@ function ManualRegister() {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('http://localhost:7000/api/v1/categories_get');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/categories_get');
             setCategory(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -49,7 +49,7 @@ function ManualRegister() {
         setLoading(true);
         
         try {
-            const res = await axios.post('http://localhost:7000/api/v1/manual_register', formData);
+            const res = await axios.post('https://www.webapi.olyox.com/api/v1/manual_register', formData);
             toast.success('Registration successful!');
             // setFormData({
             //     name: '',

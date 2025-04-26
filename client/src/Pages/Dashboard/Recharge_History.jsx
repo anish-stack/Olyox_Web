@@ -33,7 +33,7 @@ const RechargeHistory = () => {
   const fetchPastRechargeDetails = async (authToken) => {
     try {
       setLoading(true);
-      const { data } = await axios.get('http://localhost:7000/api/v1/get-recharge', {
+      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/get-recharge', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },

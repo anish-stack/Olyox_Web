@@ -83,7 +83,7 @@ const Withdrawals = () => {
   const fetchWithdrawals = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:7000/api/v1/withdrawal', {
+      const response = await axios.get('https://www.webapi.olyox.com/api/v1/withdrawal', {
         headers: {
           'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
         }
@@ -160,7 +160,7 @@ const Withdrawals = () => {
 
     setSubmitting(true);
     try {
-      await axios.post('http://localhost:7000/api/v1/create-withdrawal', formData, {
+      await axios.post('https://www.webapi.olyox.com/api/v1/create-withdrawal', formData, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('token')}`

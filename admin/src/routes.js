@@ -84,6 +84,9 @@ import EditHeavyVehicalTransportCategory from './views/HeavyVehicalTransportCate
 import AllFoodCoupon from './views/FoodCoupon/AllFoodCoupon'
 import AddFoodCoupon from './views/FoodCoupon/AddFoodCoupon'
 import EditFoodCoupon from './views/FoodCoupon/EditFoodCoupon'
+import AllHomeBanner from './views/HomeBanner/AllHomeBanner'
+import AddHomeBanner from './views/HomeBanner/AddHomeBanner'
+import EditHomeBanner from './views/HomeBanner/EditHomeBanner'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -337,6 +340,11 @@ const routes = [
   { path: '/all-food-coupon', name: 'All Food Coupon', element: AllFoodCoupon },
   { path: '/add-food-coupon', name: 'Add Food Coupon', element: AddFoodCoupon },
   { path: '/edit-food-coupon/:id', name: 'Edit Food Coupon', element: EditFoodCoupon },
+
+  // home banner route 
+  { path: '/all-home-banner', name: 'All Home Banner', element: AllHomeBanner },
+  { path: '/add-home-banner', name: 'Add Home Banner', element: AddHomeBanner },
+  { path: '/edit-home-banner/:id', name: 'Edit Home Banner', element: EditHomeBanner },
 
 ]
 

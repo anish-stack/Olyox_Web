@@ -10,7 +10,7 @@ const RiderTime = () => {
   const fetchRiderTime = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:3100/api/v1/rides/get_riders_times_by_rider_id/${id}`
+        `https://www.appapi.olyox.com/api/v1/rides/get_riders_times_by_rider_id/${id}`
       );
       setRiderTime(data.data.reverse());
     } catch (error) {

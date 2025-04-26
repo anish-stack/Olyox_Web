@@ -28,7 +28,7 @@ const AllHeavyVehicalTransportCategory = () => {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/heavy/heavy-category');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/heavy/heavy-category');
             setCategories(data.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
@@ -42,7 +42,7 @@ const AllHeavyVehicalTransportCategory = () => {
     const handleStatusToggle = async (categoryId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.patch(`http://localhost:3100/api/v1/heavy/heavy-category/${categoryId}/toggle-status`);
+            await axios.patch(`https://www.appapi.olyox.com/api/v1/heavy/heavy-category/${categoryId}/toggle-status`);
             toast.success(`Category ${currentStatus ? 'deactivated' : 'activated'} successfully!`);
             fetchCategories();
         } catch (error) {
@@ -55,7 +55,7 @@ const AllHeavyVehicalTransportCategory = () => {
 
     const handleDelete = async (categoryId) => {
         try {
-            await axios.delete(`http://localhost:3100/api/v1/heavy/heavy-category/${categoryId}`);
+            await axios.delete(`https://www.appapi.olyox.com/api/v1/heavy/heavy-category/${categoryId}`);
             toast.success('Category deleted successfully');
             fetchCategories();
         } catch (error) {

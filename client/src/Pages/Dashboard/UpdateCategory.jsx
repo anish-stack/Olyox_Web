@@ -22,7 +22,7 @@ function UpdateCategory() {
 
     const fetchCategory = async () => {
         try {
-            const { data } = await axios.get('http://localhost:7000/api/v1/categories_get');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/categories_get');
             setCategories(data.data);
         } catch (err) {
             console.error('Error fetching categories:', err);
@@ -34,7 +34,7 @@ function UpdateCategory() {
 
     const fetchProvider = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:7000/api/v1//get_Single_Provider/${providerId}`);
+            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1//get_Single_Provider/${providerId}`);
             const allData = data.data;
             setFormData({
                 category: allData.category._id || '',
@@ -55,7 +55,7 @@ function UpdateCategory() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await axios.put(`http://localhost:7000/api/v1//update_account/${providerId}`, formData);
+            await axios.put(`https://www.webapi.olyox.com/api/v1//update_account/${providerId}`, formData);
             toast.success('Category updated successfully');
             window.location.href="/Dashboard"
         } catch (error) {

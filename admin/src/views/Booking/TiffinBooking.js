@@ -28,7 +28,7 @@ const TiffinBooking = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('http://localhost:3100/api/v1/tiffin/get_all_orders');
+            const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/tiffin/get_all_orders');
             const allData = data.data.reverse();
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
@@ -42,7 +42,7 @@ const TiffinBooking = () => {
 
     const handleDelete = async (vendorId) => {
         try {
-            const res = await axios.delete(`http://localhost:3100/api/v1/tiffin/delete_tiffin_order/${vendorId}`);
+            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/tiffin/delete_tiffin_order/${vendorId}`);
             toast.success(res.data.message);
             fetchOrders();
         } catch (error) {
@@ -52,7 +52,7 @@ const TiffinBooking = () => {
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
-            const res = await axios.put(`http://localhost:3100/api/v1/tiffin/update_tiffin_order_status/${orderId}`, { status });
+            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_tiffin_order_status/${orderId}`, { status });
             toast.success(res.data.message);
             fetchOrders(); // refetch after update
         } catch (error) {

@@ -13,7 +13,7 @@ const EditSetting = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const { data } = await axios.get('http://localhost:3100/api/v1/admin/get_Setting');
+                const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/admin/get_Setting');
                 const filteredData = Object.fromEntries(
                     Object.entries(data).filter(([key]) => 
                         !['__v', 'updatedAt', 'createdAt', '_id'].includes(key)
@@ -37,7 +37,7 @@ const EditSetting = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://localhost:3100/api/v1/admin/updateSetting', formData);
+            await axios.post('https://www.appapi.olyox.com/api/v1/admin/updateSetting', formData);
             toast.success('Settings updated successfully!');
             // navigate('/settings');
         } catch (error) {
