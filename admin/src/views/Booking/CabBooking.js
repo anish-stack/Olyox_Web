@@ -9,6 +9,7 @@ import {
     CInputGroupText,
     CFormInput,
     CButton,
+    CFormSelect,
 } from '@coreui/react';
 import { FaEye } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -24,6 +25,21 @@ const CabBooking = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const itemsPerPage = 10;
+    const [filters, setFilters] = useState({
+        search: '',
+        status: '',
+        startDate: '',
+        endDate: '',
+    });
+    
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [name]: value,
+        }));
+    };
+    
 
     const fetchOrders = async () => {
 
@@ -69,14 +85,25 @@ const CabBooking = () => {
     }, []);
 
     // Filter orders by ride status, pickup location, or other relevant fields
-    const filteredOrders = orders.filter(order => {
-        const searchQuery = searchTerm.toLowerCase();
-        return (
-            order.pickup_desc.toLowerCase().includes(searchQuery) ||
-            order.drop_desc.toLowerCase().includes(searchQuery)
-            // order.RideOtp.toLowerCase().includes(searchQuery)
+    const filteredOrders = orders.filter((order) => {
+        const searchQuery = filters.search.toLowerCase();
+        const orderCreatedAt = new Date(order.createdAt);
+    
+        const matchesSearch = (
+            (order?.user?.name && order.user.name.toLowerCase().includes(searchQuery)) ||
+            (order?.user?.number && order.user.number.includes(searchQuery)) ||
+            (order?.rider?.name && order.rider.name.toLowerCase().includes(searchQuery)) ||
+            (order?.rider?.phone && order.rider.phone.includes(searchQuery))
         );
+    
+        const matchesStatus = filters.status ? order.rideStatus === filters.status : true;
+    
+        const matchesStartDate = filters.startDate ? orderCreatedAt >= new Date(filters.startDate) : true;
+        const matchesEndDate = filters.endDate ? orderCreatedAt <= new Date(filters.endDate) : true;
+    
+        return matchesSearch && matchesStatus && matchesStartDate && matchesEndDate;
     });
+    
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
@@ -97,16 +124,37 @@ const CabBooking = () => {
     return (
         <>
             {/* Filter Section - Search input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
-                    <CInputGroupText>Search</CInputGroupText>
-                    <CFormInput
-                        placeholder="Search by pickup location, drop location, or ride OTP"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </CInputGroup>
-            </div>
+            <div className="filters mb-3 d-flex gap-3">
+    <CFormInput
+        type="text"
+        name="search"
+        placeholder="Search by Name or Number"
+        value={filters.search}
+        onChange={handleFilterChange}
+    />
+    <CFormSelect name="status" value={filters.status} onChange={handleFilterChange}>
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="accepted">Accepted</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+        <option value="drivers_found">Drivers Found</option>
+    </CFormSelect>
+    <CFormInput
+        type="date"
+        name="startDate"
+        value={filters.startDate}
+        onChange={handleFilterChange}
+    />
+    <CFormInput
+        type="date"
+        name="endDate"
+        value={filters.endDate}
+        onChange={handleFilterChange}
+    />
+</div>
+
 
             {/* Loader or No Data */}
             {loading ? (

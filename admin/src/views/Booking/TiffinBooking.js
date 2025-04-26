@@ -6,9 +6,8 @@ import {
     CPagination,
     CPaginationItem,
     CButton,
-    CInputGroup,
-    CInputGroupText,
     CFormInput,
+    CFormSelect,
 } from '@coreui/react';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
@@ -20,10 +19,14 @@ const TiffinBooking = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({
+        search: '',
+        status: '',
+        startDate: '',
+        endDate: '',
+    });
     const navigate = useNavigate();
     const itemsPerPage = 10;
-
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -46,9 +49,9 @@ const TiffinBooking = () => {
             toast.success(res.data.message);
             fetchOrders();
         } catch (error) {
-            console.log("Internal server error", error)
+            console.log("Internal server error", error);
         }
-    }
+    };
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
@@ -61,18 +64,34 @@ const TiffinBooking = () => {
         }
     };
 
-
     useEffect(() => {
         fetchOrders();
     }, []);
 
-    // Filter orders by restaurant name or order ID based on the searchTerm
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     const filteredOrders = orders.filter(order => {
-        const searchQuery = searchTerm.toLowerCase();
-        return (
+        const searchQuery = filters.search.toLowerCase();
+        const orderDate = new Date(order.createdAt);
+
+        const matchesSearch =
             order.restaurant?.restaurant_name?.toLowerCase().includes(searchQuery) ||
-            order.Order_Id?.toLowerCase().includes(searchQuery)
-        );
+            order.Order_Id?.toLowerCase().includes(searchQuery) ||
+            order.user?.name?.toLowerCase().includes(searchQuery) ||
+            order.user?.number?.toLowerCase().includes(searchQuery);
+
+        const matchesStatus = filters.status ? order.status?.toLowerCase() === filters.status.toLowerCase() : true;
+
+        const matchesStartDate = filters.startDate ? orderDate >= new Date(filters.startDate) : true;
+        const matchesEndDate = filters.endDate ? orderDate <= new Date(filters.endDate) : true;
+
+        return matchesSearch && matchesStatus && matchesStartDate && matchesEndDate;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -80,7 +99,6 @@ const TiffinBooking = () => {
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
     const statusOptions = ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'];
-
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -94,16 +112,35 @@ const TiffinBooking = () => {
 
     return (
         <>
-            {/* Filter Section - Search input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
-                    <CInputGroupText>Search</CInputGroupText>
-                    <CFormInput
-                        placeholder="Search by restaurant name or order ID"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </CInputGroup>
+            {/* Filter Section */}
+            <div className="filters mb-3 d-flex gap-3">
+                <CFormInput
+                    type="text"
+                    name="search"
+                    placeholder="Search by Name, Number, or Order ID"
+                    value={filters.search}
+                    onChange={handleFilterChange}
+                />
+                <CFormSelect name="status" value={filters.status} onChange={handleFilterChange}>
+                    <option value="">All Status</option>
+                    {statusOptions.map((status) => (
+                        <option key={status} value={status}>
+                            {status}
+                        </option>
+                    ))}
+                </CFormSelect>
+                <CFormInput
+                    type="date"
+                    name="startDate"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                />
+                <CFormInput
+                    type="date"
+                    name="endDate"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                />
             </div>
 
             {/* Loader or No Data */}

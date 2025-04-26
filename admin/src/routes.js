@@ -87,6 +87,10 @@ import EditFoodCoupon from './views/FoodCoupon/EditFoodCoupon'
 import AllHomeBanner from './views/HomeBanner/AllHomeBanner'
 import AddHomeBanner from './views/HomeBanner/AddHomeBanner'
 import EditHomeBanner from './views/HomeBanner/EditHomeBanner'
+import AllHeavyVehicalOrder from './views/HeavyVehicalOrder/AllHeavyVehicalOrder'
+import AddHeavyVehicalOrder from './views/HeavyVehicalOrder/AddHeavyVehicalOrder'
+import EditHeavyVehicalOrder from './views/HeavyVehicalOrder/EditHeavyVehicalOrder'
+import AllParcelOrder from './views/ParcelOrder/AllParcelOrder'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -346,6 +350,13 @@ const routes = [
   { path: '/add-home-banner', name: 'Add Home Banner', element: AddHomeBanner },
   { path: '/edit-home-banner/:id', name: 'Edit Home Banner', element: EditHomeBanner },
 
+  // heavy vehical order routes here 
+  { path: '/all-heavy-vehical-order', name: 'All Heavy Vehical Order', element: AllHeavyVehicalOrder },
+  { path: '/add-heavy-vehical-order', name: 'Add Heavy Vehical Order', element: AddHeavyVehicalOrder },
+  { path: '/edit-heavy-vehical-order/:id', name: 'Edit Heavy Vehical Order', element: EditHeavyVehicalOrder },
+  
+  // parcel order route 
+  { path: '/all-parcel-order', name: 'All Parcel Order', element: AllParcelOrder },
 ]
 
 export default routes

@@ -6,8 +6,8 @@ import {
     CPagination,
     CPaginationItem,
     CInputGroup,
-    CInputGroupText,
     CFormInput,
+    CFormSelect,
     CButton,
 } from '@coreui/react';
 import { FaEye } from 'react-icons/fa';
@@ -20,7 +20,12 @@ const HotelBooking = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({
+        search: '',
+        status: '',
+        startDate: '',
+        endDate: '',
+    });
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
@@ -40,49 +45,63 @@ const HotelBooking = () => {
         }
     };
 
-    const handleDelete = async (vendorId) => {
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const handleDelete = async (orderId) => {
         try {
-            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_order/${vendorId}`);
+            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_order/${orderId}`);
             toast.success(res.data.message);
             fetchOrders();
         } catch (error) {
-            console.log("Internal server error", error)
+            console.log("Internal server error", error);
+            toast.error("Failed to delete order");
         }
-    }
+    };
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
             const res = await axios.put(`https://www.appapi.olyox.com/api/v1/hotels/update_status_hotel_order/${orderId}`, { status });
             toast.success(res.data.message);
-            fetchOrders(); // refetch after update
+            fetchOrders();
         } catch (error) {
             console.log("Internal server error", error);
             toast.error("Failed to update order status");
         }
     };
 
-    // console.log("orders", orders)
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prev) => ({ ...prev, [name]: value }));
+        setCurrentPage(1); // Reset to first page on filter change
+    };
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    console.log("orders", orders)
-
-    // Filter orders by restaurant name or order ID based on the searchTerm
+    // Apply Filters
     const filteredOrders = orders.filter(order => {
-        const searchQuery = searchTerm.toLowerCase();
-        return (
-            order.HotelUserId?.hotel_name?.toLowerCase().includes(searchQuery) ||
-            order.Booking_id?.toLowerCase().includes(searchQuery)
-        );
+        const searchQuery = filters.search.toLowerCase();
+        const hotelName = order.HotelUserId?.hotel_name?.toLowerCase() || '';
+        const guestName = order.guest_id?.name?.toLowerCase() || '';
+        const guestNumber = order.guest_id?.number?.toString() || '';
+
+        const matchesSearch = hotelName.includes(searchQuery) || guestName.includes(searchQuery) || guestNumber.includes(searchQuery);
+
+        const matchesStatus = filters.status ? order.status?.toLowerCase() === filters.status.toLowerCase() : true;
+
+        const bookingDate = order.bookingDate ? new Date(order.bookingDate) : null;
+        const startDate = filters.startDate ? new Date(filters.startDate) : null;
+        const endDate = filters.endDate ? new Date(filters.endDate) : null;
+
+        const matchesDateRange =
+            (!startDate || (bookingDate && bookingDate >= startDate)) &&
+            (!endDate || (bookingDate && bookingDate <= endDate));
+
+        return matchesSearch && matchesStatus && matchesDateRange;
     });
-    console.log("filteredOrders", filteredOrders)
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
-    // console.log("currentData", currentData)
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -92,32 +111,47 @@ const HotelBooking = () => {
 
     const handleViewDetails = (id) => {
         navigate(`/hotel/booking-detail/${id}`);
-    }
+    };
 
     const heading = ['S.No', 'Hotel Name', 'Order ID', 'User Name', 'User Number', 'Guest Detail', 'Status', 'Payment Method', 'Action'];
 
     return (
         <>
-            {/* Filter Section - Search input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
-                    <CInputGroupText>Search</CInputGroupText>
-                    <CFormInput
-                        placeholder="Search by restaurant name or order ID"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </CInputGroup>
+            {/* Filter Section */}
+            <div className="filters mb-3 d-flex gap-3">
+                <CFormInput
+                    type="text"
+                    name="search"
+                    placeholder="Search by Name or Number"
+                    value={filters.search}
+                    onChange={handleFilterChange}
+                />
+                <CFormSelect name="status" value={filters.status} onChange={handleFilterChange}>
+                    <option value="">All Status</option>
+                    {statusOptions.map((status) => (
+                        <option key={status} value={status.toLowerCase()}>
+                            {status}
+                        </option>
+                    ))}
+                </CFormSelect>
+                <CFormInput
+                    type="date"
+                    name="startDate"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                />
+                <CFormInput
+                    type="date"
+                    name="endDate"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                />
             </div>
 
             {/* Loader or No Data */}
             {loading ? (
                 <div className="spin-style">
                     <CSpinner color="primary" variant="grow" />
-                </div>
-            ) : filteredOrders.length === 0 ? (
-                <div className="no-data">
-                    <p>No orders available</p>
                 </div>
             ) : (
                 <Table
@@ -140,7 +174,6 @@ const HotelBooking = () => {
                                         </div>
                                     ))}
                                 </CTableDataCell>
-                                {/* <CTableDataCell>{order.totalPrice} INR</CTableDataCell> */}
                                 <CTableDataCell>
                                     <select
                                         value={order.status}
@@ -155,7 +188,7 @@ const HotelBooking = () => {
                                     </select>
                                 </CTableDataCell>
                                 <CTableDataCell>{order.paymentMode}</CTableDataCell>
-                                <CTableDataCell>
+                                <CTableDataCell className="d-flex gap-2">
                                     <CButton
                                         color="info"
                                         size="sm"
@@ -163,18 +196,15 @@ const HotelBooking = () => {
                                         onClick={() => handleViewDetails(order._id)}
                                     >
                                         <FaEye />
-                                        View Details
+                                        View
                                     </CButton>
-                                </CTableDataCell>
-                                <CTableDataCell>
                                     <CButton
                                         color="danger"
                                         size="sm"
                                         className="d-flex text-white align-items-center gap-2"
                                         onClick={() => handleDelete(order._id)}
                                     >
-                                        <FaEye />
-                                        View Details
+                                        Delete
                                     </CButton>
                                 </CTableDataCell>
                             </CTableRow>
@@ -211,4 +241,4 @@ const HotelBooking = () => {
     );
 };
 
-export default HotelBooking
+export default HotelBooking;
