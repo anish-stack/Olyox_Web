@@ -69,7 +69,7 @@ function EditVendor() {
     setLoading(true);
     try {
       const res = await axios.put(
-        `api/v1/update_vendor_detail_by_admin/${id}`,
+        `https://www.webapi.olyox.com/api/v1/update_vendor_detail_by_admin/${id}`,
         payload
       );
 
