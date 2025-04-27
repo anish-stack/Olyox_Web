@@ -93,6 +93,8 @@ exports.registerVendor = async (req, res) => {
                 const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
                 await SendWhatsAppMessage(message, number)
                 existingVendor.otp_ = otp;
+                existingVendor.number = number
+                existingVendor.email = email
                 existingVendor.otp_expire_time = expiryTime;
                 await existingVendor.save();
                 return res.status(201).json({
@@ -1220,16 +1222,16 @@ exports.updateVendorDetailByAdmin = async (req, res) => {
                 message: 'Vendor not found'
             })
         }
-        const { name, email, number, category} = req.body;
-        if(name) findVendor.name = name;
-        if(email) findVendor.email = email;
-        if(number) findVendor.number = number;
-        if(category) findVendor.category = category;
+        const { name, email, number, category } = req.body;
+        if (name) findVendor.name = name;
+        if (email) findVendor.email = email;
+        if (number) findVendor.number = number;
+        if (category) findVendor.category = category;
         await findVendor.save();
         res.status(200).json({
             success: true,
             message: 'Vendor details updated successfully',
-            vendor: findVendor 
+            vendor: findVendor
         })
     } catch (error) {
         console.log("Internal server error", error)

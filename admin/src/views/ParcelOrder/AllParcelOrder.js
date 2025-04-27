@@ -79,6 +79,7 @@ const AllParcelOrder = () => {
     };
 
     const handleViewDetails = (order) => {
+        console.log(order)
         Swal.fire({
             title: `Parcel Order Details`,
             html: `
