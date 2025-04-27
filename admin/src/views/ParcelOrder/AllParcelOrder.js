@@ -13,8 +13,10 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 const AllParcelOrder = () => {
+    const navigate = useNavigate();
     const [orders, setOrders] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
@@ -80,27 +82,29 @@ const AllParcelOrder = () => {
 
     const handleViewDetails = (order) => {
         console.log(order)
-        Swal.fire({
-            title: `Parcel Order Details`,
-            html: `
-        <div style="text-align: left;">
-          <p><b>Customer Name:</b> ${order.customerId?.name || 'N/A'}</p>
-          <p><b>Phone:</b> ${order.customerId?.number || 'N/A'}</p>
-          <p><b>Pickup Address:</b> ${order.locations?.pickup?.address || 'N/A'}</p>
-          <p><b>Dropoff Address:</b> ${order.locations?.dropoff?.address || 'N/A'}</p>
-          <p><b>Apartment:</b> ${order.apartment || 'N/A'}</p>
-          <p><b>Saved As:</b> ${order.savedAs || 'N/A'}</p>
-          <p><b>Status:</b> ${order.status}</p>
-          <p><b>Fare:</b> ₹${order.fares?.payableAmount || 0}</p>
-          <p><b>Ride ID:</b> ${order.ride_id || 'N/A'}</p>
-          <p><b>Booking Created At:</b> ${new Date(order.createdAt).toLocaleString()}</p>
-          <p><b>Vehicle:</b> ${order.vehicle_id?.title || 'N/A'}</p>
-          <p><b>Vehicle Info:</b> ${order.vehicle_id?.info || 'N/A'}</p>
-        </div>
-      `,
-            width: 600,
-            confirmButtonText: 'Close',
-        });
+    //     Swal.fire({
+    //         title: `Parcel Order Details`,
+    //         html: `
+    //     <div style="text-align: left;">
+    //       <p><b>Customer Name:</b> ${order.customerId?.name || 'N/A'}</p>
+    //       <p><b>Phone:</b> ${order.customerId?.number || 'N/A'}</p>
+    //       <p><b>Pickup Address:</b> ${order.locations?.pickup?.address || 'N/A'}</p>
+    //       <p><b>Dropoff Address:</b> ${order.locations?.dropoff?.address || 'N/A'}</p>
+    //       <p><b>Apartment:</b> ${order.apartment || 'N/A'}</p>
+    //       <p><b>Saved As:</b> ${order.savedAs || 'N/A'}</p>
+    //       <p><b>Status:</b> ${order.status}</p>
+    //       <p><b>Fare:</b> ₹${order.fares?.payableAmount || 0}</p>
+    //       <p><b>Ride ID:</b> ${order.ride_id || 'N/A'}</p>
+    //       <p><b>Booking Created At:</b> ${new Date(order.createdAt).toLocaleString()}</p>
+    //       <p><b>Vehicle:</b> ${order.vehicle_id?.title || 'N/A'}</p>
+    //       <p><b>Vehicle Info:</b> ${order.vehicle_id?.info || 'N/A'}</p>
+    //     </div>
+    //   `,
+    //         width: 600,
+    //         confirmButtonText: 'Close',
+    //     });
+
+    navigate(`/parcel-order-detail/${order._id}`)
     };
 
     React.useEffect(() => {
@@ -134,6 +138,9 @@ const AllParcelOrder = () => {
         'S.No',
         'Customer Name',
         'Customer Number',
+        'Rider BH ID',
+        'Rider Name',
+        'Rider Number',
         'Pickup',
         'Dropoff',
         'Fare',
@@ -187,6 +194,9 @@ const AllParcelOrder = () => {
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                             <CTableDataCell>{order.customerId?.name || 'Guest'}</CTableDataCell>
                             <CTableDataCell>{order.customerId?.number || ''}</CTableDataCell>
+                            <CTableDataCell>{order?.rider_id?.BH || ''}</CTableDataCell>
+                            <CTableDataCell>{order.rider_id?.name || ''}</CTableDataCell>
+                            <CTableDataCell>{order.rider_id?.phone || ''}</CTableDataCell>
                             <CTableDataCell>{order.locations?.pickup?.address || '-'}</CTableDataCell>
                             <CTableDataCell>{order.locations?.dropoff?.address || '-'}</CTableDataCell>
                             <CTableDataCell>₹{order.fares?.payableAmount || 0}</CTableDataCell>

@@ -30,7 +30,7 @@ const MembershipPlanSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['tiffin', 'cab', 'parcel', 'transport'],
+        enum: ['tiffin', 'cab', 'parcel', 'transport','bike','Hotel'],
     }
 }, { timestamps: true });
 

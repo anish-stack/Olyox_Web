@@ -46,11 +46,11 @@ exports.getMembershipPlanById = async (req, res) => {
 exports.updateMembershipPlan = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, price, description, level, includes, active, category } = req.body;
+        const { title, price, description, level, includes, validityDays, whatIsThis, active, category } = req.body;
 
         const updatedPlan = await MembershipPlan.findByIdAndUpdate(
             id,
-            { title, price, description, level, includes, active, category },
+            { title, price, description, level, includes, validityDays, whatIsThis, active, category },
             { new: true, runValidators: true }
         );
 

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import Form from '../../components/Form/Form';
 import { useParams } from 'react-router-dom';
 
-const EditTiffinSubscription = () => {
+const EditHotelSubscription = () => {
     const { id } = useParams(); // Get the ID from the URL
     // const history = useHistory();
     const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ const EditTiffinSubscription = () => {
         includes: '',
         whatIsThis: '',
         active: true,
-        category: 'tiffin'
+        category: 'Hotel'
     });
 
     // Fetch the membership plan details when the component mounts
@@ -26,7 +26,7 @@ const EditTiffinSubscription = () => {
         const fetchMembershipPlan = async () => {
             try {
 
-                const res = await axios.get(`https://www.webapi.olyox.com/api/v1/membership-plans/${id}`);
+                const res = await axios.get(`https://www.webapi.olyox.com/api/v1//membership-plans/${id}`);
                 setFormData({
                     title: res.data.data.title,
                     price: res.data.data.price,
@@ -64,7 +64,7 @@ const EditTiffinSubscription = () => {
 
         setLoading(true);
         try {
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/membership-plans/${id}`, formDataToSend);
+            const res = await axios.put(`https://www.webapi.olyox.com/api/v1//membership-plans/${id}`, formDataToSend);
             toast.success(res.data.message);
             // history.push('/membership-plans'); // Redirect to the membership plans list page
         } catch (error) {
@@ -77,9 +77,9 @@ const EditTiffinSubscription = () => {
 
     return (
         <Form
-            heading="Edit Tiffin Plan"
+            heading="Edit Hotel Plan"
             btnText="Back"
-            btnURL="/subscription/all_tiffin"
+            btnURL="/subscription/all_hotel"
             onSubmit={handleSubmit}
             formContent={
                 <>
@@ -172,4 +172,4 @@ const EditTiffinSubscription = () => {
     );
 }
 
-export default EditTiffinSubscription
+export default EditHotelSubscription

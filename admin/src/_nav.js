@@ -54,12 +54,6 @@ const _nav = [
         to: '/heavy/all-heavy-transport-vendor',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       },
-      // {
-      //   component: CNavItem,
-      //   name: 'Parcel Vendor',
-      //   to: '/parcel/all-parcel-vendor',
-      //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-      // },
     ],
   },
   {
@@ -119,10 +113,35 @@ const _nav = [
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
-    component: CNavItem,
-    name: 'Coupons',
-    to: '/coupon/all_coupon',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    component: CNavGroup,
+    name: 'All Coupons',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Coupons',
+        to: '/coupon/all_coupon',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Food Coupon',
+        to: '/all-food-coupon',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcel Coupon',
+        to: '/all-parcel-coupon',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Bonus Coupon',
+        to: '/all-bonus-coupon',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+    ],
   },
   {
     component: CNavItem,
@@ -134,12 +153,6 @@ const _nav = [
     component: CNavItem,
     name: 'Enquiry',
     to: '/enquiry/all-enuqiry',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
-    name: 'Food Coupon',
-    to: '/all-food-coupon',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
@@ -176,6 +189,12 @@ const _nav = [
     component: CNavItem,
     name: 'Privacy Policy',
     to: '/all-privacy-policy',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Parcel Vehical',
+    to: '/all-parcel-vehical',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
@@ -221,18 +240,24 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Bike Parcel Subscription',
+        to: '/subscription/all_bike',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
         name: 'Transport Subscription',
         to: '/subscription/all_transport',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
       },
+      {
+        component: CNavItem,
+        name: 'Hotel Subscription',
+        to: '/subscription/all_hotel',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
     ],
   },
-  // {
-  //   component: CNavItem,
-  //   name: 'Sub Admin',
-  //   to: '/Sub/all-sub',
-  //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-  // },
   {
     component: CNavItem,
     name: 'Settings',

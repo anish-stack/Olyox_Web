@@ -91,6 +91,22 @@ import AllHeavyVehicalOrder from './views/HeavyVehicalOrder/AllHeavyVehicalOrder
 import AddHeavyVehicalOrder from './views/HeavyVehicalOrder/AddHeavyVehicalOrder'
 import EditHeavyVehicalOrder from './views/HeavyVehicalOrder/EditHeavyVehicalOrder'
 import AllParcelOrder from './views/ParcelOrder/AllParcelOrder'
+import ParcelOrderDetails from './views/ParcelOrder/ParcelOrderDetails'
+import AllHotelSubscription from './views/Subscription/AllHotelSubscription'
+import AddHotelSubscription from './views/Subscription/AddHotelSubscription'
+import EditHotelSubscription from './views/Subscription/EditHotelSubscription'
+import AllParcelCoupon from './views/ParcelCoupon/AllParcelCoupon'
+import AddParcelCoupon from './views/ParcelCoupon/AddParcelCoupon'
+import EditParcelCoupon from './views/ParcelCoupon/EditParcelCoupon'
+import AllBonusCoupon from './views/BonusCoupon/AllBonusCoupon'
+import AddBonusCoupon from './views/BonusCoupon/AddBonusCoupon'
+import EditBonusCoupon from './views/BonusCoupon/EditBonusCoupon'
+import AllParcelVehical from './views/ParcelVehical/AllParcelVehical'
+import AddParcelVehical from './views/ParcelVehical/AddParcelVehical'
+import EditParcelVehical from './views/ParcelVehical/EditParcelVehical'
+import AllBikeSubscription from './views/Subscription/AllBikeSubscription'
+import AddBikeSubscription from './views/Subscription/AddBikeSubscription'
+import EditBikeSubscription from './views/Subscription/EditBikeSubscription'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -260,6 +276,9 @@ const routes = [
   { path: '/subscription/all_tiffin', name: 'All Tiffin Subscription', element: TiffinSubscription },
   { path: '/subscription/add-tiffin', name: 'Add Tiffin Subscription', element: AddTiffinSubscription },
   { path: '/subscription/edit-tiffin/:id', name: 'Edit Tiffin Subscription', element: EditTiffinSubscription },
+  { path: '/subscription/all_bike', name: 'All Bike Subscription', element: AllBikeSubscription },
+  { path: '/subscription/add-bike', name: 'Add Bike Subscription', element: AddBikeSubscription },
+  { path: '/subscription/edit-bike/:id', name: 'Edit Bike Subscription', element: EditBikeSubscription },
   { path: '/subscription/all_cab', name: 'All Cab Subscription', element: CabSubscription },
   { path: '/subscription/add-cab', name: 'Add Cab Subscription', element: AddCabSubscription },
   { path: '/subscription/edit-cab/:id', name: 'Edit Cab Subscription', element: EditCabSubscription },
@@ -269,6 +288,12 @@ const routes = [
   { path: '/subscription/all_transport', name: 'All Transport Subscription', element: TransportSubscription },
   { path: '/subscription/add-transport', name: 'Add Transport Subscription', element: AddTransportSubscription },
   { path: '/subscription/edit-transport/:id', name: 'Edit Transport Subscription', element: EditTransportSubscription },
+  { path: '/subscription/all_transport', name: 'All Transport Subscription', element: TransportSubscription },
+  { path: '/subscription/add-transport', name: 'Add Transport Subscription', element: AddTransportSubscription },
+  { path: '/subscription/edit-transport/:id', name: 'Edit Transport Subscription', element: EditTransportSubscription },
+  { path: '/subscription/all_hotel', name: 'All Hotel Subscription', element: AllHotelSubscription },
+  { path: '/subscription/add-hotel', name: 'Add Hotel Subscription', element: AddHotelSubscription },
+  { path: '/subscription/edit-hotel/:id', name: 'Edit Hotel Subscription', element: EditHotelSubscription },
   { path: '/subscription/all_subscription', name: 'All Subscription', element: AllSubscription },
 
   // refferal routes here 
@@ -345,6 +370,18 @@ const routes = [
   { path: '/add-food-coupon', name: 'Add Food Coupon', element: AddFoodCoupon },
   { path: '/edit-food-coupon/:id', name: 'Edit Food Coupon', element: EditFoodCoupon },
 
+  { path: '/all-parcel-coupon', name: 'All Parcel Coupon', element: AllParcelCoupon },
+  { path: '/add-parcel-coupon', name: 'Add Parcel Coupon', element: AddParcelCoupon },
+  { path: '/edit-parcel-coupon/:id', name: 'Edit Parcel Coupon', element: EditParcelCoupon },
+
+  { path: '/all-bonus-coupon', name: 'All Bonus Coupon', element: AllBonusCoupon },
+  { path: '/add-bonus-coupon', name: 'Add Bonus Coupon', element: AddBonusCoupon },
+  { path: '/edit-bonus-coupon/:id', name: 'Edit Bonus Coupon', element: EditBonusCoupon },
+
+  { path: '/all-parcel-vehical', name: 'All Parcel Vehical', element: AllParcelVehical },
+  { path: '/add-parcel-vehical', name: 'Add Parcel Vehical', element: AddParcelVehical },
+  { path: '/edit-parcel-vehical/:id', name: 'Edit Parcel Vehical', element: EditParcelVehical },
+
   // home banner route 
   { path: '/all-home-banner', name: 'All Home Banner', element: AllHomeBanner },
   { path: '/add-home-banner', name: 'Add Home Banner', element: AddHomeBanner },
@@ -357,6 +394,7 @@ const routes = [
   
   // parcel order route 
   { path: '/all-parcel-order', name: 'All Parcel Order', element: AllParcelOrder },
+  { path: '/parcel-order-detail/:id', name: 'All Parcel Order', element: ParcelOrderDetails },
 ]
 
 export default routes
