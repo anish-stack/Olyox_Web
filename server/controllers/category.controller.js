@@ -1,16 +1,33 @@
 const Category = require('../model/Category');
+const { uploadSingleImage } = require('../utils/cloudinary');
 
 // Create a new category
 exports.createCategory = async (req, res) => {
     try {
-        const { title, icon } = req.body;
+        const { title } = req.body;
 
-        if (!title || !icon) {
+        if (!title) {
             return res.status(400).json({ success: false, message: 'Title and Icon are required' });
         }
 
-        const category = await Category.create({ title, icon });
-        res.status(201).json({ success: true, message: 'Category created successfully', data: category });
+        const newCategory = new Category({ title });
+        // console.log("req.file",req.file)
+
+        if(req.file){
+            const imgUrl = await uploadSingleImage(req.file.buffer);
+            const {image} = imgUrl;
+            newCategory.icon = image
+        }else{
+            return res.status(400).json({
+                success: false,
+                message: 'Image is required',
+            })
+        }
+
+        await newCategory.save();
+
+        // const category = await Category.create({ title, icon });
+        res.status(201).json({ success: true, message: 'Category created successfully', data: newCategory });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to create category', error: error.message });
     }
@@ -46,17 +63,24 @@ exports.getCategoryById = async (req, res) => {
 exports.updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, icon, isActive } = req.body;
+        const { title, isActive } = req.body;
 
-        const updatedCategory = await Category.findByIdAndUpdate(
-            id,
-            { title, icon, isActive },
-            { new: true, runValidators: true }
-        );
+        const updatedCategory = await Category.findById(id)
 
         if (!updatedCategory) {
             return res.status(404).json({ success: false, message: 'Category not found' });
         }
+
+        if(req.file){
+            const imgUrl = await uploadSingleImage(req.file.buffer);
+            const {image} = imgUrl;
+            updatedCategory.icon = image
+        }
+
+        if(title) updatedCategory.title = title;
+        if(isActive) updatedCategory.isActive = isActive;
+
+        await updatedCategory.save();
 
         res.status(200).json({ success: true, message: 'Category updated successfully', data: updatedCategory });
     } catch (error) {

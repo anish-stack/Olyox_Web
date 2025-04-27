@@ -148,10 +148,10 @@ router.delete('/enquiries/:id', deleteEnquiry);  // Delete an enquiry
 
 
 // category CRUD routes
-router.post('/categories_create', createCategory);
+router.post('/categories_create', upload.single('icon'), createCategory);
 router.get('/categories_get', getAllCategories);
 router.get('/categories/:id', getCategoryById);
-router.put('/categories/:id', updateCategory);
+router.put('/categories/:id', upload.single('icon'), updateCategory);
 router.delete('/categories/:id', deleteCategory);
 router.put('/update_category_status/:id', updateCategoryToggle);
 

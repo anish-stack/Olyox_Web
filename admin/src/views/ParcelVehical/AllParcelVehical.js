@@ -13,53 +13,49 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
-const AllParcelVehical = () => {
-    const [coupons, setCoupons] = React.useState([]);
+const AllParcelVehicle = () => {
+    const [vehicles, setVehicles] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
 
-    const fetchCoupons = async () => {
+    const fetchVehicles = async () => {
         setLoading(true);
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/parcel/all-parcel');
-            setCoupons(data.data.reverse() || []);
+            setVehicles(data.data || []);
         } catch (error) {
-            console.error('Error fetching coupons:', error);
-            toast.error('Failed to load coupons. Please try again.');
+            console.error('Error fetching vehicles:', error);
+            toast.error('Failed to load vehicles. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUpdateStatus = async (id, currentStatus) => {
+    const handleDeleteVehicle = async (id) => {
         setLoading(true);
         try {
-            const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_coupon_status/${id}`, {
-                isActive: updatedStatus,
+            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/parcel/delete-parcel/${id}`);
+            toast.success(res?.data?.message || 'Vehicle deleted successfully!');
+            fetchVehicles();
+        } catch (error) {
+            console.error('Error deleting vehicle:', error);
+            toast.error('Failed to delete vehicle. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStatusToggle = async (id, currentStatus) => {
+        try {
+            const { data } = await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_vehical_status/${id}`, {
+                status: !currentStatus,
             });
-            toast.success(res?.data?.message);
-            fetchCoupons();
+            toast.success(data?.message || 'Status updated successfully!');
+            fetchVehicles();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error('Failed to update status. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteCoupon = async (id) => {
-        setLoading(true);
-        try {
-            const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/parcel/parcel-coupon/${id}`);
-            toast.success(res?.data?.message);
-            fetchCoupons();
-        } catch (error) {
-            console.error('Error deleting coupon:', error);
-            toast.error('Failed to delete coupon. Please try again.');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -74,22 +70,38 @@ const AllParcelVehical = () => {
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                handleDeleteCoupon(id);
+                handleDeleteVehicle(id);
             }
         });
     };
 
     React.useEffect(() => {
-        fetchCoupons();
+        fetchVehicles();
     }, []);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentData = coupons.slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(coupons.length / itemsPerPage);
+    const currentData = vehicles.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(vehicles.length / itemsPerPage);
 
     const handlePageChange = (page) => setCurrentPage(page);
 
-    const heading = ['S.No', 'Code', 'Discount (%)', 'Expiration Date', 'Active', 'Action'];
+    const heading = [
+        'S.No',
+        'Image',
+        'Title',
+        'Info',
+        'Max Weight (kg)',
+        'Price per Km (₹)',
+        'Base Fare (₹)',
+        'Time to Reach (min)',
+        'Position',
+        'Any Tag',
+        'Tag',
+        'Status',
+        'Created At',
+        'Action',
+    ];
+
 
     return (
         <>
@@ -99,26 +111,51 @@ const AllParcelVehical = () => {
                 </div>
             ) : (
                 <Table
-                    heading="All Coupons"
-                    btnText="Add New Coupon"
-                    btnURL="/add-parcel-coupon"
+                    heading="All Parcel Vehicles"
+                    btnText="Add New Vehicle"
+                    btnURL="/add-parcel-vehical"
                     tableHeading={heading}
                     tableContent={currentData.map((item, index) => (
                         <CTableRow key={item._id}>
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
-                            <CTableDataCell>{item.code}</CTableDataCell>
-                            <CTableDataCell>{item.discount}%</CTableDataCell>
-                            <CTableDataCell>{new Date(item.expirationDate).toLocaleDateString()}</CTableDataCell>
                             <CTableDataCell>
-                                <CFormSwitch
-                                    id={`formSwitch-${item._id}`}
-                                    checked={item.isActive}
-                                    onChange={() => handleUpdateStatus(item._id, item.isActive)}
+                                <img
+                                    src={item.image?.url}
+                                    alt={item.title}
+                                    style={{ width: '80px', height: '50px', objectFit: 'cover' }}
                                 />
                             </CTableDataCell>
+                            <CTableDataCell>{item.title}</CTableDataCell>
+                            <CTableDataCell>{item.info}</CTableDataCell>
+                            <CTableDataCell>{item.max_weight}</CTableDataCell>
+                            <CTableDataCell>₹{item.price_per_km}</CTableDataCell>
+                            <CTableDataCell>₹{item.BaseFare}</CTableDataCell>
+                            <CTableDataCell>{item.time_can_reach} min</CTableDataCell>
+                            <CTableDataCell>{item.position}</CTableDataCell>
+                            <CTableDataCell>
+                                {item.anyTag ? (
+                                    <span style={{ color: 'green', fontWeight: 'bold' }}>Yes</span>
+                                ) : (
+                                    <span style={{ color: 'red', fontWeight: 'bold' }}>No</span>
+                                )}
+                            </CTableDataCell>
+                            <CTableDataCell>{item.tag || '-'}</CTableDataCell>
+
+                            {/* Status Toggle Switch */}
+                            <CTableDataCell>
+                                <CFormSwitch
+                                    color="success"
+                                    size="lg"
+                                    checked={item.status}
+                                    onChange={() => handleStatusToggle(item._id, item.status)}
+                                />
+                            </CTableDataCell>
+
+                            <CTableDataCell>{new Date(item.createdAt).toLocaleDateString()}</CTableDataCell>
+
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    <CNavLink href={`#edit-parcel-coupon/${item._id}`} className="edit">
+                                    <CNavLink href={`#edit-parcel-vehical/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
                                     </CNavLink>
                                     <div className="delete" onClick={() => confirmDelete(item._id)}>
@@ -127,6 +164,7 @@ const AllParcelVehical = () => {
                                 </div>
                             </CTableDataCell>
                         </CTableRow>
+
                     ))}
                     pagination={
                         <CPagination className="justify-content-center">
@@ -159,4 +197,4 @@ const AllParcelVehical = () => {
     );
 };
 
-export default AllParcelVehical
+export default AllParcelVehicle;

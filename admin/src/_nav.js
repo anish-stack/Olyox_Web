@@ -214,12 +214,12 @@ const _nav = [
     name: 'Subscription Type',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
     items: [
-      {
-        component: CNavItem,
-        name: 'All Subscription',
-        to: '/subscription/all_subscription',
-        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'All Subscription',
+      //   to: '/subscription/all_subscription',
+      //   icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      // },
       {
         component: CNavItem,
         name: 'Tiffin Subscription',
