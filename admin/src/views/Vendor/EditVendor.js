@@ -29,7 +29,7 @@ function EditVendor() {
   const fetchVendorData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://www.webapi.olyox.com/api/v1//get_Single_Provider/${id}`);
+      const res = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
       const vendor = res.data.data;
       setFormData({
         name: vendor.name || '',

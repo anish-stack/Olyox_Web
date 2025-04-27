@@ -35,7 +35,7 @@ function UpdateProfile() {
 
     const fetchProvider = async () => {
         try {
-            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1//get_Single_Provider/${providerId}`,{
+            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${providerId}`,{
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -138,7 +138,7 @@ function UpdateProfile() {
         // });
 
         try {
-            const response = await axios.put(`https://www.webapi.olyox.com/api/v1//update_account/${providerId}`, formData);
+            const response = await axios.put(`https://www.webapi.olyox.com/api/v1/update_account/${providerId}`, formData);
             if (response.data.success) {
                 toast.success('Profile updated successfully');
             }

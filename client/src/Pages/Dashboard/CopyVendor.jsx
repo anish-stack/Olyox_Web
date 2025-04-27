@@ -29,7 +29,7 @@ const CopyVendor = () => {
         const fetchCategories = async () => {
             try {
                 const response = await axios.get(
-                    "api/v1/categories_get",
+                    "https://www.webapi.olyox.com/api/v1/categories_get",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -75,7 +75,7 @@ const CopyVendor = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "api/v1/copy-her-id",
+                "https://www.webapi.olyox.com/api/v1/copy-her-id",
                 formData,
                 {
                     headers: {
@@ -109,7 +109,7 @@ const CopyVendor = () => {
         }
         setLoading(true);
         try {
-            const response = await axios.post("api/v1/verify_email", formDataSend);
+            const response = await axios.post("https://www.webapi.olyox.com/api/v1/verify_email", formDataSend);
             toast.success(response.data.message || "OTP verified successfully!");
             setOtpModalOpen(false);
             window.location.href = "/dashboard";
@@ -132,7 +132,7 @@ const CopyVendor = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "api/v1/resend_Otp",
+                "https://www.webapi.olyox.com/api/v1/resend_Otp",
                 { email: formData.Newemail, type: 'email' }
             );
             toast.success(response.data.message || "OTP sent successfully!");

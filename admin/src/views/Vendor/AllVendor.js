@@ -78,7 +78,7 @@ function AllVendor() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1//update_vendor_status/${id}`, {
+            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
                 isActive: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -133,7 +133,7 @@ function AllVendor() {
         console.log(selected)
         setLoading(true);
         try {
-            const res = await axios.post(`https://www.webapi.olyox.com/api/v1//verify_document?id=${selected}`);
+            const res = await axios.post(`https://www.webapi.olyox.com/api/v1/verify_document?id=${selected}`);
             console.log(res?.data);
             toast.success(res?.data?.message);
             handleFetchBanner();
