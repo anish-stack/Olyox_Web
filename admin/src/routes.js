@@ -107,6 +107,7 @@ import EditParcelVehical from './views/ParcelVehical/EditParcelVehical'
 import AllBikeSubscription from './views/Subscription/AllBikeSubscription'
 import AddBikeSubscription from './views/Subscription/AddBikeSubscription'
 import EditBikeSubscription from './views/Subscription/EditBikeSubscription'
+import UpdateVendorDocuments from './views/Vendor/UpdateVendorDocuments'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -395,6 +396,7 @@ const routes = [
   // parcel order route 
   { path: '/all-parcel-order', name: 'All Parcel Order', element: AllParcelOrder },
   { path: '/parcel-order-detail/:id', name: 'All Parcel Order', element: ParcelOrderDetails },
+  { path: '/update-vendor-documents/:id', name: 'Updat Vendor Document', element: UpdateVendorDocuments },
 ]
 
 export default routes

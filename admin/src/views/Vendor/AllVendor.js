@@ -207,7 +207,7 @@ function AllVendor() {
         setDocumentVerify(documentVerify)
     };
 
-    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'Action', 'View Detail'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Action'];
 
     return (
         <>
@@ -285,6 +285,16 @@ function AllVendor() {
                                 />
                             </CTableDataCell>
                             <CTableDataCell>
+                                <CButton color="info">
+                                    <a style={{ color: 'white' }} href={`#/vendor/vendor_detail/${item._id}`}>View</a>
+                                </CButton>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <CButton color="info">
+                                    <a style={{ color: 'white' }} href={`#/update-vendor-documents/${item._id}`}>View</a>
+                                </CButton>
+                            </CTableDataCell>
+                            <CTableDataCell>
                                 <div className="action-parent">
                                     <CNavLink href={`#/vendor/edit-vendor/${item._id}`} className="edit">
                                         <i className="ri-pencil-fill"></i>
@@ -293,11 +303,6 @@ function AllVendor() {
                                         <i className="ri-delete-bin-fill"></i>
                                     </div>
                                 </div>
-                            </CTableDataCell>
-                            <CTableDataCell>
-                                <CButton color="info">
-                                    <a style={{ color: 'white' }} href={`#/vendor/vendor_detail/${item._id}`}>View</a>
-                                </CButton>
                             </CTableDataCell>
                         </CTableRow>
                     ))}
