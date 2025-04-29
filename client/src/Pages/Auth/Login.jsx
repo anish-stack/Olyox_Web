@@ -37,7 +37,8 @@ function Login() {
       console.log(response.data)
       if (response.data.success) {
         const token = response.data.token;
-        const user = response.data.vendor;
+        const user = response.data.user;
+        // console.log("user",user)
         sessionStorage.setItem('token', token)
         sessionStorage.setItem('user', JSON.stringify(user))
         // navigate('/dashboard');
