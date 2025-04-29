@@ -8,6 +8,7 @@ const sendToken = require('../utils/SendToken.js');
 const BhIdSchema = require('../model/Partner.model.js');
 const SendWhatsAppMessage = require('../utils/SendWhatsappMsg.js');
 const Bull = require('bull');
+const { deleteImage, uploadSingleImage } = require('../utils/cloudinary.js');
 // Register a vendor and send a verification email
 
 const fileUploadQueue = new Bull('file-upload-queue', {
@@ -1688,3 +1689,54 @@ exports.manuallyRegisterVendor = async (req, res) => {
         });
     }
 };
+
+exports.updateVendorDocument = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const vendor = await Vendor_Model.findById(id);
+      if (!vendor) {
+        return res.status(404).json({
+          success: false,
+          message: 'Vendor not found',
+        });
+      }
+  
+      const documentFields = ['documentFirst', 'documentSecond', 'documentThird'];
+  
+      if (req.files) {
+        for (const field of documentFields) {
+          const file = req.files.find((f) => f.fieldname === field);
+          if (file) {
+            // Delete existing document from cloud
+            if (vendor?.Documents?.[field]?.public_id) {
+              await deleteImage(vendor.Documents[field].public_id);
+            }
+  
+            // Upload new document
+            const imageUrl = await uploadSingleImage(file.buffer);
+            const { image, public_id } = imageUrl;
+  
+            // Update vendor document
+            vendor.Documents[field] = { image, public_id };
+          }
+        }
+      }
+  
+      await vendor.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: 'Vendor documents updated successfully',
+        data: vendor,
+      });
+    } catch (error) {
+      console.error("Internal server error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error,
+      });
+    }
+  };
+  
+  
