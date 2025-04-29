@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FiLock, FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
+import { useEffect } from 'react';
 
 function UpdatePassword() {
     const SessionData = sessionStorage.getItem('user');
