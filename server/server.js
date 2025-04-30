@@ -33,25 +33,37 @@ const redisClient = redis.createClient({
     }
 })();
 
-// // Middleware for custom headers
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    if (req.method === 'OPTIONS') {
-        return res.status(204).end();
-    }
-    next();
-});
+// ✅ CORS Setup with credentials + subdomain support
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://olyox.com',
+    'https://www.olyox.com',
+    'https://www.admin.olyox.com',
+    'https://admin.olyox.com',
+    /\.olyox\.com$/ // regex for subdomains
+];
 
-// Middleware and routes setup
-app.use(cors());
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // Allow non-browser tools
+        if (
+            allowedOrigins.includes(origin) ||
+            allowedOrigins.some(pattern => pattern instanceof RegExp && pattern.test(origin))
+        ) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Connect to database
+// DB Connection
 connectDb();
 
 // Routes
@@ -84,13 +96,12 @@ app.get("/Flush-all-Redis-Cached", async (req, res) => {
 
 app.use("/api/v1", router);
 
+// Admin login route
 app.post('/admin-login', (req, res) => {
-    console.log(req.body);
     const { email, password } = req.body;
     const defaultEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
     const defaultPassword = process.env.ADMIN_PASSWORD || "olyox@admin";
 
-    console.log(defaultEmail);
     if (email === defaultEmail && password === defaultPassword) {
         res.json({ message: 'Login successful', login: true });
     } else {
@@ -98,6 +109,7 @@ app.post('/admin-login', (req, res) => {
     }
 });
 
+// Error handler
 app.use((err, req, res, next) => {
     if (err.name === 'ValidationError') {
         for (const field in err.errors) {
@@ -115,32 +127,25 @@ app.use((err, req, res, next) => {
     }
 });
 
+// Bull board
 setupBullBoard(app);
 
+// Cluster Setup
 if (cluster.isMaster) {
-    // Fork workers for each CPU core
     const numCores = os.cpus().length;
     console.log(`Master process is running on ${process.pid}`);
     console.log(`Forking ${numCores} workers`);
 
     for (let i = 0; i < numCores; i++) {
-        cluster.fork(); // Create a new worker for each CPU core
+        cluster.fork();
     }
 
     cluster.on("exit", (worker, code, signal) => {
         console.log(`Worker ${worker.process.pid} died`);
     });
-
 } else {
-    // Worker processes have a HTTP server
     app.listen(PORT, () => {
         console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
         console.log('Server is running on port', PORT);
     });
 }
-
-
-app.listen(PORT, () => {
-    console.log(`Bull Board available at http://localhost:${PORT}/admin/queues`);
-    console.log('Server is running on port', PORT);
-});
