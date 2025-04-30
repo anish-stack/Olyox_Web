@@ -9,9 +9,7 @@ const sendToken = async (user, res, status) => {
         })
 
         const options = {
-
-            httpOnly: true,
-            sameSite: 'None'
+            httpOnly: false
         }
 
         res.status(status).cookie('token', token, options).json({
