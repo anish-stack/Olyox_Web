@@ -718,7 +718,7 @@ exports.loginVendor = async (req, res) => {
 
         // Step 6: Send the token upon successful login
         console.log("Successful login for vendor:", { vendorId: vendor._id, email });
-        await sendToken(vendor, res, 200);
+       set
 
     } catch (error) {
         // Step 7: Catch and log unexpected errors
