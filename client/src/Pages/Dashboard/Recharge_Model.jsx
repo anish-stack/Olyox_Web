@@ -11,7 +11,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const [timer, setTimer] = useState(30 * 60); // 30 minutes in seconds
     const [loading, setLoading] = useState(false);
     const [token, setToken] = useState({})
-
+    const [userCategory, setUserCategory] = useState('');
 
 
     useEffect(() => {
@@ -26,6 +26,12 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     }, [isOpen]);
 
     useEffect(() => {
+        if (user_id) {
+          fetchUserDetails();
+        }
+      }, [user_id]);
+    
+    useEffect(() => {
         let interval;
         if (showQR && timer > 0) {
             interval = setInterval(() => {
@@ -35,10 +41,23 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
         return () => clearInterval(interval);
     }, [showQR, timer]);
 
+    const fetchUserDetails = async () => {
+        try {
+            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${user_id}`);
+            setUserCategory(data.data.category?.title);
+            // fetchMembershipPlan();
+        } catch (err) {
+            console.error('Error fetching user details:', err);
+        }
+    };
+
     const fetchMembershipPlan = async () => {
         try {
             const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
-            setMemberships(data.data);
+            // console.log("data", data.data)
+            const filterData = data.data.filter(plan => plan.category === userCategory);
+            // console.log("filterData", filterData)
+            setMemberships(filterData);
         } catch (err) {
             console.error('Error fetching membership plans:', err);
         }
