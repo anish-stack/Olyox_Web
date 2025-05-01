@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const OtherVendors = () => {
+  
+    useEffect(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }, [])
   const location = new URLSearchParams(window.location.search);
   const vendorId = location.get("id");
 
