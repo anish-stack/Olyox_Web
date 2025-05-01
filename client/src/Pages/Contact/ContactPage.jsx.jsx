@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ContactHero from './ContactHero';
 import ContactForm from './ContactForm';
 import ContactInfo from './ContactInfo';
 import ContactMap from './ContactMap';
 
 const ContactPage = () => {
+  useEffect(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }, [])
   return (
     <div className="min-h-screen">
       <ContactHero />
