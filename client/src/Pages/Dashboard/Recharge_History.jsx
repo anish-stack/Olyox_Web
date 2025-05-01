@@ -4,6 +4,12 @@ import { Calendar, ChevronLeft, ChevronRight, Filter, Loader2 } from 'lucide-rea
 import { formatDate } from './formData';
 
 const RechargeHistory = () => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }, [])
   const [token, setToken] = useState('');
   const [rechargeHistory, setRechargeHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -11,12 +17,6 @@ const RechargeHistory = () => {
   const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [dateFilter, setDateFilter] = useState('');
   const [filteredHistory, setFilteredHistory] = useState([]);
-  useEffect(() => {
-          window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-          })
-      },[])
 
   useEffect(() => {
     const tokenExtract = sessionStorage.getItem('token');
@@ -111,6 +111,9 @@ const RechargeHistory = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  S.No
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Plan Details
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -131,8 +134,11 @@ const RechargeHistory = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentRecords.map((record) => (
+              {currentRecords.map((record, index) => (
                 <tr key={record._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {indexOfFirstRecord + index + 1}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="text-sm font-medium text-gray-900">
                       {record.member_id.title}
@@ -155,8 +161,8 @@ const RechargeHistory = () => {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${record.payment_approved
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
                       }`}>
                       {record.payment_approved ? 'Approved' : 'Pending'}
                     </span>
@@ -185,8 +191,8 @@ const RechargeHistory = () => {
                 key={number}
                 onClick={() => paginate(number)}
                 className={`px-3 py-1 rounded-md ${currentPage === number
-                    ? 'bg-blue-500 text-white'
-                    : 'border hover:bg-gray-50'
+                  ? 'bg-blue-500 text-white'
+                  : 'border hover:bg-gray-50'
                   }`}
               >
                 {number}
