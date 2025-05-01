@@ -27,10 +27,10 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
     useEffect(() => {
         if (user_id) {
-          fetchUserDetails();
+            fetchUserDetails();
         }
-      }, [user_id]);
-    
+    }, [user_id]);
+
     useEffect(() => {
         let interval;
         if (showQR && timer > 0) {
@@ -54,14 +54,25 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const fetchMembershipPlan = async () => {
         try {
             const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
-            // console.log("data", data.data)
-            const filterData = data.data.filter(plan => plan.category === userCategory);
-            // console.log("filterData", filterData)
+
+            // Normalize and prepare user categories for flexible matching
+            const normalizedCategories = userCategory.map(cat => cat.toLowerCase());
+
+            const filterData = data.data.filter(plan => {
+                const planCategory = plan.category.toLowerCase();
+                return normalizedCategories.some(userCat => {
+                    // Convert userCat to a partial match regex
+                    const regex = new RegExp(userCat.replace(/\s+/g, ''), 'i');
+                    return regex.test(planCategory.replace(/\s+/g, ''));
+                });
+            });
+
             setMemberships(filterData);
         } catch (err) {
             console.error('Error fetching membership plans:', err);
         }
     };
+
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
