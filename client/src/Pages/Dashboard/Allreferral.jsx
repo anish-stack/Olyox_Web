@@ -3,6 +3,12 @@ import axios from 'axios';
 import { Search, Filter, Loader2, UserCheck, UserX, RefreshCcw, Calendar } from 'lucide-react';
 
 const AllReferral = () => {
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }, [])
   const [referrals, setReferrals] = useState([]);
   const [filteredReferrals, setFilteredReferrals] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -12,12 +18,6 @@ const AllReferral = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-  useEffect(() => {
-          window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-          })
-      },[])
 
   const fetchReferrals = async () => {
     setLoading(true);
