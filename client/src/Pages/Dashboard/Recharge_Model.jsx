@@ -27,10 +27,10 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
     useEffect(() => {
         if (user_id) {
-          fetchUserDetails();
+            fetchUserDetails();
         }
-      }, [user_id]);
-    
+    }, [user_id]);
+
     useEffect(() => {
         let interval;
         if (showQR && timer > 0) {
@@ -54,22 +54,31 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const fetchMembershipPlan = async () => {
         try {
             const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
-    
-            // Convert category into lowercase and remove whitespace for better matching
+            // console.log("userCategory", userCategory);
+
             const normalizedUserCategory = userCategory?.toLowerCase().replace(/\s+/g, '');
-    
+
             const filterData = data.data.filter(plan => {
-                const normalizedPlanCategory = plan.category?.toLowerCase().replace(/\s+/g, '');
-                // Use RegExp for partial matching
-                return normalizedUserCategory && new RegExp(normalizedUserCategory, 'i').test(normalizedPlanCategory);
+                if (!plan.category) return false; // Skip if category is undefined or null
+
+                const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
+                // console.log("normalizedPlanCategory", normalizedPlanCategory);
+
+                return (
+                    normalizedPlanCategory.includes(normalizedUserCategory) ||
+                    normalizedUserCategory.includes(normalizedPlanCategory)
+                );
             });
-    
+
+            // console.log("filterData", filterData);
             setMemberships(filterData);
         } catch (err) {
             console.error('Error fetching membership plans:', err);
         }
     };
-    
+
+
+
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
