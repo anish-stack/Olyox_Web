@@ -15,7 +15,7 @@ const EditSetting = () => {
             try {
                 const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/admin/get_Setting');
                 const filteredData = Object.fromEntries(
-                    Object.entries(data).filter(([key]) => 
+                    Object.entries(data).filter(([key]) =>
                         !['__v', 'updatedAt', 'createdAt', '_id'].includes(key)
                     )
                 );
@@ -23,7 +23,7 @@ const EditSetting = () => {
             } catch (error) {
                 toast.error('Failed to load settings. Please try again.');
             }
-            
+
         };
         fetchSettings();
     }, []);
@@ -57,7 +57,10 @@ const EditSetting = () => {
                 <>
                     {Object.keys(formData).map((key) => (
                         <CCol md={12} key={key} className="mb-3">
-                            <CFormLabel htmlFor={key}>{key.replace(/([A-Z])/g, ' $1').trim()}</CFormLabel>
+                            <CFormLabel htmlFor={key}>
+                                {key === 'twitterUrl' ? 'YouTube Url' : key.replace(/([A-Z])/g, ' $1').trim()}
+                            </CFormLabel>
+
                             {typeof formData[key] === 'boolean' ? (
                                 <CFormSwitch id={key} name={key} checked={formData[key]} onChange={handleChange} />
                             ) : (
