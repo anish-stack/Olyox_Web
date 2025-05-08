@@ -12,7 +12,8 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
-  XCircle
+  XCircle,
+  IndianRupee
 } from 'lucide-react';
 
 const Withdrawals = () => {
@@ -240,7 +241,7 @@ const Withdrawals = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <DollarSign className="w-4 h-4" />
+                  <IndianRupee className="w-4 h-4" />
                   Amount
                 </label>
                 <input
@@ -385,120 +386,120 @@ const Withdrawals = () => {
       )}
 
       {/* Withdrawals Table */}
-{loading ? (
-  <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-  </div>
-) : (
-  <div className="bg-white rounded-lg shadow-md overflow-hidden">
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead className="bg-red-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              S. No.
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              Remark
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              Amount
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              Method / Bank Details
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
-              Status
-            </th>
-          </tr>
-        </thead>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-red-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    S. No.
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    Remark
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    Method / Bank Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-red-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
 
-        <tbody className="bg-white divide-y divide-gray-200">
-          {currentItems.map((withdrawal, index) => (
-            <tr key={withdrawal._id} className="hover:bg-red-50">
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {(currentPage - 1) * itemsPerPage + index + 1}
-              </td>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.map((withdrawal, index) => (
+                  <tr key={withdrawal._id} className="hover:bg-red-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {new Date(withdrawal.requestedAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(withdrawal.requestedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </td>
 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {withdrawal.remark || "No Remark Yet"}
-              </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {withdrawal.remark || "No Remark Yet"}
+                    </td>
 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                ₹{withdrawal.amount}
-              </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      ₹{withdrawal.amount}
+                    </td>
 
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    {withdrawal.method === 'Bank Transfer' ? (
-                      <BanknoteIcon className="w-4 h-4" />
-                    ) : (
-                      <QrCode className="w-4 h-4" />
-                    )}
-                    {withdrawal.method}
-                  </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          {withdrawal.method === 'Bank Transfer' ? (
+                            <BanknoteIcon className="w-4 h-4" />
+                          ) : (
+                            <QrCode className="w-4 h-4" />
+                          )}
+                          {withdrawal.method}
+                        </div>
 
-                  {/* Bank Details if method is Bank Transfer */}
-                  {withdrawal.method === 'Bank Transfer' && withdrawal.BankDetails && (
-                    <div className="ml-6 text-xs text-gray-600 flex flex-col">
-                      <span><strong>Bank:</strong> {withdrawal.BankDetails.bankName}</span>
-                      <span><strong>Account No:</strong> {withdrawal.BankDetails.accountNo}</span>
-                      <span><strong>IFSC:</strong> {withdrawal.BankDetails.ifsc_code}</span>
-                    </div>
-                  )}
-                </div>
-              </td>
+                        {/* Bank Details if method is Bank Transfer */}
+                        {withdrawal.method === 'Bank Transfer' && withdrawal.BankDetails && (
+                          <div className="ml-6 text-xs text-gray-600 flex flex-col">
+                            <span><strong>Bank:</strong> {withdrawal.BankDetails.bankName}</span>
+                            <span><strong>Account No:</strong> {withdrawal.BankDetails.accountNo}</span>
+                            <span><strong>IFSC:</strong> {withdrawal.BankDetails.ifsc_code}</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className={`px-3 py-1 rounded-full text-sm flex items-center gap-1 w-fit ${getStatusColor(withdrawal.status)}`}>
-                  {getStatusIcon(withdrawal.status)}
-                  {withdrawal.status}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-3 py-1 rounded-full text-sm flex items-center gap-1 w-fit ${getStatusColor(withdrawal.status)}`}>
+                        {getStatusIcon(withdrawal.status)}
+                        {withdrawal.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-    {/* Pagination */}
-    <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200">
-      <button
-        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-        disabled={currentPage === 1}
-        className="flex items-center gap-1 px-3 py-1 rounded-md bg-red-100 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <ChevronLeft className="w-4 h-4" />
-        Previous
-      </button>
+          {/* Pagination */}
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-3 py-1 rounded-md bg-red-100 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
 
-      <span className="text-sm text-gray-700">
-        Page {currentPage} of {totalPages}
-      </span>
+            <span className="text-sm text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
 
-      <button
-        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-        disabled={currentPage === totalPages}
-        className="flex items-center gap-1 px-3 py-1 rounded-md bg-red-100 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Next
-        <ChevronRight className="w-4 h-4" />
-      </button>
-    </div>
-  </div>
-)}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-1 px-3 py-1 rounded-md bg-red-100 text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );
