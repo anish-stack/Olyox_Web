@@ -20,11 +20,11 @@ function Dashboard() {
     const SessionData = sessionStorage.getItem('user');
     const token = sessionStorage.getItem('token');
     useEffect(() => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            })
-        },[])
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }, [])
 
     if (!token) {
         return <LoginAlert />;
@@ -202,7 +202,7 @@ function Dashboard() {
                         <div className="flex items-center cursor-pointer justify-between">
                             <div>
                                 <p className="text-sm text-gray-500 mb-1">Referral Earnings</p>
-                                <h3 className="text-2xl font-bold text-gray-900">₹{allProvider?.wallet || '0'}</h3>
+                                <h3 className="text-2xl font-bold text-gray-900">₹{Number(allProvider?.wallet || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
                                 <p className="text-xs text-green-500 mt-2 flex items-center">
                                     <FiTrendingUp className="mr-1" />
                                     +12.5% from last month
