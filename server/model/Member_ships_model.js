@@ -21,16 +21,18 @@ const MembershipPlanSchema = new mongoose.Schema({
     validityDays: {
         type: Number,
     },
-    whatIsThis:{
-        type:String,
+    whatIsThis: {
+        type: String,
     },
     active: {
         type: Boolean,
         default: true
+    }, HowManyMoneyEarnThisPlan: {
+        type: Number,
     },
     category: {
         type: String,
-        enum: ['tiffin', 'cab', 'parcel', 'transport','bike','Hotel'],
+        enum: ['tiffin', 'cab', 'parcel', 'transport', 'bike', 'Hotel'],
     }
 }, { timestamps: true });
 

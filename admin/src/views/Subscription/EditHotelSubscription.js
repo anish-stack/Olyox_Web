@@ -14,6 +14,7 @@ const EditHotelSubscription = () => {
         price: '',
         description: '',
         validityDays: '',
+        HowManyMoneyEarnThisPlan: '',
         level: '',
         includes: '',
         whatIsThis: '',
@@ -34,6 +35,7 @@ const EditHotelSubscription = () => {
                     validityDays: res.data.data.validityDays,
                     level: res.data.data.level,
                     includes: res.data.data.includes.join(', '), // Join the array into a comma-separated string
+                    HowManyMoneyEarnThisPlan: res.data.data.HowManyMoneyEarnThisPlan,
                     whatIsThis: res.data.data.whatIsThis,
                     active: res.data.data.active,
                     category: res.data.data.category,
@@ -125,6 +127,17 @@ const EditHotelSubscription = () => {
                             onChange={handleChange}
                         />
                     </CCol>
+                                        <CCol md={12} className="mt-3">
+                                            <CFormLabel htmlFor="HowManyMoneyEarnThisPlan">Enter Money to be Earned</CFormLabel>
+                                            <CFormInput
+                                                id="HowManyMoneyEarnThisPlan"
+                                                name="HowManyMoneyEarnThisPlan"
+                                                type="number"
+                                                placeholder="Enter Money to be Earned"
+                                                value={formData.HowManyMoneyEarnThisPlan}
+                                                onChange={handleChange}
+                                            />
+                                        </CCol>
                     <CCol md={12} className="mt-3">
                         <CFormLabel htmlFor="whatIsThis">What is This (day,week,Month,year)</CFormLabel>
                         <CFormSelect

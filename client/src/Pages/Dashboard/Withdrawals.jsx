@@ -33,6 +33,10 @@ const Withdrawals = () => {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [ServerErrors, setServerErrors] = useState('');
+  const [commission, setCommission] = useState({
+    tdsPercentage: '',
+    withdrawCommision: ''
+  });
 
   const itemsPerPage = 5;
 
@@ -90,12 +94,12 @@ const Withdrawals = () => {
     setLoading(true);
     try {
       const response = await axios.get(`https://www.webapi.olyox.com/api/v1/get_withdrawal_by_vendor_id/${providerId}`);
-      setWithdrawals(response.data.data);
+      setWithdrawals(response.data.withdrawal);
       console.log("response.data.withdrawal", response.data)
 
       // Set last used method and details if available
-      if (response.data.data.length > 0) {
-        const lastWithdrawal = response.data.data[0];
+      if (response.data.withdrawal.length > 0) {
+        const lastWithdrawal = response.data.withdrawal[0];
         const isBank = lastWithdrawal.method === 'Bank Transfer';
         setFormData(prev => ({
           ...prev,
@@ -118,6 +122,19 @@ const Withdrawals = () => {
       setLoading(false);
     }
   };
+
+  const handleFetchCommissionTDS = async () => {
+    try {
+      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/get_single_commission_tds/681fa157d45bee7fc60813cb');
+      setCommission(data.data);
+    } catch (error) {
+      console.log("Internal server error", error);
+    }
+  }
+
+  useEffect(() => {
+    handleFetchCommissionTDS();
+  }, [])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -157,23 +174,51 @@ const Withdrawals = () => {
     setErrors({});
   };
 
+  // Calculate final amount after deductions
+  const calculateFinalAmount = (amount) => {
+    if (!amount || isNaN(amount)) return 0;
+    
+    const parsedAmount = parseFloat(amount);
+    const tdsDeduction = parsedAmount * (commission.tdsPercentage / 100);
+    const commissionDeduction = parseFloat(commission.withdrawCommision);
+    
+    return parsedAmount - tdsDeduction - commissionDeduction;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setSubmitting(true);
     try {
-      await axios.post('https://www.webapi.olyox.com/api/v1/create-withdrawal', formData, {
+      // Calculate the amounts
+      const enteredAmount = parseFloat(formData.amount);
+      const finalAmount = calculateFinalAmount(enteredAmount);
+      const tdsDeduction = enteredAmount * (commission.tdsPercentage / 100);
+      const commissionDeduction = parseFloat(commission.withdrawCommision);
+      
+      // Create withdrawal request with the final amount as the actual withdrawal amount
+      const withdrawalRequest = {
+        ...formData,
+        amount: finalAmount, // Set the actual withdrawal amount to the final amount (after deductions)
+        originalAmount: enteredAmount, // Store the original amount for record-keeping
+        deductions: {
+          tds: tdsDeduction,
+          commission: commissionDeduction
+        }
+      };
+
+      await axios.post('https://www.webapi.olyox.com/api/v1/create-withdrawal', withdrawalRequest, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('token')}`
         }
       });
+      
       setShowModal(false);
       fetchWithdrawals();
-      // Form will retain the last used method and details
     } catch (error) {
-      setServerErrors(error?.response?.data?.message)
+      setServerErrors(error?.response?.data?.message || "An error occurred during withdrawal submission")
       console.error('Error creating withdrawal:', error?.response?.data?.message);
     } finally {
       setSubmitting(false);
@@ -233,8 +278,7 @@ const Withdrawals = () => {
 
             <h2 className="text-2xl font-bold mb-6 text-red-500">New Withdrawal Request</h2>
             {ServerErrors && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-
-          4 py-3 text-center rounded-lg mb-4">
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 text-center rounded-lg mb-4">
                 <p>{ServerErrors}</p>
               </div>
             )}
@@ -249,8 +293,7 @@ const Withdrawals = () => {
                   name="amount"
                   value={formData.amount}
                   onChange={handleInputChange}
-                  className={`w-full p-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${errors.amount ? 'border-red-500' : ''
-                    }`}
+                  className={`w-full p-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 ${errors.amount ? 'border-red-500' : ''}`}
                   required
                 />
                 {errors.amount && (
@@ -260,6 +303,34 @@ const Withdrawals = () => {
                   </p>
                 )}
               </div>
+
+              {/* Deduction Information */}
+              {(commission.tdsPercentage > 0 || commission.withdrawCommision > 0) && (
+                <div className="bg-blue-50 p-4 rounded-lg space-y-2">
+                  <h3 className="font-medium flex items-center gap-2 text-blue-700">
+                    <AlertCircle className="w-5 h-5" />
+                    Applicable Charges
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    {commission.tdsPercentage > 0 && (
+                      <div className="flex justify-between">
+                        <span>TDS ({commission.tdsPercentage}%):</span>
+                        <span>-₹{formData.amount ? (formData.amount * commission.tdsPercentage / 100).toFixed(2) : '0.00'}</span>
+                      </div>
+                    )}
+                    {commission.withdrawCommision > 0 && (
+                      <div className="flex justify-between">
+                        <span>Service Charge:</span>
+                        <span>-₹{commission.withdrawCommision.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 font-medium border-t border-blue-200 mt-2">
+                      <span>You will receive:</span>
+                      <span>₹{formData.amount ? calculateFinalAmount(formData.amount).toFixed(2) : '0.00'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-4 mb-4">
                 <button
@@ -295,8 +366,7 @@ const Withdrawals = () => {
                       placeholder="Account Number"
                       value={formData.BankDetails.accountNo}
                       onChange={handleInputChange}
-                      className={`w-full p-2 border rounded-lg ${errors.accountNo ? 'border-red-500' : ''
-                        }`}
+                      className={`w-full p-2 border rounded-lg ${errors.accountNo ? 'border-red-500' : ''}`}
                       required
                     />
                     {errors.accountNo && (
@@ -313,8 +383,7 @@ const Withdrawals = () => {
                       placeholder="IFSC Code"
                       value={formData.BankDetails.ifsc_code}
                       onChange={handleInputChange}
-                      className={`w-full p-2 border rounded-lg ${errors.ifsc_code ? 'border-red-500' : ''
-                        }`}
+                      className={`w-full p-2 border rounded-lg ${errors.ifsc_code ? 'border-red-500' : ''}`}
                       required
                     />
                     {errors.ifsc_code && (
@@ -331,8 +400,7 @@ const Withdrawals = () => {
                       placeholder="Bank Name"
                       value={formData.BankDetails.bankName}
                       onChange={handleInputChange}
-                      className={`w-full p-2 border rounded-lg ${errors.bankName ? 'border-red-500' : ''
-                        }`}
+                      className={`w-full p-2 border rounded-lg ${errors.bankName ? 'border-red-500' : ''}`}
                       required
                     />
                     {errors.bankName && (
@@ -353,8 +421,7 @@ const Withdrawals = () => {
                     placeholder="UPI ID"
                     value={formData.upi_details.upi_id}
                     onChange={handleInputChange}
-                    className={`w-full p-2 border rounded-lg ${errors.upi_id ? 'border-red-500' : ''
-                      }`}
+                    className={`w-full p-2 border rounded-lg ${errors.upi_id ? 'border-red-500' : ''}`}
                     required
                   />
                   {errors.upi_id && (
@@ -437,7 +504,14 @@ const Withdrawals = () => {
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ₹{withdrawal.amount}
+                      <div className="flex flex-col">
+                        <span>₹{withdrawal.amount}</span>
+                        {withdrawal.originalAmount && withdrawal.originalAmount !== withdrawal.amount && (
+                          <span className="text-xs text-gray-500">
+                            Requested: ₹{withdrawal.originalAmount} (After deductions: ₹{withdrawal.amount})
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -450,6 +524,15 @@ const Withdrawals = () => {
                           )}
                           {withdrawal.method}
                         </div>
+
+                        {/* Bank Details if method is Bank Transfer */}
+                        {withdrawal.method === 'UPI' && withdrawal.upi_details && (
+                          <div className="ml-6 text-xs text-gray-600 flex flex-col">
+                            <span><strong>UPI:</strong> {withdrawal.upi_details.upi_id}</span>
+                            {/* <span><strong>Account No:</strong> {withdrawal.BankDetails.accountNo}</span>
+                            <span><strong>IFSC:</strong> {withdrawal.BankDetails.ifsc_code}</span> */}
+                          </div>
+                        )}
 
                         {/* Bank Details if method is Bank Transfer */}
                         {withdrawal.method === 'Bank Transfer' && withdrawal.BankDetails && (

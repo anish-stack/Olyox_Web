@@ -108,7 +108,7 @@ const CabSubscription = () => {
         setCurrentPage(page);
     };
 
-    const heading = ['S.No', 'Title', 'Price', 'Level', 'Is Active', 'Action'];
+      const heading = ['S.No', 'Title', 'Price', 'Money Earn', 'Level', 'Is Active', 'Action'];
 
     return (
         <>
@@ -127,6 +127,8 @@ const CabSubscription = () => {
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                             <CTableDataCell>{item.title}</CTableDataCell>
                             <CTableDataCell>{item.price} INR</CTableDataCell>
+                                                          <CTableDataCell>{item.HowManyMoneyEarnThisPlan || 0}</CTableDataCell>
+                            
                             <CTableDataCell>{item.level}</CTableDataCell>
                             <CTableDataCell>
                                 <CFormSwitch

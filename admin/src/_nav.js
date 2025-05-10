@@ -266,6 +266,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'TDS Commission',
+    to: '/update-tds-commission',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Withdraw Request',
     to: '/withdraw/all-withdraw',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
