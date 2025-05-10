@@ -14,6 +14,7 @@ const EditCabSubscription = () => {
         price: '',
         description: '',
         validityDays: '',
+        HowManyMoneyEarnThisPlan: '',
         level: '',
         includes: '',
         whatIsThis: '',
@@ -30,6 +31,7 @@ const EditCabSubscription = () => {
                 setFormData({
                     title: res.data.data.title,
                     price: res.data.data.price,
+                    HowManyMoneyEarnThisPlan: res.data.data.HowManyMoneyEarnThisPlan,
                     description: res.data.data.description,
                     validityDays: res.data.data.validityDays,
                     level: res.data.data.level,
@@ -125,6 +127,17 @@ const EditCabSubscription = () => {
                             onChange={handleChange}
                         />
                     </CCol>
+                                        <CCol md={12} className="mt-3">
+                                            <CFormLabel htmlFor="HowManyMoneyEarnThisPlan">Enter Money to be Earned</CFormLabel>
+                                            <CFormInput
+                                                id="HowManyMoneyEarnThisPlan"
+                                                name="HowManyMoneyEarnThisPlan"
+                                                type="number"
+                                                placeholder="Enter Money to be Earned"
+                                                value={formData.HowManyMoneyEarnThisPlan}
+                                                onChange={handleChange}
+                                            />
+                                        </CCol>
                     <CCol md={12} className="mt-3">
                         <CFormLabel htmlFor="whatIsThis">What is This (day,week,Month,year)</CFormLabel>
                         <CFormSelect

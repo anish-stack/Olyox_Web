@@ -23,8 +23,9 @@ const { DoRecharge, getMyRecharges, getApprovedRecharge, getAllRecharge, cancelR
 const Protect = require('../middlewares/Protect');
 const { createBhId, updateBhId, deleteBhId, toggleStatus, checkBhId, getDetailsViaBh } = require('../controllers/Bh.controller');
 const { doReffer, getMyReferral, GetRefrealDetailsBy, getAllReferal } = require('../controllers/Refrreal');
-const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals, getWithdrawalQueryById } = require('../controllers/Withdraw.controller');
+const { createWithdrawal, approveWithdrawal, rejectWithdrawal, cancelWithdrawal, getAllWithdrawals, getWithdrawalById, getPendingWithdrawals, getWithdrawalQueryById, getWithdrawalByVendorId } = require('../controllers/Withdraw.controller');
 const { createEnquiry, getAllEnquiries, getEnquiryById, updateEnquiry, deleteEnquiry } = require('../controllers/Enquiry.controller');
+const { createCommissionTDS, getSingleCommissionTDS, updateCommissionTDS } = require('../controllers/commissionTDS.Controller');
 
 router.post('/register_vendor', upload.any(), registerVendor);
 router.post('/manual_register', manuallyRegisterVendor)
@@ -107,6 +108,7 @@ router.put('/reject-withdrawal/:id', rejectWithdrawal);
 router.put('/cancel-withdrawal/:id', cancelWithdrawal);
 router.get('/withdrawals', getAllWithdrawals);
 router.get('/admin-withdrawals', getWithdrawalQueryById);
+router.get('/get_withdrawal_by_vendor_id/:id', getWithdrawalByVendorId);
 
 router.post('/getProviderDetailsByNumber', getProviderDetailsByNumber);
 router.post('/getProviderDetailsByBhId', getProviderDetailsByBhId);
@@ -167,11 +169,12 @@ router.put('/membership-plans/:id', updateMembershipPlan);
 router.delete('/membership-plans/:id', deleteMembershipPlan);
 router.put('/update_membership_status/:id', updateMembershipStatus);
 
-
 // app routes
 router.get('/app-get-details', getDetailsViaBh);
 
-
+router.post('/create_commission_tds',createCommissionTDS)
+router.get('/get_single_commission_tds/:id',getSingleCommissionTDS)
+router.put('/update_commission_tds/:id',updateCommissionTDS)
 
 
 module.exports = router;

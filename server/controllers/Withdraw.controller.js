@@ -375,3 +375,29 @@ exports.getWithdrawalQueryById = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };
+
+exports.getWithdrawalByVendorId = async (req, res) => {
+    try {
+        const {id} = req.params
+        const user = id
+
+        const withdrawal = await Withdraw.find({ vendor_id: user })
+            .populate('vendor_id')
+            .sort({ createdAt: -1 });
+
+
+        // If withdrawal is not found
+        if (!withdrawal) {
+            return res.status(404).json({ success: false, message: 'Withdrawal not found.' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Withdrawal details fetched successfully.',
+            withdrawal,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};

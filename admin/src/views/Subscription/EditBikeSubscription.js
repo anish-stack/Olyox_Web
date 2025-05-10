@@ -14,6 +14,7 @@ const EditBikeSubscription = () => {
         price: '',
         description: '',
         validityDays: '',
+        HowManyMoneyEarnThisPlan: '',
         level: '',
         includes: '',
         whatIsThis: '',
@@ -32,6 +33,7 @@ const EditBikeSubscription = () => {
                     price: res.data.data.price,
                     description: res.data.data.description,
                     validityDays: res.data.data.validityDays,
+                    HowManyMoneyEarnThisPlan: res.data.data.HowManyMoneyEarnThisPlan,
                     level: res.data.data.level,
                     includes: res.data.data.includes.join(', '), // Join the array into a comma-separated string
                     whatIsThis: res.data.data.whatIsThis,
@@ -122,6 +124,17 @@ const EditBikeSubscription = () => {
                             type="number"
                             placeholder="Enter validity in days"
                             value={formData.validityDays}
+                            onChange={handleChange}
+                        />
+                    </CCol>
+                    <CCol md={12} className="mt-3">
+                        <CFormLabel htmlFor="HowManyMoneyEarnThisPlan">Enter Money to be Earned</CFormLabel>
+                        <CFormInput
+                            id="HowManyMoneyEarnThisPlan"
+                            name="HowManyMoneyEarnThisPlan"
+                            type="number"
+                            placeholder="Enter Money to be Earned"
+                            value={formData.HowManyMoneyEarnThisPlan}
                             onChange={handleChange}
                         />
                     </CCol>

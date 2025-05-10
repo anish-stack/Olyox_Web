@@ -108,6 +108,7 @@ import AllBikeSubscription from './views/Subscription/AllBikeSubscription'
 import AddBikeSubscription from './views/Subscription/AddBikeSubscription'
 import EditBikeSubscription from './views/Subscription/EditBikeSubscription'
 import UpdateVendorDocuments from './views/Vendor/UpdateVendorDocuments'
+import EditTDSCommission from './views/TDSCommission/EditTDSCommission'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -397,6 +398,8 @@ const routes = [
   { path: '/all-parcel-order', name: 'All Parcel Order', element: AllParcelOrder },
   { path: '/parcel-order-detail/:id', name: 'All Parcel Order', element: ParcelOrderDetails },
   { path: '/update-vendor-documents/:id', name: 'Updat Vendor Document', element: UpdateVendorDocuments },
+
+  { path: '/update-tds-commission', name: 'Updat TDS Commission', element: EditTDSCommission },
 ]
 
 export default routes
