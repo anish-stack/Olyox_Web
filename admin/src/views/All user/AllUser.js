@@ -82,7 +82,7 @@ const AllUser = () => {
       navigate(`/cab/vendor-detail/${userId}`);
   };
 
-  const heading = ['S.No', 'User Name', 'Email', 'Number', 'OTP Verified', 'Block'];
+  const heading = ['S.No', 'User Name', 'Email', 'Number', 'Join At','OTP Verified', 'Block'];
 
   return (
       <>
@@ -117,6 +117,9 @@ const AllUser = () => {
                               <CTableDataCell>{user.name || 'N/A'}</CTableDataCell>
                               <CTableDataCell>{user.email || 'N/A'}</CTableDataCell>
                               <CTableDataCell>{user.number || 'N/A'}</CTableDataCell>
+<CTableDataCell>
+  {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : 'N/A'}
+</CTableDataCell>
                               <CTableDataCell>{user.isOtpVerify ? 'Yes' : 'No'}</CTableDataCell>
                               <CTableDataCell>
                                   <CButton
