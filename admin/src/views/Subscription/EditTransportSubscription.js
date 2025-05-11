@@ -127,17 +127,17 @@ const EditTransportSubscription = () => {
                             onChange={handleChange}
                         />
                     </CCol>
-                                        <CCol md={12} className="mt-3">
-                                            <CFormLabel htmlFor="HowManyMoneyEarnThisPlan">Enter Money to be Earned</CFormLabel>
-                                            <CFormInput
-                                                id="HowManyMoneyEarnThisPlan"
-                                                name="HowManyMoneyEarnThisPlan"
-                                                type="number"
-                                                placeholder="Enter Money to be Earned"
-                                                value={formData.HowManyMoneyEarnThisPlan}
-                                                onChange={handleChange}
-                                            />
-                                        </CCol>
+                    <CCol md={12} className="mt-3">
+                        <CFormLabel htmlFor="HowManyMoneyEarnThisPlan">Enter Money to be Earned</CFormLabel>
+                        <CFormInput
+                            id="HowManyMoneyEarnThisPlan"
+                            name="HowManyMoneyEarnThisPlan"
+                            type="number"
+                            placeholder="Enter Money to be Earned"
+                            value={formData.HowManyMoneyEarnThisPlan}
+                            onChange={handleChange}
+                        />
+                    </CCol>
                     <CCol md={12} className="mt-3">
                         <CFormLabel htmlFor="whatIsThis">What is This (day,week,Month,year)</CFormLabel>
                         <CFormSelect

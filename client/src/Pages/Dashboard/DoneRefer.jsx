@@ -10,12 +10,12 @@ function DoneRefer() {
   const [error, setError] = useState('');
   const [activeLevelTab, setActiveLevelTab] = useState('Level1');
   useEffect(() => {
-          window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-          })
-      },[])
-  
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }, [])
+
   // Pagination state for each level
   const [pagination, setPagination] = useState({});
   const itemsPerPage = 10;
@@ -37,7 +37,7 @@ function DoneRefer() {
       const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
       setVendor(data.data);
     } catch (error) {
-      
+
       setError('Failed to fetch referral data. Please try again later.');
     } finally {
       setLoading(false);
@@ -138,13 +138,14 @@ function DoneRefer() {
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                   {level} Referrals
                 </h2>
-                
+
                 {vendor?.[level]?.length > 0 ? (
                   <>
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S.No</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BHID</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -157,6 +158,9 @@ function DoneRefer() {
                         <tbody className="bg-white divide-y divide-gray-200">
                           {getPaginatedData(vendor[level]).map((referral, idx) => (
                             <tr key={idx} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {(pagination[level]?.currentPage - 1) * pagination[level]?.itemsPerPage + idx + 1}
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{referral?.myReferral}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{referral.name}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{referral.email}</td>
@@ -166,15 +170,14 @@ function DoneRefer() {
                                 {referral?.member_id?.title || 'Pending'}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  referral?.plan_status
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${referral?.plan_status
                                     ? 'bg-green-100 text-green-800'
                                     : 'bg-red-100 text-red-800'
-                                }`}>
+                                  }`}>
                                   {referral?.plan_status ? 'Active' : 'Inactive'}
                                 </span>
                               </td>
-                             
+
                             </tr>
                           ))}
                         </tbody>
@@ -190,11 +193,10 @@ function DoneRefer() {
                               <button
                                 key={idx}
                                 onClick={() => handlePageChange(level, idx + 1)}
-                                className={`px-3 py-1 rounded ${
-                                  pagination[level]?.currentPage === idx + 1
+                                className={`px-3 py-1 rounded ${pagination[level]?.currentPage === idx + 1
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                  }`}
                               >
                                 {idx + 1}
                               </button>
