@@ -32,6 +32,7 @@ function AllCarList() {
         setLoading(true);
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/admin/getAllSuggestions');
+            console.log(data?.data)
             setRides(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching rides:', error);
@@ -90,7 +91,7 @@ function AllCarList() {
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
     };
 
-    const heading = ['S.No', 'Image', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status', 'Actions'];
+    const heading = ['S.No', 'Image', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status','Add Brands' ,'Actions'];
 
     return (
         <>
@@ -132,6 +133,11 @@ function AllCarList() {
                                     >
                                         {item.status ? 'Active' : 'Inactive'}
                                     </CButton>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                      <CButton 
+                                       onClick={() => navigate(`/cars/add-brands-list/${item._id}`)}
+                                      color={'secondary'} >Add Brands</CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

@@ -22,6 +22,7 @@ import Onboarding from './views/Onboarding/Onboarding'
 import AddOnboarding from './views/Onboarding/AddOnboarding'
 import EditOnboarding from './views/Onboarding/EditOnboarding'
 import AllCarList from './views/CarList/AllCarList'
+import BrandList from './views/CarList/Brands'
 import AddCarList from './views/CarList/AddCarList'
 import EditCarList from './views/CarList/EditCarList'
 import AllTiffinVendor from './views/TiffinVendor/AllTiffinVendor'
@@ -270,6 +271,7 @@ const routes = [
   // refferal routes here 
   { path: '/Cars List', name: 'Cars List', element: Cards, exact: true },
   { path: '/cars/all-cars-list', name: 'All Cars List', element: AllCarList },
+  { path: '/cars/add-brands-list/:id', name: 'All Cars List', element: BrandList },
   { path: '/cars/add-cars-list', name: 'Add Cars List', element: AddCarList },
   { path: '/cars/edit-cars-list/:id', name: 'Edit Cars List', element: EditCarList },
 
