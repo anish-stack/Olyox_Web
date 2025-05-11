@@ -137,6 +137,12 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Personal Coupon',
+        to: '/all-personal-coupon',
+        icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
         name: 'Bonus Coupon',
         to: '/all-bonus-coupon',
         icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,

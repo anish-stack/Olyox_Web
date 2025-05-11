@@ -110,6 +110,7 @@ import AddBikeSubscription from './views/Subscription/AddBikeSubscription'
 import EditBikeSubscription from './views/Subscription/EditBikeSubscription'
 import UpdateVendorDocuments from './views/Vendor/UpdateVendorDocuments'
 import EditTDSCommission from './views/TDSCommission/EditTDSCommission'
+import PersonalCoupons from './views/PersonalCoupons/PersonalCoupons'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -361,6 +362,7 @@ const routes = [
   { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
 
   { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
+  { path: '/all-personal-coupon', name: 'All Coupons', element: PersonalCoupons },
   { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
   { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
 
