@@ -48,7 +48,7 @@ const Settings = () => {
     const heading = [
         'App Name', 'App URL', 'Admin Email', 'Maintenance Mode', 'Basic Fare', 'Fare Per Km',
         'Rain Mode', 'Rain Fare Per 3Km', 'Show Rain On App', 'Show Offers', 'OpenMap API Key',
-        'Google API Key', 'Traffic Price Per Min', 'Waiting Time', 'Created At', 'Updated At'
+        'Google API Key', 'Traffic Price Per Min', 'Waiting Time','Admin Bh', 'Created At', 'Updated At'
     ];
 
     return (
@@ -86,6 +86,7 @@ const Settings = () => {
                             <CTableDataCell>{settings.googleApiKey}</CTableDataCell>
                             <CTableDataCell>{settings.trafficDurationPricePerMinute}</CTableDataCell>
                             <CTableDataCell>{settings.waitingTimeInMinutes}</CTableDataCell>
+                            <CTableDataCell>{settings.adminBh}</CTableDataCell>
                             <CTableDataCell>{new Date(settings.createdAt).toLocaleString()}</CTableDataCell>
                             <CTableDataCell>{new Date(settings.updatedAt).toLocaleString()}</CTableDataCell>
                         </CTableRow>

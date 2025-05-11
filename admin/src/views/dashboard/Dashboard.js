@@ -8,101 +8,101 @@ import {
   CSpinner,
 } from '@coreui/react';
 import { CChart } from '@coreui/react-chartjs';
-import {
-  cilPeople,
-  cilUserFollow,
-  cilMoney,
-  cilWallet,
-  cilBank,
-  cilChatBubble
-} from '@coreui/icons';
-// import cilChat from '@coreui/icons/js/free/cil-chat';
+import { cilPeople, cilUserFollow, cilMoney, cilWallet, cilBank } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import './Dashboard.css';
 
 const Dashboard = () => {
-  
   const token = sessionStorage.getItem('token');
   const [loading, setLoading] = useState(false);
-  const [allUserCount, setAllUserCount] = useState(0);
-  const [allProviderCount, setAllProviderCount] = useState({
-    Vastu: 0,
-    Architect: 0,
-    Interior: 0
-  });
-  const [allChatCount, setAllChatCount] = useState(0);
-  const [allRecharge, setAllRecharge] = useState(0);
-  const [allWithdraw, setAllWithdraw] = useState({
-    request: 0,
-    commission: 0
-  });
-
-  const handleFetchUser = async () => {
-    try {
-      const { data } = await axios.get('https://api.helpubuild.co.in/api/v1/users', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      setAllUserCount(data.data.length);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to fetch users');
-    }
-  };
+  const [providerStats, setProviderStats] = useState({});
+  const [userStats, setUserStats] = useState({});
 
   const fetchProviders = async () => {
     try {
-      const { data } = await axios.get('https://api.helpubuild.co.in/api/v1/get-all-provider');
-      const allData = data.data;
-      setAllProviderCount({
-        Vastu: allData.filter(provider => provider.type === 'Vastu').length,
-        Architect: allData.filter(provider => provider.type === 'Architect').length,
-        Interior: allData.filter(provider => provider.type === 'Interior').length
+      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/all_vendor');
+      const providers = data.data;
+
+      // Sort providers by newest first
+      const sortedByDate = [...providers].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // Get today's date range
+      const today = new Date();
+      const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+      const endOfToday = new Date(today.setHours(23, 59, 59, 999));
+
+      // Last 7 days
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() - 7);
+
+      // Last 30 days
+      const lastMonth = new Date();
+      lastMonth.setDate(lastMonth.getDate() - 30);
+
+      // Filters
+      const todayJoin = providers.filter(p => new Date(p.createdAt) >= startOfToday && new Date(p.createdAt) <= endOfToday);
+      const lastWeekJoin = providers.filter(p => new Date(p.createdAt) >= lastWeek);
+      const lastMonthJoin = providers.filter(p => new Date(p.createdAt) >= lastMonth);
+      const rechargeDone = providers.filter(p => p.payment_id !== null);
+
+      // Summary counts
+      setProviderStats({
+        totalProviders: providers.length,
+        todayJoinCount: todayJoin.length,
+        lastWeekJoinCount: lastWeekJoin.length,
+        lastMonthJoinCount: lastMonthJoin.length,
+        rechargeDoneCount: rechargeDone.length,
       });
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to fetch providers');
     }
   };
 
-  const handleFetchChat = async () => {
+  const handleFetchAppUser = async () => {
     try {
-      const { data } = await axios.get('https://api.helpubuild.co.in/api/v1/get-all-chat-record');
-      setAllChatCount(data.data.length);
-    } catch (error) {
-      toast.error('Failed to load chat records');
-    }
-  };
+      const { data } = await axios.get('https://appapi.olyox.com/api/v1/user/get_all_user');
+      const userData = data.data;
 
-  const handleFetchRecharge = async () => {
-    try {
-      const { data } = await axios.get('https://api.helpubuild.co.in/api/v1/total-recharge-amount');
-      setAllRecharge(data.data);
-    } catch (error) {
-      toast.error('Failed to load recharge amount');
-    }
-  };
+      // Get today's date range
+      const today = new Date();
+      const startOfToday = new Date(today.setHours(0, 0, 0, 0));
+      const endOfToday = new Date(today.setHours(23, 59, 59, 999));
 
-  const handleFetchWithdraw = async () => {
-    try {
-      const { data } = await axios.get('https://api.helpubuild.co.in/api/v1/total-withdraw-and-commission');
-      setAllWithdraw({
-        request: data.totalWithdrawAmount,
-        commission: data.totalCommission
+      // Last 7 days
+      const lastWeek = new Date();
+      lastWeek.setDate(lastWeek.getDate() - 7);
+
+      // Last 30 days
+      const lastMonth = new Date();
+      lastMonth.setDate(lastMonth.getDate() - 30);
+
+      // Helper function to handle date fallback logic (createdAt or otpExpiresAt)
+      const getValidDate = (user) => {
+        return user.createdAt ? new Date(user.createdAt) : new Date(user.otpExpiresAt);
+      };
+
+      // Filters
+      const todayJoin = userData.filter(user => getValidDate(user) >= startOfToday && getValidDate(user) <= endOfToday);
+      const lastWeekJoin = userData.filter(user => getValidDate(user) >= lastWeek);
+      const lastMonthJoin = userData.filter(user => getValidDate(user) >= lastMonth);
+
+      // Stats object
+      setUserStats({
+        totalUsers: userData.length,
+        todayJoinCount: todayJoin.length,
+        lastWeekJoinCount: lastWeekJoin.length,
+        lastMonthJoinCount: lastMonthJoin.length,
       });
     } catch (error) {
-      toast.error('Failed to load withdraw data');
+      toast.error('Failed to load user records');
     }
   };
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([
-      handleFetchUser(),
-      fetchProviders(),
-      handleFetchChat(),
-      handleFetchRecharge(),
-      handleFetchWithdraw()
-    ]).finally(() => setLoading(false));
+    Promise.all([fetchProviders(), handleFetchAppUser()])
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
@@ -113,155 +113,129 @@ const Dashboard = () => {
     );
   }
 
-  const providerData = {
-    labels: ['Vastu', 'Architect', 'Interior'],
-    datasets: [
-      {
-        data: [
-          allProviderCount.Vastu,
-          allProviderCount.Architect,
-          allProviderCount.Interior
-        ],
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-      }
-    ]
-  };
-
-  const financialData = {
-    labels: ['Recharge', 'Withdrawals', 'Commission'],
-    datasets: [
-      {
-        label: 'Amount (₹)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgb(54, 162, 235)',
-        borderWidth: 1,
-        data: [allRecharge, allWithdraw.request, allWithdraw.commission]
-      }
-    ]
-  };
-
   return (
     <>
-    <div>
-      <h2>Welcome to Olyox Dashboard</h2>
-    </div>
-      {/* <CRow>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsF
-            className="mb-3"
-            icon={<CIcon icon={cilPeople} height={24} />}
-            title="Total Users"
-            value={allUserCount}
-            color="primary"
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsF
-            className="mb-3"
-            icon={<CIcon icon={cilUserFollow} height={24} />}
-            title="Total Providers"
-            value={Object.values(allProviderCount).reduce((a, b) => a + b, 0)}
-            color="info"
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsF
-            className="mb-3"
-            icon={<CIcon icon={cilChatBubble} height={24} />}
-            title="Total Chats"
-            value={allChatCount}
-            color="warning"
-          />
-        </CCol>
-        <CCol sm={6} lg={3}>
-          <CWidgetStatsF
-            className="mb-3"
-            icon={<CIcon icon={cilMoney} height={24} />}
-            title="Total Recharge"
-            value={`₹${allRecharge.toLocaleString()}`}
-            color="success"
-          />
-        </CCol>
-      </CRow>
+      <div className="dashboard-container">
+        <h2 className="dashboard-title">Welcome to Olyox Dashboard</h2>
 
-      <CRow>
-        <CCol md={6}>
-          <CCard className="mb-4">
-            <CCardBody>
-              <h4 className="card-title mb-4">Provider Distribution</h4>
-              <CChart
-                type="doughnut"
-                data={providerData}
-                options={{
-                  plugins: {
-                    legend: {
-                      position: 'bottom'
-                    }
-                  },
-                  cutout: '60%'
-                }}
-              />
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol md={6}>
-          <CCard className="mb-4">
-            <CCardBody>
-              <h4 className="card-title mb-4">Financial Overview</h4>
-              <CChart
-                type="bar"
-                data={financialData}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false
-                    }
-                  },
-                  scales: {
-                    y: {
-                      beginAtZero: true
-                    }
-                  }
-                }}
-              />
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+        <CRow>
+          {/* Provider Stats */}
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="info"
+                  value={providerStats.totalProviders}
+                  title="Total Providers"
+                  icon={<CIcon icon={cilPeople} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
 
-      <CRow>
-        <CCol sm={6}>
-          <CCard className="mb-4">
-            <CCardBody>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <h4 className="card-title mb-1">Total Withdrawals</h4>
-                  <div className="fs-6 fw-semibold text-primary">
-                    ₹{allWithdraw.request.toLocaleString()}
-                  </div>
-                </div>
-                <CIcon icon={cilWallet} height={48} className="text-black-50" />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={6}>
-          <CCard className="mb-4">
-            <CCardBody>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <h4 className="card-title mb-1">Total Commission</h4>
-                  <div className="fs-6 fw-semibold text-success">
-                    ₹{allWithdraw.commission.toLocaleString()}
-                  </div>
-                </div>
-                <CIcon icon={cilBank} height={48} className="text-black-50" />
-              </div>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow> */}
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="success"
+                  value={providerStats.todayJoinCount}
+                  title="Joined Today"
+                  icon={<CIcon icon={cilUserFollow} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="warning"
+                  value={providerStats.lastWeekJoinCount}
+                  title="Joined Last Week"
+                  icon={<CIcon icon={cilMoney} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="danger"
+                  value={providerStats.rechargeDoneCount}
+                  title="Providers with Recharge"
+                  icon={<CIcon icon={cilWallet} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          {/* User Stats */}
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="info"
+                  value={userStats.totalUsers}
+                  title="Total Users"
+                  icon={<CIcon icon={cilPeople} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="success"
+                  value={userStats.todayJoinCount}
+                  title="Joined Today"
+                  icon={<CIcon icon={cilUserFollow} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="warning"
+                  value={userStats.lastWeekJoinCount}
+                  title="Joined Last Week"
+                  icon={<CIcon icon={cilMoney} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+
+          <CCol lg={3} sm={6} className="mb-4">
+            <CCard>
+              <CCardBody>
+                <CWidgetStatsF
+                  className="mb-3"
+                  color="danger"
+                  value={userStats.lastMonthJoinCount}
+                  title="Joined Last Month"
+                  icon={<CIcon icon={cilBank} />}
+                />
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      </div>
     </>
   );
 };

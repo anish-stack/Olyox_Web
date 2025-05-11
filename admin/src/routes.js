@@ -22,6 +22,7 @@ import Onboarding from './views/Onboarding/Onboarding'
 import AddOnboarding from './views/Onboarding/AddOnboarding'
 import EditOnboarding from './views/Onboarding/EditOnboarding'
 import AllCarList from './views/CarList/AllCarList'
+import BrandList from './views/CarList/Brands'
 import AddCarList from './views/CarList/AddCarList'
 import EditCarList from './views/CarList/EditCarList'
 import AllTiffinVendor from './views/TiffinVendor/AllTiffinVendor'
@@ -109,6 +110,7 @@ import AddBikeSubscription from './views/Subscription/AddBikeSubscription'
 import EditBikeSubscription from './views/Subscription/EditBikeSubscription'
 import UpdateVendorDocuments from './views/Vendor/UpdateVendorDocuments'
 import EditTDSCommission from './views/TDSCommission/EditTDSCommission'
+import PersonalCoupons from './views/PersonalCoupons/PersonalCoupons'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -270,6 +272,7 @@ const routes = [
   // refferal routes here 
   { path: '/Cars List', name: 'Cars List', element: Cards, exact: true },
   { path: '/cars/all-cars-list', name: 'All Cars List', element: AllCarList },
+  { path: '/cars/add-brands-list/:id', name: 'All Cars List', element: BrandList },
   { path: '/cars/add-cars-list', name: 'Add Cars List', element: AddCarList },
   { path: '/cars/edit-cars-list/:id', name: 'Edit Cars List', element: EditCarList },
 
@@ -359,6 +362,7 @@ const routes = [
   { path: '/edit-cancel-reason/:id', name: 'Edit Cancel Reason', element: EditCancelReson },
 
   { path: '/coupon/all_coupon', name: 'All Coupons', element: AllCoupon },
+  { path: '/all-personal-coupon', name: 'All Coupons', element: PersonalCoupons },
   { path: '/coupon/add-coupon', name: 'Add Coupon', element: AddCoupon },
   { path: '/coupon/edit-coupon/:id', name: 'Edit Coupon', element: EditCoupon },
 
