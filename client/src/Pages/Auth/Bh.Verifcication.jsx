@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { UserCheck, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { UserCheck, AlertCircle, Loader2, ArrowRight, SkipForward } from 'lucide-react';
 
 const BhVerification = () => {
   const [bh, setBh] = useState('');
@@ -9,6 +9,20 @@ const BhVerification = () => {
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [adminBH, setAdminBH] = useState('');
+
+  const fetchAdminBH = async () => {
+    try {
+      const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/admin/get_Setting');
+      setAdminBH(data.adminBh);
+    } catch (error) {
+      console.log("Internal server error", error)
+    }
+  }
+
+  useEffect(()=>{
+    fetchAdminBH()
+  },[])
 
   const checkBhId = async () => {
     try {
@@ -34,6 +48,15 @@ const BhVerification = () => {
       setError(err.response?.data?.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSkip = () => {
+    // Use admin BH and redirect immediately
+    if (adminBH) {
+      window.location.href = `/register?bh_id=${adminBH}`;
+    } else {
+      setError("Unable to skip. Please try again later.");
     }
   };
 
@@ -92,26 +115,37 @@ const BhVerification = () => {
             />
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            disabled={loading}
-            onClick={checkBhId}
-            className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin h-5 w-5" />
-                <span>Verifying...</span>
-              </>
-            ) : (
-              <>
-                <UserCheck className="h-5 w-5" />
-                <span>Verify BH ID</span>
-                <ArrowRight className="h-5 w-5" />
-              </>
-            )}
-          </motion.button>
+          <div className="flex gap-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={loading}
+              onClick={checkBhId}
+              className="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-70"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5" />
+                  <span>Verifying...</span>
+                </>
+              ) : (
+                <>
+                  <UserCheck className="h-5 w-5" />
+                  <span>Verify BH ID</span>
+                </>
+              )}
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleSkip}
+              className="bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center space-x-2"
+            >
+              <SkipForward className="h-5 w-5" />
+              <span>Skip</span>
+            </motion.button>
+          </div>
 
           {response && (
             <motion.div 
