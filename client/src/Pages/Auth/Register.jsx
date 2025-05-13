@@ -21,16 +21,16 @@ const Register = () => {
         category: '',
         address: {
             area: '',
-            street_address: '',
+            street_address: 'Rohini',
             landmark: '',
             pincode: '',
             location: {
-                type: '',
+                type: 'Point',
                 coordinates: [78.2693, 25.369]
             }
         },
         dob: null,
-        // aadharNumber: 'ssssssss',
+        aadharNumber: '',
         // panNumber: 'ssssssssss',
         referral_code_which_applied: '',
         is_referral_applied: false,
@@ -378,7 +378,7 @@ const Register = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="address.area" className="block text-sm font-medium text-gray-700">Area</label>
+                                <label htmlFor="address.area" className="block text-sm font-medium text-gray-700">Full Address (as per aadhar card)</label>
                                 <input
                                     type="text"
                                     id="address.area"
@@ -388,45 +388,16 @@ const Register = () => {
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
                                 />
                             </div>
-
                             <div>
-                                <label htmlFor="address.street_address" className="block text-sm font-medium text-gray-700">Street Address</label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        id="address.street_address"
-                                        name="address.street_address"
-                                        value={formData.address.street_address}
-                                        onChange={(e) => {
-                                            handleChange(e);
-                                            fetchAddressSuggestions(e.target.value);
-                                        }}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
-                                    />
-                                    {addressSuggestions.length > 0 && (
-                                        <ul className="absolute z-10 w-full bg-white mt-1 rounded-md shadow-lg max-h-60 overflow-auto">
-                                            {addressSuggestions.map((suggestion, index) => (
-                                                <li
-                                                    key={index}
-                                                    onClick={() => {
-                                                        setFormData(prev => ({
-                                                            ...prev,
-                                                            address: {
-                                                                ...prev.address,
-                                                                street_address: suggestion?.description
-                                                            }
-                                                        }));
-                                                        fetchGeocode(suggestion);
-                                                        setAddressSuggestions([]);
-                                                    }}
-                                                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                                >
-                                                    {suggestion?.description}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
+                                <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700">Aadhar Number</label>
+                                <input
+                                    type="text"
+                                    id="aadharNumber"
+                                    name="aadharNumber"
+                                    value={formData.aadharNumber}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+                                />
                             </div>
 
                             <div>
