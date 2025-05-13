@@ -93,7 +93,7 @@ const BhVerification = () => {
           transition={{ delay: 0.2 }}
           className="text-gray-600 text-center mb-6"
         >
-          Register at oloyox.com and start earning today
+          Register at olyox.com and start earning today
         </motion.p>
 
         <div className="space-y-4">
