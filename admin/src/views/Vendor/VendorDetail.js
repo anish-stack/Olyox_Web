@@ -230,12 +230,12 @@ function VendorDetail() {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="mb-3">
-                                                <label className="text-muted small">Street Address</label>
-                                                <p className="mb-2">{vendor.address?.street_address || 'N/A'}</p>
+                                                <label className="text-muted small">Full Address</label>
+                                                <p className="mb-2">{vendor.address?.area || 'N/A'}</p>
                                             </div>
                                             <div className="mb-3">
-                                                <label className="text-muted small">Area</label>
-                                                <p className="mb-2">{vendor.address?.area || 'N/A'}</p>
+                                                <label className="text-muted small">{vendor.aadharNumber ? 'Aadhar Number' : "Street Address"}</label>
+                                                <p className="mb-2">{vendor.aadharNumber ? vendor.aadharNumber : vendor.address?.street_address}</p>
                                             </div>
                                         </div>
                                         <div className="col-md-6">
