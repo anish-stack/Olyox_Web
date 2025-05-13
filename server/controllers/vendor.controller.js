@@ -33,6 +33,13 @@ exports.registerVendor = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please enter all fields' });
         }
 
+        const aadharRegex = /^[2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$/;
+
+        if (!aadharRegex.test(aadharNumber)) {
+            return res.status(400).json({ success: false, message: 'Invalid Aadhar Number ' });
+
+        }
+
         if (dob) {
             const dobDate = new Date(dob);
             const currentDate = new Date();
@@ -83,24 +90,31 @@ exports.registerVendor = async (req, res) => {
         address.location.coordinates = coordinatesArray;
 
 
+
         const existingVendor = await Vendor_Model.findOne({ $or: [{ email }, { number }] });
+
         if (existingVendor) {
-            if (existingVendor.isEmailVerified === true) {
-                return res.status(400).json({ success: false, message: 'Vendor already exists, and the mobile number has been successfully verified.' });
-            } else {
+            const isSameCredentials =
+                existingVendor.aadharNumber === aadharNumber &&
+                existingVendor.email === email &&
+                existingVendor.number === number;
+
+            // ✅ Case 1: Same credentials and not verified — RESEND OTP
+            if (isSameCredentials && !existingVendor.isEmailVerified) {
                 const otpServiceR = new OtpService();
                 const { otp, expiryTime } = otpServiceR.generateOtp();
 
                 const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
-                await SendWhatsAppMessage(message, number)
+
+                await SendWhatsAppMessage(message, number);
+
                 existingVendor.otp_ = otp;
-                existingVendor.number = number
-                existingVendor.email = email
                 existingVendor.otp_expire_time = expiryTime;
                 await existingVendor.save();
-                return res.status(201).json({
+
+                return res.status(200).json({
                     success: true,
-                    message: 'Vendor already exists, but the mobile number has not been verified.',
+                    message: 'OTP re-sent. Please verify your number.',
                     data: existingVendor,
                     type: 'email',
                     email: existingVendor.email,
@@ -108,6 +122,51 @@ exports.registerVendor = async (req, res) => {
                     time: existingVendor.otp_expire_time,
                 });
             }
+
+            // ❌ Case 2: Same Aadhar but email or number don't match
+            if (existingVendor.aadharNumber === aadharNumber) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Vendor already exists with the same Aadhar number. Please try with different Aadhar.',
+                });
+            }
+
+            // ❌ Case 3: Email is already verified
+            if (existingVendor.isEmailVerified === true) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Vendor already exists, and the mobile number has been successfully verified.',
+                });
+            }
+
+            // ✅ Optional fallback — update OTP if partially matched (optional, based on use case)
+            const otpServiceR = new OtpService();
+            const { otp, expiryTime } = otpServiceR.generateOtp();
+
+            const message = `Hi ${name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+
+            await SendWhatsAppMessage(message, number);
+
+            existingVendor.otp_ = otp;
+            existingVendor.number = number;
+            existingVendor.email = email;
+            existingVendor.otp_expire_time = expiryTime;
+            await existingVendor.save();
+
+            return res.status(201).json({
+                success: true,
+                message: 'Vendor already exists, but the mobile number has not been verified. New OTP sent.',
+                data: existingVendor,
+                type: 'email',
+                email: existingVendor.email,
+                number: existingVendor.number,
+                time: existingVendor.otp_expire_time,
+            });
+        }
+
+        const checkAAdhar = await Vendor_Model.findOne({ aadharNumber })
+        if (checkAAdhar) {
+            return res.status(400).json({ success: false, message: 'Vendor already exists with the same aadhar' })
         }
 
         const imageFileOne = files.find(file => file.fieldname === 'aadharfront');
@@ -476,6 +535,8 @@ exports.resendOtp = async (req, res) => {
     try {
         const { type, email } = req.body;
 
+        console.log(req.body)
+
         // Find vendor by email
         const vendor = await Vendor_Model.findOne({ email });
         if (!vendor) {
@@ -718,7 +779,7 @@ exports.loginVendor = async (req, res) => {
 
         // Step 6: Send the token upon successful login
         console.log("Successful login for vendor:", { vendorId: vendor._id, email });
-     await sendToken(vendor, res, 200);
+        await sendToken(vendor, res, 200);
 
     } catch (error) {
         // Step 7: Catch and log unexpected errors
@@ -1692,51 +1753,51 @@ exports.manuallyRegisterVendor = async (req, res) => {
 
 exports.updateVendorDocument = async (req, res) => {
     try {
-      const { id } = req.params;
-      const vendor = await Vendor_Model.findById(id);
-      if (!vendor) {
-        return res.status(404).json({
-          success: false,
-          message: 'Vendor not found',
-        });
-      }
-  
-      const documentFields = ['documentFirst', 'documentSecond', 'documentThird'];
-  
-      if (req.files) {
-        for (const field of documentFields) {
-          const file = req.files.find((f) => f.fieldname === field);
-          if (file) {
-            // Delete existing document from cloud
-            if (vendor?.Documents?.[field]?.public_id) {
-              await deleteImage(vendor.Documents[field].public_id);
-            }
-  
-            // Upload new document
-            const imageUrl = await uploadSingleImage(file.buffer);
-            const { image, public_id } = imageUrl;
-  
-            // Update vendor document
-            vendor.Documents[field] = { image, public_id };
-          }
+        const { id } = req.params;
+        const vendor = await Vendor_Model.findById(id);
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: 'Vendor not found',
+            });
         }
-      }
-  
-      await vendor.save();
-  
-      return res.status(200).json({
-        success: true,
-        message: 'Vendor documents updated successfully',
-        data: vendor,
-      });
+
+        const documentFields = ['documentFirst', 'documentSecond', 'documentThird'];
+
+        if (req.files) {
+            for (const field of documentFields) {
+                const file = req.files.find((f) => f.fieldname === field);
+                if (file) {
+                    // Delete existing document from cloud
+                    if (vendor?.Documents?.[field]?.public_id) {
+                        await deleteImage(vendor.Documents[field].public_id);
+                    }
+
+                    // Upload new document
+                    const imageUrl = await uploadSingleImage(file.buffer);
+                    const { image, public_id } = imageUrl;
+
+                    // Update vendor document
+                    vendor.Documents[field] = { image, public_id };
+                }
+            }
+        }
+
+        await vendor.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Vendor documents updated successfully',
+            data: vendor,
+        });
     } catch (error) {
-      console.error("Internal server error:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Internal server error",
-        error,
-      });
+        console.error("Internal server error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error,
+        });
     }
-  };
-  
-  
+};
+
+

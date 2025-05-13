@@ -254,6 +254,7 @@ const vendorSchema = new mongoose.Schema({
     aadharNumber: {
         type: String,
     },
+    
     panNumber: {
         type: String,
     },
