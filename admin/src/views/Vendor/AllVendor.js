@@ -20,7 +20,7 @@ import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
 function AllVendor() {
-    
+
     const [category, setCategory] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
@@ -75,27 +75,27 @@ function AllVendor() {
     }, [])
 
     const handleUpdateActive = async (id, currentStatus) => {
-    setLoading(true);
-    try {
-        const updatedStatus = !currentStatus;
-        const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
-            isActive: updatedStatus,
-        });
+        setLoading(true);
+        try {
+            const updatedStatus = !currentStatus;
+            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
+                isActive: updatedStatus,
+            });
 
-        if (updatedStatus) {
-            toast.success('Vendor has been activated successfully.');
-        } else {
-            toast.success('Vendor has been deactivated.');
+            if (updatedStatus) {
+                toast.success('Vendor has been activated successfully.');
+            } else {
+                toast.success('Vendor has been deactivated.');
+            }
+
+            handleFetchBanner();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            toast.error('Failed to update the status. Please try again.');
+        } finally {
+            setLoading(false);
         }
-
-        handleFetchBanner();
-    } catch (error) {
-        console.error('Error updating status:', error);
-        toast.error('Failed to update the status. Please try again.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
     const handleSaveChanges = async () => {
@@ -214,7 +214,7 @@ function AllVendor() {
         setDocumentVerify(documentVerify)
     };
 
-    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Action'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Created At', 'Action'];
 
     return (
         <>
@@ -301,6 +301,10 @@ function AllVendor() {
                                     <a style={{ color: 'white' }} href={`#/update-vendor-documents/${item._id}`}>View</a>
                                 </CButton>
                             </CTableDataCell>
+                            <CTableDataCell>
+                                {new Date(item.createdAt).toLocaleDateString('en-GB')}
+                            </CTableDataCell>
+
                             <CTableDataCell>
                                 <div className="action-parent">
                                     <CNavLink href={`#/vendor/edit-vendor/${item._id}`} className="edit">
