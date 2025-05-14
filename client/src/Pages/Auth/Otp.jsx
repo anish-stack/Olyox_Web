@@ -82,7 +82,7 @@ const Otp = () => {
             <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md">
                 <h2 className="text-center text-2xl font-semibold mb-4">Enter OTP</h2>
                 <p className="text-center text-gray-600 mb-4">
-                    We have sent a 6-digit OTP to <strong>{numberGrom}</strong>
+                    We have sent a 6-digit OTP on WhatsApp to <strong>{numberGrom}</strong>
                 </p>
                 <form>
                     <div className="mb-4">
