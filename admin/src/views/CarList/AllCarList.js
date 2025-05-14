@@ -61,18 +61,20 @@ function AllCarList() {
     const handleStatusToggle = async (rideId, currentStatus) => {
         setLoading(true);
         try {
+            const newStatus = !currentStatus; // Toggle the status
             await axios.put(`https://www.appapi.olyox.com/api/v1/admin/updateSuggestionStatus/${rideId}`, {
-                status: !currentStatus, // Toggle the status
+                status: newStatus,
             });
-            toast.success('Status updated successfully!');
+            toast.success(`Suggestion ${newStatus ? 'enabled' : 'disabled'} successfully!`);
             fetchRides(); // Refresh the ride list after updating status
         } catch (error) {
             console.error('Error updating status:', error);
-            toast.error('Failed to update ride status. Please try again.');
+            toast.error('Failed to update suggestion status. Please try again.');
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchRides();
@@ -91,7 +93,7 @@ function AllCarList() {
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
     };
 
-    const heading = ['S.No', 'Image', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status','Add Brands' ,'Actions'];
+    const heading = ['S.No', 'Image', 'Name', 'Type', 'Description', 'Time', 'Price Range', 'Status', 'Add Brands', 'Actions'];
 
     return (
         <>
@@ -135,9 +137,9 @@ function AllCarList() {
                                     </CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                      <CButton 
-                                       onClick={() => navigate(`/cars/add-brands-list/${item._id}`)}
-                                      color={'secondary'} >Add Brands</CButton>
+                                    <CButton
+                                        onClick={() => navigate(`/cars/add-brands-list/${item._id}`)}
+                                        color={'secondary'} >Add Brands</CButton>
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

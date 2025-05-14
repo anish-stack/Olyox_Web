@@ -41,21 +41,22 @@ const AllBonusCoupon = () => {
   };
 
   const handleUpdateStatus = async (id, currentStatus) => {
-    setLoading(true);
-    try {
-      const updatedStatus = currentStatus === 'active' ? 'inactive' : 'active';
-      const res = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/admin/update_bonus_status/${id}`, {
-        bonusStatus: updatedStatus,
-      });
-      toast.success(res?.data?.message || 'Status updated successfully');
-      fetchBonuses();
-    } catch (error) {
-      console.error('Error updating bonus status:', error);
-      toast.error('Failed to update status. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const updatedStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    await axios.put(`https://www.appapi.olyox.com/api/v1/admin/admin/update_bonus_status/${id}`, {
+      bonusStatus: updatedStatus,
+    });
+    toast.success(`Bonus ${updatedStatus === 'active' ? 'activated' : 'deactivated'} successfully!`);
+    fetchBonuses();
+  } catch (error) {
+    console.error('Error updating bonus status:', error);
+    toast.error('Failed to update status. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDeleteBonus = async (id) => {
     setLoading(true);

@@ -36,25 +36,26 @@ const ParcelSubscription = () => {
 
     // Update Active Status
     const handleUpdateActive = async (id, currentStatus) => {
-        setLoading(true);
-        try {
-            const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_membership_status/${id}`, {
-                active: updatedStatus,
-            });
-            toast.success(res?.data?.message);
-            handleFetchMembershipPlans();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error(
-                error?.response?.data?.errors?.[0] ||
-                error?.response?.data?.message ||
-                'Failed to update the status. Please try again.',
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+        const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_membership_status/${id}`, {
+            active: updatedStatus,
+        });
+        toast.success(`Membership plan ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
+        handleFetchMembershipPlans();
+    } catch (error) {
+        console.error('Error updating status:', error);
+        toast.error(
+            error?.response?.data?.errors?.[0] ||
+            error?.response?.data?.message ||
+            'Failed to update the status. Please try again.'
+        );
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     // Delete Membership Plan
     const handleDeleteMembershipPlan = async (id) => {

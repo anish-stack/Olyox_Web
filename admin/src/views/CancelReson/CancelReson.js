@@ -41,14 +41,17 @@ const CancelReason = () => {
     const handleToggleStatus = async (id, currentStatus) => {
         try {
             const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            const { data } = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/toggle-cancel-reasons/${id}`, { status: newStatus });
-            toast.success(data.message);
-            fetchCancelReasons();
+            await axios.put(`https://www.appapi.olyox.com/api/v1/admin/toggle-cancel-reasons/${id}`, {
+                status: newStatus,
+            });
+            toast.success(`Cancel reason ${newStatus === 'active' ? 'enabled' : 'disabled'} successfully!`);
+            fetchCancelReasons(); // Refresh the list
         } catch (error) {
             console.log('Error updating status:', error);
             toast.error('Failed to update status. Please try again.');
         }
     };
+
 
     const handleDelete = async (id) => {
         try {

@@ -49,16 +49,18 @@ const AllHomeBanner = () => {
     }
   };
 
-  const toggleStatus = async (id) => {
-    try {
-      await axios.patch(`https://www.appapi.olyox.com/api/v1/admin/toggle_home_banner/${id}`);
-      toast.success('Banner status updated');
-      fetchBanners();
-    } catch (error) {
-      console.error('Error updating status:', error);
-      toast.error('Failed to update status. Please try again.');
-    }
-  };
+  const toggleStatus = async (id, currentStatus) => {
+  try {
+    const newStatus = !currentStatus;
+    await axios.patch(`https://www.appapi.olyox.com/api/v1/admin/toggle_home_banner/${id}`);
+    toast.success(`Banner ${newStatus ? 'enabled' : 'disabled'} successfully!`);
+    fetchBanners();
+  } catch (error) {
+    console.error('Error updating status:', error);
+    toast.error('Failed to update status. Please try again.');
+  }
+};
+
 
   useEffect(() => {
     fetchBanners();
@@ -116,7 +118,7 @@ const AllHomeBanner = () => {
               <CTableDataCell>
                 <CFormSwitch
                   checked={banner.is_active}
-                  onChange={() => toggleStatus(banner._id)}
+                  onChange={() => toggleStatus(banner._id,banner.is_active)}
                   label={banner.is_active ? 'Active' : 'Inactive'}
                 />
               </CTableDataCell>

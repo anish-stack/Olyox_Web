@@ -36,10 +36,10 @@ const AllParcelCoupon = () => {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_coupon_status/${id}`, {
+            await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_coupon_status/${id}`, {
                 isActive: updatedStatus,
             });
-            toast.success(res?.data?.message);
+            toast.success(`Parcel coupon ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
             fetchCoupons();
         } catch (error) {
             console.error('Error updating status:', error);
@@ -48,6 +48,7 @@ const AllParcelCoupon = () => {
             setLoading(false);
         }
     };
+
 
     const handleDeleteCoupon = async (id) => {
         setLoading(true);
