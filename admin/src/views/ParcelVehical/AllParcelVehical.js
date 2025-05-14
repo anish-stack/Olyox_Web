@@ -48,16 +48,18 @@ const AllParcelVehicle = () => {
 
     const handleStatusToggle = async (id, currentStatus) => {
         try {
-            const { data } = await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_vehical_status/${id}`, {
-                status: !currentStatus,
+            const updatedStatus = !currentStatus;
+            await axios.put(`https://www.appapi.olyox.com/api/v1/parcel/update_parcel_vehical_status/${id}`, {
+                status: updatedStatus,
             });
-            toast.success(data?.message || 'Status updated successfully!');
+            toast.success(`Vehicle ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
             fetchVehicles();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error('Failed to update status. Please try again.');
         }
     };
+
 
     const confirmDelete = (id) => {
         Swal.fire({

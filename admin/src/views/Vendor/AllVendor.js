@@ -75,21 +75,28 @@ function AllVendor() {
     }, [])
 
     const handleUpdateActive = async (id, currentStatus) => {
-        setLoading(true);
-        try {
-            const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
-                isActive: updatedStatus,
-            });
-            toast.success(res?.data?.message);
-            handleFetchBanner();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Failed to update the status. Please try again.');
-        } finally {
-            setLoading(false);
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+        const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
+            isActive: updatedStatus,
+        });
+
+        if (updatedStatus) {
+            toast.success('Vendor has been activated successfully.');
+        } else {
+            toast.success('Vendor has been deactivated.');
         }
-    };
+
+        handleFetchBanner();
+    } catch (error) {
+        console.error('Error updating status:', error);
+        toast.error('Failed to update the status. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleSaveChanges = async () => {
         setLoading(true)
@@ -170,9 +177,9 @@ function AllVendor() {
         .filter(item => {
             // Search in name, email, number, or referral
             const searchMatch =
-                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-
+                (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                (item.email && item.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                (item.number && item.number.toString().includes(searchQuery)) || // Safely handle number with toString()
                 (item?.myReferral && item.myReferral.toLowerCase().includes(searchQuery.toLowerCase()));
 
             // Apply status filter
@@ -216,7 +223,7 @@ function AllVendor() {
                 <div className="mb-2 col-10 mb-md-0 me-md-3">
                     <CFormInput
                         type="text"
-                        placeholder="Search by Name or Email Or BH"
+                        placeholder="Search by Name, Email, Phone Number or BH"
                         value={searchQuery}
                         onChange={handleSearchChange}
                         className="form-control"

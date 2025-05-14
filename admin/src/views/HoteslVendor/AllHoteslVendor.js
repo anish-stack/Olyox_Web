@@ -45,10 +45,11 @@ const AllHoteslVendor = () => {
     const handleStatusToggle = async (hotelId, currentStatus) => {
         setLoading(true);
         try {
-            await axios.put(`https://www.appapi.olyox.com/api/v1/hotels/verify_hotel_documents/${hotelId}`, {
-                isVerifiedTag: !currentStatus,
+            const updatedStatus = !currentStatus;
+            await axios.put(`https://www.appapi.olyox.com/api/v1/hotels/update_hotel_block_status/${hotelId}`, {
+                isBlockByAdmin: updatedStatus,
             });
-            toast.success('Status updated successfully!');
+            toast.success(`Hotel ${updatedStatus ? 'blocked' : 'unblocked'} successfully!`);
             fetchHotels();
         } catch (error) {
             console.error('Error updating status:', error);
@@ -58,13 +59,14 @@ const AllHoteslVendor = () => {
         }
     };
 
-    const handleDelete = async(vendorId) => {
+
+    const handleDelete = async (vendorId) => {
         try {
-            const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_vendor/${vendorId}`);    
+            const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/hotels/delete_hotel_vendor/${vendorId}`);
             toast.success(data.data.message);
             fetchHotels();
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
         }
 
     }
@@ -99,7 +101,7 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/hotel-listin/${hotelId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Olyox Verified', 'View listing', 'Actions','Delete'];
+    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Is Blocked', 'View listing', 'Actions', 'Delete'];
 
     return (
         <>
@@ -144,8 +146,8 @@ const AllHoteslVendor = () => {
                                     <CFormSwitch
                                         id={`blockSwitch-${hotel._id}`}
                                         label=""
-                                        checked={hotel.isVerifiedTag}
-                                        onChange={() => handleStatusToggle(hotel._id, hotel.isVerifiedTag)}
+                                        checked={hotel.isBlockByAdmin}
+                                        onChange={() => handleStatusToggle(hotel._id, hotel.isBlockByAdmin)}
                                     />
                                 </CTableDataCell>
                                 <CTableDataCell>

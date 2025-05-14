@@ -33,21 +33,22 @@ const AllCoupon = () => {
     };
 
     const handleUpdateStatus = async (id, currentStatus) => {
-        setLoading(true);
-        try {
-            const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.appapi.olyox.com/api/v1/admin/updateCouponStatus/${id}`, {
-                active: updatedStatus,
-            });
-            toast.success(res?.data?.message);
-            fetchCoupons();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Failed to update status. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+        await axios.put(`https://www.appapi.olyox.com/api/v1/admin/updateCouponStatus/${id}`, {
+            active: updatedStatus,
+        });
+        toast.success(`Coupon ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
+        fetchCoupons();
+    } catch (error) {
+        console.error('Error updating status:', error);
+        toast.error('Failed to update status. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleDeleteCoupon = async (id) => {
         setLoading(true);

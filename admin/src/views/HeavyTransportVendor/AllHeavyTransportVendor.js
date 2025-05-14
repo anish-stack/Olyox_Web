@@ -42,20 +42,29 @@ const AllHeavyTransportVendor = () => {
     };
 
     const handleStatusToggle = async (vendorId, currentStatus) => {
-        setLoading(true);
-        try {
-            await axios.put(`https://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
-                is_blocked: !currentStatus,
-            });
-            toast.success('Block status updated!');
-            fetchVendors();
-        } catch (error) {
-            console.error('Error updating block status:', error);
-            toast.error('Failed to update status. Please try again.');
-        } finally {
-            setLoading(false);
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+
+        await axios.put(`https://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
+            is_blocked: updatedStatus,
+        });
+
+        if (updatedStatus) {
+            toast.success('Vendor has been blocked.');
+        } else {
+            toast.success('Vendor has been unblocked.');
         }
-    };
+
+        fetchVendors();
+    } catch (error) {
+        console.error('Error updating block status:', error);
+        toast.error('Failed to update status. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleDelete = async(vendorId) => {
         try {

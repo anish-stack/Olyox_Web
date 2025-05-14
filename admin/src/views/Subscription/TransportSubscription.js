@@ -42,19 +42,23 @@ const TransportSubscription = () => {
             const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_membership_status/${id}`, {
                 active: updatedStatus,
             });
-            toast.success(res?.data?.message);
+
+            // Customizing the success message based on the updated status
+            toast.success(`Membership plan ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
+
             handleFetchMembershipPlans();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(
                 error?.response?.data?.errors?.[0] ||
                 error?.response?.data?.message ||
-                'Failed to update the status. Please try again.',
+                'Failed to update the status. Please try again.'
             );
         } finally {
             setLoading(false);
         }
     };
+
 
     // Delete Membership Plan
     const handleDeleteMembershipPlan = async (id) => {
@@ -108,7 +112,7 @@ const TransportSubscription = () => {
         setCurrentPage(page);
     };
 
-      const heading = ['S.No', 'Title', 'Price', 'Money Earn', 'Level', 'Is Active', 'Action'];
+    const heading = ['S.No', 'Title', 'Price', 'Money Earn', 'Level', 'Is Active', 'Action'];
 
     return (
         <>
@@ -127,8 +131,8 @@ const TransportSubscription = () => {
                             <CTableDataCell>{startIndex + index + 1}</CTableDataCell>
                             <CTableDataCell>{item.title}</CTableDataCell>
                             <CTableDataCell>{item.price} INR</CTableDataCell>
-                                                          <CTableDataCell>{item.HowManyMoneyEarnThisPlan || 0}</CTableDataCell>
-                            
+                            <CTableDataCell>{item.HowManyMoneyEarnThisPlan || 0}</CTableDataCell>
+
                             <CTableDataCell>{item.level}</CTableDataCell>
                             <CTableDataCell>
                                 <CFormSwitch

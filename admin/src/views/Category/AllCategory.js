@@ -21,7 +21,7 @@ function AllCategory() {
 
     const handleFetchBanner = async () => {
         setLoading(true);
-        
+
         try {
             const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/categories_get');
             setCategory(data.data || []); // Ensure default empty array
@@ -38,11 +38,11 @@ function AllCategory() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_category_status/${id}`, {
+            await axios.put(`https://www.webapi.olyox.com/api/v1/update_category_status/${id}`, {
                 isActive: updatedStatus,
             });
-            toast.success(res?.data?.message);
-            handleFetchBanner()
+            toast.success(`Category ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
+            handleFetchBanner();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error(
@@ -54,6 +54,7 @@ function AllCategory() {
             setLoading(false);
         }
     };
+
 
     // Delete Banner
     const handleDeleteBanner = async (id) => {
