@@ -350,6 +350,7 @@ exports.verifyDocument = async (req, res) => {
 
 
         vendor.documentVerify = !vendor.documentVerify;
+        vendor.isActive = true
         await vendor.save();
 
 
