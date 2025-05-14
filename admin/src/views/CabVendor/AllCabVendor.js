@@ -44,20 +44,29 @@ const AllCabVendor = () => {
     };
 
     const handleStatusToggle = async (riderId, currentStatus) => {
-        setLoading(true);
-        try {
-            await axios.put(`https://www.appapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
-                isBlockByAdmin: !currentStatus,
-            });
-            toast.success('Status updated successfully!');
-            fetchRiders();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Failed to update rider status. Please try again.');
-        } finally {
-            setLoading(false);
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+
+        await axios.put(`https://www.appapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
+            isBlockByAdmin: updatedStatus,
+        });
+
+        if (updatedStatus) {
+            toast.success('Rider has been blocked by admin.');
+        } else {
+            toast.success('Rider has been unblocked.');
         }
-    };
+
+        fetchRiders();
+    } catch (error) {
+        console.error('Error updating status:', error);
+        toast.error('Failed to update rider status. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleDelete = async (vendorId) => {
         try {

@@ -10,8 +10,13 @@ import {
     CInputGroupText,
     CFormInput,
     CFormSwitch,
+    CRow,
+    CCol,
+    CCard,
+    CCardBody,
 } from '@coreui/react';
-import { FaEye } from 'react-icons/fa';
+import { FaEye, FaSearch } from 'react-icons/fa';
+import { X } from 'lucide-react';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -22,15 +27,19 @@ const AllTiffinVendor = () => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({
+        bhid: '',
+        name: '',
+        phone: ''
+    });
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
     const fetchVendors = async () => {
         setLoading(true);
         try {
-
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/tiffin/get_restaurant');
+            console.log("data.data",data.data)
             setVendors(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching vendors:', error);
@@ -42,20 +51,29 @@ const AllTiffinVendor = () => {
     };
 
     const handleStatusToggle = async (vendorId, currentStatus) => {
-        setLoading(true);
-        try {
-            await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${vendorId}`, {
-                status: !currentStatus,
-            });
-            toast.success('Status updated successfully!');
-            fetchVendors();
-        } catch (error) {
-            console.error('Error updating status:', error);
-            toast.error('Failed to update vendor status. Please try again.');
-        } finally {
-            setLoading(false);
+    setLoading(true);
+    try {
+        const updatedStatus = !currentStatus;
+
+        await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${vendorId}`, {
+            status: updatedStatus,
+        });
+
+        if (updatedStatus) {
+            toast.success('Vendor has been activated successfully.');
+        } else {
+            toast.success('Vendor has been deactivated.');
         }
-    };
+
+        fetchVendors();
+    } catch (error) {
+        console.error('Error updating status:', error);
+        toast.error('Failed to update vendor status. Please try again.');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleDelete = async (vendorId) => {
         try {
@@ -63,7 +81,7 @@ const AllTiffinVendor = () => {
             toast.success(res.data.message);
             fetchVendors();
         } catch (error) {
-            console.log("Internal server error",error)
+            console.log("Internal server error", error)
         }
     }
 
@@ -71,10 +89,38 @@ const AllTiffinVendor = () => {
         fetchVendors();
     }, []);
 
-    // Filter vendors by restaurant name
-    const filteredVendors = vendors.filter(vendor =>
-        vendor.restaurant_name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        setCurrentPage(1); // Reset to first page when filters change
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            bhid: '',
+            name: '',
+            phone: ''
+        });
+        setCurrentPage(1);
+    };
+
+    // Filter vendors based on multiple criteria
+    const filteredVendors = vendors.filter(vendor => {
+        const matchesBHID = filters.bhid === '' || 
+            vendor.restaurant_BHID?.toLowerCase().includes(filters.bhid.toLowerCase());
+        
+        const matchesName = filters.name === '' || 
+            vendor.restaurant_name?.toLowerCase().includes(filters.name.toLowerCase());
+        
+        const matchesPhone = filters.phone === '' || 
+            (vendor.restaurant_contact && 
+             vendor.restaurant_contact.toString().includes(filters.phone));
+        
+        return matchesBHID && matchesName && matchesPhone;
+    });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredVendors.slice(startIndex, startIndex + itemsPerPage);
@@ -100,17 +146,73 @@ const AllTiffinVendor = () => {
 
     return (
         <>
-            {/* Filter Input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
-                    <CInputGroupText>Search by Name</CInputGroupText>
-                    <CFormInput
-                        placeholder="Search by restaurant name"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </CInputGroup>
-            </div>
+            {/* Enhanced Filter Section */}
+            <CCard className="mb-4">
+                <CCardBody>
+                    <h5 className="mb-3">Search Filters</h5>
+                    <CRow className="g-3">
+                        <CCol md={3}>
+                            <CInputGroup>
+                                <CInputGroupText>
+                                    BHID
+                                </CInputGroupText>
+                                <CFormInput
+                                    placeholder="Search by BHID"
+                                    name="bhid"
+                                    value={filters.bhid}
+                                    onChange={handleFilterChange}
+                                />
+                            </CInputGroup>
+                        </CCol>
+                        <CCol md={3}>
+                            <CInputGroup>
+                                <CInputGroupText>
+                                    Name
+                                </CInputGroupText>
+                                <CFormInput
+                                    placeholder="Search by restaurant name"
+                                    name="name"
+                                    value={filters.name}
+                                    onChange={handleFilterChange}
+                                />
+                            </CInputGroup>
+                        </CCol>
+                        <CCol md={3}>
+                            <CInputGroup>
+                                <CInputGroupText>
+                                    Phone
+                                </CInputGroupText>
+                                <CFormInput
+                                    type="text"
+                                    placeholder="Search by phone number"
+                                    name="phone"
+                                    value={filters.phone}
+                                    onChange={handleFilterChange}
+                                />
+                            </CInputGroup>
+                        </CCol>
+                        <CCol md={3} className="d-flex align-items-center">
+                            <CButton 
+                                color="primary"
+                                className="me-2"
+                                onClick={fetchVendors}
+                            >
+                                <FaSearch className="me-1" /> Search
+                            </CButton>
+                            <CButton 
+                                color="secondary"
+                                variant="outline"
+                                onClick={clearFilters}
+                            >
+                                <X size={16} className="me-1" /> Clear
+                            </CButton>
+                        </CCol>
+                    </CRow>
+                    <div className="mt-3 text-muted small">
+                        Showing {filteredVendors.length} of {vendors.length} vendors
+                    </div>
+                </CCardBody>
+            </CCard>
 
             {/* Loader or No Data */}
             {loading ? (
@@ -119,7 +221,7 @@ const AllTiffinVendor = () => {
                 </div>
             ) : filteredVendors.length === 0 ? (
                 <div className="no-data">
-                    <p>No vendors available</p>
+                    <p>No vendors available matching your search criteria</p>
                 </div>
             ) : (
                 <Table
