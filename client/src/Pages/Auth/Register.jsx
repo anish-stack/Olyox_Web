@@ -119,6 +119,16 @@ const Register = () => {
         if (!formData.category) newErrors.category = 'Please select a category.';
         if (!formData.address.pincode.trim()) newErrors.pincode = 'Please enter your area pincode.';
 
+        const rawAadhaar = formData.aadharNumber.replace(/\s/g, '');
+        if (!rawAadhaar) {
+            newErrors.aadharNumber = 'Please enter your Aadhaar number.';
+        } else if (rawAadhaar.length !== 12) {
+            newErrors.aadharNumber = 'Aadhaar must be exactly 12 digits.';
+        } else if (!/^\d{12}$/.test(rawAadhaar)) {
+            newErrors.aadharNumber = 'Aadhaar must contain only digits.';
+        }
+
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -126,7 +136,15 @@ const Register = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (name.startsWith('address.')) {
+
+        if (name === 'aadharNumber') {
+            // Remove all non-digit characters
+            const rawValue = value.replace(/\D/g, '');
+            // Format: insert space after every 4 digits
+            const formattedValue = rawValue.replace(/(.{4})/g, '$1 ').trim();
+
+            setFormData(prev => ({ ...prev, [name]: formattedValue }));
+        } else if (name.startsWith('address.')) {
             const addressField = name.split('.')[1];
             setFormData(prev => ({
                 ...prev,
@@ -138,11 +156,13 @@ const Register = () => {
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
+
         // Clear error when user starts typing
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
+
 
     const handleSelect = (e) => {
         const { name, value } = e.target;
@@ -389,15 +409,16 @@ const Register = () => {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700">Aadhar Number</label>
+                                <label htmlFor="aadharNumber" className="block text-sm font-medium text-gray-700">Aadhaar Number</label>
                                 <input
                                     type="text"
                                     id="aadharNumber"
                                     name="aadharNumber"
                                     value={formData.aadharNumber}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+                                    className={`mt-1 block w-full rounded-md px-3 py-2 border shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${errors.aadharNumber ? 'border-red-500' : 'border-gray-300'}`}
                                 />
+                                {errors.aadharNumber && <p className="mt-1 text-sm text-red-600">{errors.aadharNumber}</p>}
                             </div>
 
                             <div>

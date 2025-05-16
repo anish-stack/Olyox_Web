@@ -16,6 +16,10 @@ function EditVendor() {
     number: '',
     category: '',
     myReferral: '',
+    aadharNumber: '',
+    area: '',
+    pincode: '',
+    landmark: '',
   });
 
   const handleFetchCategory = async () => {
@@ -32,12 +36,17 @@ function EditVendor() {
     try {
       const res = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
       const vendor = res.data.data;
+      console.log("vendor",vendor)
       setFormData({
         name: vendor.name || '',
         email: vendor.email || '',
         number: vendor.number || '',
         category: vendor.category || '',
         myReferral: vendor.myReferral || '',
+        aadharNumber: vendor.aadharNumber || '',
+        area: vendor.address.area || '',
+        pincode: vendor.address.pincode || '',
+        landmark: vendor.address.landmark || '',
       });
     } catch (err) {
       console.error(err);
@@ -59,14 +68,14 @@ function EditVendor() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, number, category, myReferral } = formData;
+    const { name, email, number, category, myReferral, aadharNumber, area, pincode, landmark } = formData;
 
     if (!name || !email || !number) {
       toast.error('Name, email, and number are required.');
       return;
     }
 
-    const payload = { name, email, number, category, myReferral };
+    const payload = { name, email, number, category, myReferral, aadharNumber, area, pincode, landmark };
 
     setLoading(true);
     try {
@@ -89,7 +98,7 @@ function EditVendor() {
     <Form
       heading="Edit Heavy Transport Vendor"
       btnText="Back"
-      btnURL="/heavy/all-heavy-transport-vendor"
+      btnURL="/vendor/all_vendor"
       onSubmit={handleSubmit}
       formContent={
         <>
@@ -110,7 +119,27 @@ function EditVendor() {
 
           <CCol md={12} className="mt-3">
             <CFormLabel htmlFor="number">Phone Number</CFormLabel>
-            <CFormInput id="number" name="number" value={formData.number} onChange={handleChange} required />
+            <CFormInput id="number" name="number" type="number" value={formData.number} onChange={handleChange} required />
+          </CCol>
+
+          <CCol md={12} className="mt-3">
+            <CFormLabel htmlFor="aadharNumber">Aadhar Number</CFormLabel>
+            <CFormInput id="aadharNumber" type="text" name="aadharNumber" value={formData.aadharNumber} onChange={handleChange} required />
+          </CCol>
+
+          <CCol md={12} className="mt-3">
+            <CFormLabel htmlFor="area">Full Address</CFormLabel>
+            <CFormInput id="area" type="text" name="area" value={formData.area} onChange={handleChange} required />
+          </CCol>
+
+          <CCol md={12} className="mt-3">
+            <CFormLabel htmlFor="landmark">Landmark</CFormLabel>
+            <CFormInput id="landmark" type="text" name="landmark" value={formData.landmark} onChange={handleChange} required />
+          </CCol>
+
+          <CCol md={12} className="mt-3">
+            <CFormLabel htmlFor="pincode">Pincode</CFormLabel>
+            <CFormInput id="pincode" type="number" name="pincode" value={formData.pincode} onChange={handleChange} required />
           </CCol>
 
           <CCol md={12} className="mt-3">
