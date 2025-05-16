@@ -69,7 +69,7 @@ const vendorSchema = new mongoose.Schema({
         },
         pincode: {
             type: String,
-
+            match: [/^\d{6}$/, 'Please provide a valid 6-digit pincode']
         }
     },
     workMode: {
@@ -238,7 +238,7 @@ const vendorSchema = new mongoose.Schema({
     },
     dob: {
         type: Date,
-        default:new Date()
+        default: new Date()
     },
     higherLevel: {
         type: Number
@@ -254,13 +254,13 @@ const vendorSchema = new mongoose.Schema({
     aadharNumber: {
         type: String,
     },
-    
+
     panNumber: {
         type: String,
     },
-    isProfileCompleteOnApp:{
-        type:Boolean,
-        default:false
+    isProfileCompleteOnApp: {
+        type: Boolean,
+        default: false
     },
     Profile_id: {
         type: mongoose.Schema.Types.ObjectId,

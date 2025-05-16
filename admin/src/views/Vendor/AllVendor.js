@@ -269,8 +269,11 @@ function AllVendor() {
                             <CTableDataCell>{item.number}</CTableDataCell>
                             <CTableDataCell>
                                 <CButton
-                                    color="warning"
-                                    onClick={() => handleModalOpen(item.Documents, 'Documents', item._id, item.documentVerify)}
+                                    color={item.documentVerify ? 'success' : 'danger'}
+                                    onClick={() =>
+                                        handleModalOpen(item.Documents, 'Documents', item._id, item.documentVerify)
+                                    }
+                                    style={{color:'white'}}
                                 >
                                     View Documents
                                 </CButton>
