@@ -15,6 +15,7 @@ function EditVendor() {
     email: '',
     number: '',
     category: '',
+    myReferral: '',
   });
 
   const handleFetchCategory = async () => {
@@ -36,6 +37,7 @@ function EditVendor() {
         email: vendor.email || '',
         number: vendor.number || '',
         category: vendor.category || '',
+        myReferral: vendor.myReferral || '',
       });
     } catch (err) {
       console.error(err);
@@ -57,14 +59,14 @@ function EditVendor() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, number, category } = formData;
+    const { name, email, number, category, myReferral } = formData;
 
     if (!name || !email || !number) {
       toast.error('Name, email, and number are required.');
       return;
     }
 
-    const payload = { name, email, number, category };
+    const payload = { name, email, number, category, myReferral };
 
     setLoading(true);
     try {
@@ -74,7 +76,7 @@ function EditVendor() {
       );
 
       toast.success(res.data.message);
-      navigate('/vendor/all_vendor');
+      // navigate('/vendor/all_vendor');
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || 'Failed to update vendor');
@@ -99,6 +101,11 @@ function EditVendor() {
           <CCol md={12} className="mt-3">
             <CFormLabel htmlFor="email">Email</CFormLabel>
             <CFormInput id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+          </CCol>
+
+          <CCol md={12} className="mt-3">
+            <CFormLabel htmlFor="myReferral">BH ID</CFormLabel>
+            <CFormInput id="myReferral" name="myReferral" type="text" value={formData.myReferral} onChange={handleChange} required />
           </CCol>
 
           <CCol md={12} className="mt-3">

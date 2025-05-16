@@ -1285,11 +1285,12 @@ exports.updateVendorDetailByAdmin = async (req, res) => {
                 message: 'Vendor not found'
             })
         }
-        const { name, email, number, category } = req.body;
+        const { name, email, number, category, myReferral } = req.body;
         if (name) findVendor.name = name;
         if (email) findVendor.email = email;
         if (number) findVendor.number = number;
         if (category) findVendor.category = category;
+        if (myReferral) findVendor.myReferral = myReferral;
         await findVendor.save();
         res.status(200).json({
             success: true,
