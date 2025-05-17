@@ -21,7 +21,7 @@ const Dashboard = () => {
 
   const fetchProviders = async () => {
     try {
-      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/all_vendor');
+      const { data } = await axios.get('https://webapi.olyox.com/api/v1/all_vendor');
       const providers = data.data;
 
       // Sort providers by newest first

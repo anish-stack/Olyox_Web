@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Check, CreditCard, Timer, AlertCircle } from 'lucide-react';
+import { X, Check, CreditCard, AlertCircle, Loader } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) => {
     const [memberships, setMemberships] = useState([]);
     const [selectedMember_id, setSelectedMember_id] = useState(alreadySelectedMember_id);
-    const [showQR, setShowQR] = useState(false);
-    const [transactionId, setTransactionId] = useState('');
-    const [timer, setTimer] = useState(30 * 60); // 30 minutes in seconds
     const [loading, setLoading] = useState(false);
-    const [token, setToken] = useState({})
+    const [paymentInProgress, setPaymentInProgress] = useState(false);
+    const [token, setToken] = useState('');
     const [userCategory, setUserCategory] = useState('');
-
+    const [userData, setUserData] = useState(null);
 
     useEffect(() => {
         if (isOpen) {
-            const tokenExtract = sessionStorage.getItem('token')
-            console.log(tokenExtract)
+            const tokenExtract = sessionStorage.getItem('token');
             if (tokenExtract) {
-                setToken(tokenExtract)
+                setToken(tokenExtract);
                 fetchMembershipPlan();
             }
         }
@@ -31,98 +28,166 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
         }
     }, [user_id]);
 
-    useEffect(() => {
-        let interval;
-        if (showQR && timer > 0) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [showQR, timer]);
-
     const fetchUserDetails = async () => {
         try {
-            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${user_id}`);
-            setUserCategory(data.data.category?.title);
-            // fetchMembershipPlan();
+            setLoading(true);
+            const { data } = await axios.get(`https://webapi.olyox.com/api/v1/get_Single_Provider/${user_id}`);
+            setUserData(data.data);
+            setUserCategory(data.data.category?.title || '');
+            setLoading(false);
         } catch (err) {
+            setLoading(false);
+            toast.error('Failed to fetch user details');
             console.error('Error fetching user details:', err);
         }
     };
 
     const fetchMembershipPlan = async () => {
         try {
-            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
-            // console.log("userCategory", userCategory);
+            setLoading(true);
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
 
-            const normalizedUserCategory = userCategory?.toLowerCase().replace(/\s+/g, '');
+            // Filter plans based on user category if available
+            if (userCategory) {
+                const normalizedUserCategory = userCategory.toLowerCase().replace(/\s+/g, '');
 
-            const filterData = data.data.filter(plan => {
-                if (!plan.category) return false; // Skip if category is undefined or null
+                const filterData = data.data.filter(plan => {
+                    if (!plan.category) return false;
 
-                const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
-                // console.log("normalizedPlanCategory", normalizedPlanCategory);
+                    const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
+                    return (
+                        normalizedPlanCategory.includes(normalizedUserCategory) ||
+                        normalizedUserCategory.includes(normalizedPlanCategory)
+                    );
+                });
 
-                return (
-                    normalizedPlanCategory.includes(normalizedUserCategory) ||
-                    normalizedUserCategory.includes(normalizedPlanCategory)
-                );
-            });
-
-            // console.log("filterData", filterData);
-            setMemberships(filterData);
+                setMemberships(filterData);
+            } else {
+                setMemberships(data.data);
+            }
+            setLoading(false);
         } catch (err) {
+            setLoading(false);
+            toast.error('Failed to fetch membership plans');
             console.error('Error fetching membership plans:', err);
         }
     };
 
-
-
-
-    const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-    };
-
-    const handlePlanSelect = (memberId) => {
-        setSelectedMember_id(memberId);
-        setShowQR(true);
-    };
-
-    const handleCancelPayment = () => {
-        setShowQR(false);
-        setTransactionId('');
-        setTimer(30 * 60);
-    };
-
-
-    const handleRecharge = async () => {
-        setLoading(true)
+    const initializeRazorpay = async (planId) => {
         try {
-            const { data } = await axios.post('https://www.webapi.olyox.com/api/v1/do-recharge', {
-                plan_id: selectedMember_id,
-                trn_no: transactionId
+            setPaymentInProgress(true);
+
+
+            // Create order on your backend
+            const orderResponse = await axios.get(`https://appapi.olyox.com/api/v1/rider/recharge-wallet/${selectedMember_id}/${userData?.myReferral}`);
+
+            if (!orderResponse.data || !orderResponse.data.order) {
+                throw new Error("Invalid response from server");
+            }
+
+            const selectedPlan = memberships.find(plan => plan._id === planId);
+
+            // Load Razorpay script if not already loaded
+            if (!window.Razorpay) {
+                await loadRazorpayScript();
+            }
+
+            // Configure Razorpay options
+            const options = {
+                key: "rzp_test_WIhO08xjZ4nRVW", // Replace with your Razorpay key
+                amount: orderResponse.data.order.amount,
+                currency: orderResponse.data.order.currency,
+                name: "OLYOX Pvt. Ltd.",
+                description: `${selectedPlan.title} Membership`,
+                image: "https://olyox.com/assets/logo-CWkwXYQ_.png",
+                order_id: orderResponse.data.order.id,
+                handler: function (response) {
+                    handlePaymentSuccess(response, planId);
+                },
+                prefill: {
+                    name: userData?.name || '',
+                    email: userData?.email || '',
+                    contact: userData?.phone || ''
+                },
+                notes: {
+                    plan_id: planId,
+                    user_id: user_id
+                },
+                theme: {
+                    color: "#d82c2a"
+                },
+                modal: {
+                    ondismiss: function () {
+                        handlePaymentCancelled();
+                    }
+                }
+            };
+
+            // Open Razorpay checkout
+            const razorpay = new window.Razorpay(options);
+            razorpay.open();
+
+        } catch (error) {
+            setPaymentInProgress(false);
+            toast.error(error.response?.data?.message || "Failed to initialize payment");
+            console.error("Payment initialization error:", error);
+        }
+    };
+
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+                toast.error("Razorpay SDK failed to load. Check your internet connection.");
+            };
+            document.body.appendChild(script);
+        });
+    };
+
+    const handlePaymentSuccess = async (response, planId) => {
+        try {
+            // Verify payment on your backend
+            const verifyResponse = await axios.post(`https://appapi.olyox.com/api/v1/rider/recharge-verify/${userData?.myReferral}`, {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                plan_id: planId
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            })
-            console.log(data)
+            });
 
-            toast.success(data?.message)
-            setTimeout(() => {
-                setLoading(false)
-                window.location.reload()
-            }, 2300);
-
+            if (verifyResponse.data.success) {
+                toast.success("Payment successful! Your plan has been activated.");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                toast.error("Payment verification failed. Please contact support.");
+            }
         } catch (error) {
-            setLoading(false)
-
-            console.log(error)
+            toast.error(error.response?.data?.message || "Payment verification failed");
+            console.error("Payment verification error:", error);
+        } finally {
+            setPaymentInProgress(false);
         }
-    }
+    };
+
+    const handlePaymentCancelled = () => {
+        setPaymentInProgress(false);
+        toast.error("Payment was cancelled. Please try again when you're ready.");
+    };
+
+    const handlePlanSelect = (planId) => {
+        setSelectedMember_id(planId);
+        initializeRazorpay(planId);
+    };
 
     if (!isOpen) return null;
 
@@ -131,124 +196,121 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
             <div className="bg-white rounded-2xl max-w-7xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-gray-900">
-                        {showQR ? 'Complete Payment' : 'Recharge Plans'}
+                        Membership Plans
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-500 transition-colors"
+                        disabled={paymentInProgress}
+                        className="text-gray-400 hover:text-gray-500 transition-colors disabled:opacity-50"
                     >
                         <X className="w-6 h-6" />
                     </button>
                 </div>
 
                 <div className="p-6">
-                    {!showQR ? (
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {memberships.map((plan) => (
-                                <div
-                                    key={plan._id}
-                                    className={`relative border rounded-xl p-6 ${plan._id === selectedMember_id
-                                        ? 'border-red-500 bg-red-50'
-                                        : 'border-gray-200 hover:border-red-300'
-                                        } transition-all`}
-                                >
-                                    {plan._id === alreadySelectedMember_id && (
-                                        <div className="absolute -top-3 -right-3">
-                                            <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                                                Current Plan
-                                            </span>
-                                        </div>
-                                    )}
-                                    <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
-                                    <div className="text-2xl font-bold text-red-600 mb-4">
-                                        ₹{plan.price} <span className="text-base text-gray-800">+ 18% Gst Extra</span>
-                                    </div>
-                                    <p className="text-gray-600 mb-4">{plan.description}</p>
-                                    {/* <div className="space-y-2 mb-6">
-                                        {plan.includes.map((feature, index) => (
-                                            <div key={index} className="flex items-center text-gray-600">
-                                                <Check className="w-4 h-4 text-green-500 mr-2" />
-                                                <span>{feature}</span>
-                                            </div>
-                                        ))}
-                                    </div> */}
-                                    <div className="text-sm text-gray-500 mb-4">
-                                        Valid for {plan.validityDays} {plan.whatIsThis}
-                                    </div>
-                                    <button
-                                        onClick={() => handlePlanSelect(plan._id)}
-                                        className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
-                                    >
-                                        <div>
-                                            <h2>Select Plan and Pay {plan.price ? `₹${(plan.price * 1.18).toFixed(2)}` : 'Price not available'}</h2>
-                                        </div>
-                                    </button>
-                                </div>
-                            ))}
+                    {loading ? (
+                        <div className="flex justify-center items-center py-12">
+                            <Loader className="w-8 h-8 text-red-600 animate-spin" />
+                            <span className="ml-3 text-lg">Loading plans...</span>
+                        </div>
+                    ) : memberships.length === 0 ? (
+                        <div className="text-center py-12">
+                            <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                            <h3 className="text-xl font-medium text-gray-900 mb-2">No plans available</h3>
+                            <p className="text-gray-600">
+                                We couldn't find any membership plans for your category.
+                                Please contact support for assistance.
+                            </p>
                         </div>
                     ) : (
-                        <div className="max-w-md mx-auto space-y-6">
-                            <div className="text-center">
-                                <Timer className="w-6 h-6 text-red-600 mx-auto mb-2" />
-                                <p className="text-lg font-semibold">Time Remaining: {formatTime(timer)}</p>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {memberships.map((plan) => {
+                                // Calculate price with GST
+                                const priceWithGST = plan.price ? Number((plan.price * 1.18).toFixed(2)) : null;
 
-                            <div className="border rounded-lg p-4">
-                                <div className="w-48 h-48 mx-auto mb-4 overflow-hidden rounded-lg">
-                                    <img
-                                        src="https://offercdn.paytm.com/blog/2022/02/scan/scan-banner.png"
-                                        alt="QR Code"
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Transaction ID
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={transactionId}
-                                            onChange={(e) => setTransactionId(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
-                                            placeholder="Enter transaction ID"
-                                        />
-                                    </div>
-
-                                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                                        <div className="flex">
-                                            <AlertCircle className="w-5 h-5 text-yellow-400" />
-                                            <div className="ml-3">
-                                                <p className="text-sm text-yellow-700">
-                                                    Please complete the payment and enter the transaction ID within 30 minutes.
-                                                </p>
+                                return (
+                                    <div
+                                        key={plan._id}
+                                        className={`relative border rounded-xl p-6 transition-all hover:shadow-md ${plan._id === selectedMember_id
+                                                ? 'border-red-500 bg-red-50'
+                                                : 'border-gray-200 hover:border-red-300'
+                                            }`}
+                                    >
+                                        {plan._id === alreadySelectedMember_id && (
+                                            <div className="absolute -top-3 -right-3">
+                                                <span className="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+                                                    Current Plan
+                                                </span>
                                             </div>
+                                        )}
+                                        <h3 className="text-xl font-semibold mb-2">{plan.title}</h3>
+                                        <div className="text-2xl font-bold text-red-600 mb-4">
+                                            ₹{plan.price} <span className="text-sm text-gray-500">+ 18% GST</span>
                                         </div>
-                                    </div>
+                                        <p className="text-gray-600 mb-4">{plan.description}</p>
 
-                                    <div className="flex gap-4">
-                                        <button
-                                            onClick={() => handleRecharge()}
-                                            disabled={!transactionId || loading}
-                                            className="flex-1 text-base whitespace-nowrap  bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                        >
-                                            <CreditCard className="w-5 hidden md:block h-5" />
-                                            {loading ? 'Verifying...' : 'Verify Payment'}
-                                        </button>
+                                        {plan.features && plan.features.length > 0 && (
+                                            <div className="space-y-2 mb-6">
+                                                {plan.features.map((feature, index) => (
+                                                    <div key={index} className="flex items-start">
+                                                        <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                                                        <span className="text-gray-600 text-sm">{feature}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div className="text-sm text-gray-500 mb-6">
+                                            Valid for {plan.validityDays} {plan.whatIsThis || 'days'}
+                                        </div>
 
                                         <button
-                                            onClick={handleCancelPayment}
-                                            className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                                            onClick={() => handlePlanSelect(plan._id)}
+                                            disabled={paymentInProgress}
+                                            className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
-                                            <X className="w-5 h-5" />
-                                            Cancel
+                                            {paymentInProgress ? (
+                                                <>
+                                                    <Loader className="w-4 h-4 animate-spin" />
+                                                    <span>Processing...</span>
+                                                </>
+                                            ) : plan._id === alreadySelectedMember_id ? (
+                                                'Current Plan'
+                                            ) : (
+                                                <>
+                                                    <CreditCard className="w-5 h-5" />
+                                                    <span>Pay ₹{priceWithGST || 'N/A'}</span>
+                                                </>
+                                            )}
                                         </button>
                                     </div>
-                                </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {paymentInProgress && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center max-w-md w-full">
+                                <Loader className="w-12 h-12 text-red-600 animate-spin mb-4" />
+                                <h3 className="text-xl font-medium mb-2">Processing Payment</h3>
+                                <p className="text-gray-600 text-center">
+                                    Please complete the payment in the Razorpay window.
+                                    Do not close this window.
+                                </p>
                             </div>
                         </div>
                     )}
+                </div>
+
+                <div className="p-6 border-t border-gray-200 bg-gray-50">
+                    <div className="flex items-start">
+                        <AlertCircle className="w-5 h-5 text-yellow-500 mr-3 mt-0.5" />
+                        <p className="text-sm text-gray-600">
+                            All payments are secured by Razorpay. After successful payment, your plan will be activated immediately.
+                            For any payment issues, please contact our support team.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

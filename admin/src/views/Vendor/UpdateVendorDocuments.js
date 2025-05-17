@@ -26,7 +26,7 @@ const UpdateVendorDocuments = () => {
     const fetchVendor = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
+        const { data } = await axios.get(`https://webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
         setFormData((prev) => ({
           ...prev,
           existingDocuments: {
@@ -66,7 +66,7 @@ const UpdateVendorDocuments = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `https://www.webapi.olyox.com/api/v1/update_document/${id}`,
+        `https://webapi.olyox.com/api/v1/update_document/${id}`,
         formDataToSend,
         {
           headers: { 'Content-Type': 'multipart/form-data' }

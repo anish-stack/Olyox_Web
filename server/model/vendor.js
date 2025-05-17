@@ -250,6 +250,10 @@ const vendorSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    adminBlock:{
+        type: Boolean,
+        default:false
+    },
 
     aadharNumber: {
         type: String,

@@ -33,7 +33,7 @@ function AllWithdraw() {
         setLoading(true);
         try {
             // Change to the withdrawal endpoint
-            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/withdrawals');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/withdrawals');
 
             setWithdrawals(data.withdrawals || []); // Ensure you handle the correct data
         } catch (error) {
@@ -54,7 +54,7 @@ function AllWithdraw() {
         try {
             const token = localStorage.getItem('authToken'); // Assuming the token is stored in localStorage
             const res = await axios.put(
-                `https://www.webapi.olyox.com/api/v1/approve-withdrawal/${selectedWithdrawalId}`,
+                `https://webapi.olyox.com/api/v1/approve-withdrawal/${selectedWithdrawalId}`,
                 { trn_no: trnNo, time_of_payment_done: paymentTime },
                 {
                     headers: {
@@ -82,7 +82,7 @@ function AllWithdraw() {
         }
         setLoading(true);
         try {
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/reject-withdrawal/${selectedWithdrawalId}`, {
+            const res = await axios.put(`https://webapi.olyox.com/api/v1/reject-withdrawal/${selectedWithdrawalId}`, {
                 cancelReason
             });
             toast.success(res?.data?.message);

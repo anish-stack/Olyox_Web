@@ -38,7 +38,7 @@ const AddParcelSubscription = () => {
   
           setLoading(true);
           try {
-              const res = await axios.post('https://www.webapi.olyox.com/api/v1/membership-plans-create', formDataToSend);
+              const res = await axios.post('https://webapi.olyox.com/api/v1/membership-plans-create', formDataToSend);
               toast.success(res.data.message);
               // Reset the form
               setFormData({

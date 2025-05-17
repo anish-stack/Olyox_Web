@@ -22,7 +22,7 @@ function AllMembership() {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
             setMembershipPlans(data.data || []); // Ensure default empty array
         } catch (error) {
             console.error('Error fetching membership plans:', error);
@@ -38,7 +38,7 @@ function AllMembership() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_membership_status/${id}`, {
+            const res = await axios.put(`https://webapi.olyox.com/api/v1/update_membership_status/${id}`, {
                 active: updatedStatus,
             });
             toast.success(res?.data?.message);
@@ -59,7 +59,7 @@ function AllMembership() {
     const handleDeleteMembershipPlan = async (id) => {
         setLoading(true);
         try {
-            const res = await axios.delete(`https://www.webapi.olyox.com/api/v1/membership-plans/${id}`);
+            const res = await axios.delete(`https://webapi.olyox.com/api/v1/membership-plans/${id}`);
             toast.success(res?.data?.message);
             handleFetchMembershipPlans();
         } catch (error) {

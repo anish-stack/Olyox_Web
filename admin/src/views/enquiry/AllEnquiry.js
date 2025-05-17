@@ -17,7 +17,7 @@ const AllEnquiry = () => {
   useEffect(() => {
     const fetchEnquiries = async () => {
       try {
-        const response = await axios.get('https://www.webapi.olyox.com/api/v1/enquiries');
+        const response = await axios.get('https://webapi.olyox.com/api/v1/enquiries');
         setEnquiries(response.data.data);
         setFilteredEnquiries(response.data.data);
       } catch (error) {
@@ -61,7 +61,7 @@ const AllEnquiry = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this enquiry?')) return;
     try {
-      await axios.delete(`https://www.webapi.olyox.com/api/v1/enquiries/${id}`);
+      await axios.delete(`https://webapi.olyox.com/api/v1/enquiries/${id}`);
       const updated = enquiries.filter((enquiry) => enquiry._id !== id);
       setEnquiries(updated);
       setFilteredEnquiries(updated);

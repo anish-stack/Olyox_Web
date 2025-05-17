@@ -29,7 +29,7 @@ const BhVerification = () => {
       setLoading(true);
       setError(null);
 
-      const { data } = await axios.post('https://www.webapi.olyox.com/api/v1/check-bh-id', { bh });
+      const { data } = await axios.post('https://webapi.olyox.com/api/v1/check-bh-id', { bh });
 
       if (!data.success) {
         setLoading(false);

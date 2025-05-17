@@ -3,7 +3,7 @@ import { FooterColumn } from './FooterColumn';
 import { FooterLink } from './FooterLink';
 import { SocialIcon } from './SocialIcon';
 import { StoreButton } from './StoreButton';
-
+import logo from './logo.png'
 const Footer = () => {
   return (
     <footer className="bg-gray-900 pt-16 pb-12 relative overflow-hidden">
@@ -11,15 +11,11 @@ const Footer = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/50" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5   gap-12">
           {/* Company Info */}
           <FooterColumn title="">
             <div className="mb-6">
-              <h3 className="text-3xl font-bold text-white mb-4">
-                <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                  Olyox
-                </span>
-              </h3>
+            <img src={logo} className='w-24' />
               <p className="text-gray-400 leading-relaxed">
                 Your one-stop platform for all services. We make everyday life easier with our comprehensive solutions.
               </p>
@@ -34,6 +30,15 @@ const Footer = () => {
               <FooterLink href="/contact">Contact</FooterLink>
               <FooterLink href="/term">Term and condition</FooterLink>
               <FooterLink href="/privacy">Privacy Policy</FooterLink>
+            </nav>
+          </FooterColumn>
+          <FooterColumn title="Connect With Us">
+            <nav>
+              <FooterLink>01141236789</FooterLink>
+              <FooterLink >+91 7015716178</FooterLink>
+              <FooterLink>helpcenter@olyox.com</FooterLink>
+              <FooterLink >Habitat Arcade # 49, Sector 99A,
+Gurugram, Haryana - 122505</FooterLink>
             </nav>
           </FooterColumn>
 

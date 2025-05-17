@@ -11,15 +11,7 @@ const ContactMap = () => {
           transition={{ duration: 0.8 }}
           className="rounded-2xl overflow-hidden shadow-xl"
         >
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3506.2233913121413!2d77.4051603!3d28.5021957!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce626851f7009%3A0x621185133cfd1ad1!2sGeeksforGeeks!5e0!3m2!1sen!2sin!4v1585991289252!5m2!1sen!2sin"
-            width="100%"
-            height="450"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
+         <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3507.5968141452486!2d76.954436!3d28.461568!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d17951e192f8d%3A0x49d9adbe06c19117!2sOlyox!5e0!3m2!1sen!2sus!4v1747506230991!5m2!1sen!2sus" width={'100%'} height="450"  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </motion.div>
       </div>
     </section>

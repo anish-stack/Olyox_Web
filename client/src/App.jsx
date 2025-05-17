@@ -15,7 +15,6 @@ import UpdatePassword from './Pages/Dashboard/UpdatePassword.jsx'
 import Term from './Pages/Term/Term.jsx'
 import Privacy from './Pages/Term/Privacy.jsx'
 import ForgetPassword from './Pages/Auth/ForgetPassword.jsx'
-import Recharge_History from './Pages/Dashboard/Recharge_History.jsx'
 import Withdrawals from './Pages/Dashboard/Withdrawals.jsx'
 import BhVerification from './Pages/Auth/Bh.Verifcication.jsx'
 import AllReferral from './Pages/Dashboard/Allreferral.jsx'
@@ -24,6 +23,7 @@ import { Toaster } from 'react-hot-toast'
 import CopyVendor from './Pages/Dashboard/CopyVendor.jsx'
 import OtherVendors from './Pages/Dashboard/Other/OtherVendors.jsx'
 import ManualRegister from './Pages/ManualRegister/ManualRegister.jsx'
+import RechargeHistory from './Pages/Dashboard/Recharge_History.jsx'
 // import About from './Pages/About/About'
 
 function App() {
@@ -49,7 +49,7 @@ function App() {
         <Route path='/Bh' element={<BhVerification />} />
 
 
-        <Route path='/Recharge-History' element={<Recharge_History />} />
+        <Route path='/Recharge-History' element={<RechargeHistory />} />
         <Route path='/Withdrawals-History' element={<Withdrawals />} />
         <Route path='/Refrreral-History' element={<AllReferral />} />
         <Route path='/Forgot-Password' element={<ForgetPassword />} />

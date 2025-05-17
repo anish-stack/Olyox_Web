@@ -93,7 +93,7 @@ const Withdrawals = () => {
   const fetchWithdrawals = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://www.webapi.olyox.com/api/v1/get_withdrawal_by_vendor_id/${providerId}`);
+      const response = await axios.get(`https://webapi.olyox.com/api/v1/get_withdrawal_by_vendor_id/${providerId}`);
       setWithdrawals(response.data.withdrawal);
       console.log("response.data.withdrawal", response.data)
 
@@ -125,7 +125,7 @@ const Withdrawals = () => {
 
   const handleFetchCommissionTDS = async () => {
     try {
-      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/get_single_commission_tds/681fa157d45bee7fc60813cb');
+      const { data } = await axios.get('https://webapi.olyox.com/api/v1/get_single_commission_tds/681fa157d45bee7fc60813cb');
       setCommission(data.data);
     } catch (error) {
       console.log("Internal server error", error);
@@ -208,7 +208,7 @@ const Withdrawals = () => {
         }
       };
 
-      await axios.post('https://www.webapi.olyox.com/api/v1/create-withdrawal', withdrawalRequest, {
+      await axios.post('https://webapi.olyox.com/api/v1/create-withdrawal', withdrawalRequest, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${sessionStorage.getItem('token')}`

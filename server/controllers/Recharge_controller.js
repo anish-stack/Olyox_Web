@@ -135,7 +135,8 @@ exports.DoRecharge = async (req, res) => {
 
 exports.getMyRecharges = async (req, res) => {
     try {
-        const userId = req?.user?.id?._id || req?.query?._id;
+        const userId = req?.user?.id || req?.query?._id;
+    
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required." });
@@ -156,7 +157,7 @@ exports.getMyRecharges = async (req, res) => {
             );
         } else if (req.user) {
             rechargeData = rechargeData.filter(recharge =>
-                recharge?.vendor_id?._id?.toString() === req.user.id._id
+                recharge?.vendor_id?._id?.toString() === req.user.id
             );
         }
 

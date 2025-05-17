@@ -21,14 +21,14 @@ const Header = () => {
                 Dashboard
             </Link>
         ) : (
-          <div className='space-x-2'>
-            <Link to={'/bh'} className="bg-[#DA2D29]  md:hidden text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
-                Register
-            </Link>
-              <Link to={'/login'} className="bg-[#DA2D29] text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
-              Login
-          </Link>
-          </div>
+            <div className='space-x-2'>
+                <Link to={'/bh'} className="bg-[#DA2D29]  md:hidden text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
+                    Register
+                </Link>
+                <Link to={'/login'} className="bg-[#DA2D29] text-white px-4 py-2 rounded-full hover:bg-[#a91e1b] transition-colors">
+                    Login
+                </Link>
+            </div>
         );
     };
 
@@ -94,7 +94,7 @@ const Header = () => {
                     <Link to={'/service'} onClick={toggleMenu} className="block text-gray-600 hover:text-blue-600 transition-colors">
                         Services
                     </Link>
-                 
+
                     <Link to={'/about'} onClick={toggleMenu} className="block text-gray-600 hover:text-blue-600 transition-colors">
                         About
                     </Link>

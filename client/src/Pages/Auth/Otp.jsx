@@ -38,7 +38,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://www.webapi.olyox.com/api/v1/verify_email",
+                "https://webapi.olyox.com/api/v1/verify_email",
                 formData
             );
 
@@ -60,7 +60,7 @@ const Otp = () => {
         setLoading(true);
         try {
             const response = await axios.post(
-                "https://www.webapi.olyox.com/api/v1/resend_Otp",
+                "https://webapi.olyox.com/api/v1/resend_Otp",
                 { email, type }
             );
             toast.success(response.data.message || "OTP sent successfully!");
@@ -82,7 +82,7 @@ const Otp = () => {
             <div className="bg-white shadow-lg p-6 rounded-lg w-full max-w-md">
                 <h2 className="text-center text-2xl font-semibold mb-4">Enter OTP</h2>
                 <p className="text-center text-gray-600 mb-4">
-                    We have sent a 6-digit OTP on WhatsApp to <strong>{numberGrom}</strong>
+                   A 6-digit OTP has been sent to your <strong>WhatsApp</strong> and <strong>SMS</strong> {numberGrom}
                 </p>
                 <form>
                     <div className="mb-4">
