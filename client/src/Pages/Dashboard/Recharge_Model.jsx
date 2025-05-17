@@ -94,7 +94,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
 
             // Configure Razorpay options
             const options = {
-                key: "rzp_test_WIhO08xjZ4nRVW", // Replace with your Razorpay key
+                key: "rzp_live_zD1yAIqb2utRwp", // Replace with your Razorpay key
                 amount: orderResponse.data.order.amount,
                 currency: orderResponse.data.order.currency,
                 name: "OLYOX Pvt. Ltd.",
