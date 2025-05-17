@@ -45,7 +45,7 @@ function App() {
         <Route path='/term' element={<Term />} />
         <Route path='/get-my-referral/:id' element={<DoneRefer />} />
 
-
+{/* i am a  */}
         <Route path='/Bh' element={<BhVerification />} />
 
 
