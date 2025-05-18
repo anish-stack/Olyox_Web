@@ -6,9 +6,8 @@ import { Toaster } from 'react-hot-toast'
 import ErrorBoundary from '../ErrorBoundary.jsx'
 
 createRoot(document.getElementById('root')).render(
-<ErrorBoundary>
-
-  <App />
-  <Toaster />
-</ErrorBoundary>
+  <ErrorBoundary>
+    <App />
+    <Toaster />
+  </ErrorBoundary>
 )
