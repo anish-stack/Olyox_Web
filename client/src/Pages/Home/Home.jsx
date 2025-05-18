@@ -13,7 +13,7 @@ function Home() {
     const hostname = window.location.hostname;
     console.log("hostname",hostname)
 
-    if (hostname === 'www.olyox.com' || hostname === 'www.olyox.com') {
+    if (hostname === 'olyox.com' || hostname === 'www.olyox.com') {
       window.location.href = 'https://www.olyox.in/';
     } else {
       window.scrollTo({
