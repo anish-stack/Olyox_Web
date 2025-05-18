@@ -10,11 +10,19 @@ import AppComponent from '../../Components/AppComponent/AppComponent'
 
 function Home() {
   useEffect(() => {
-          window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-          })
-      },[])
+    const hostname = window.location.hostname;
+
+    if (hostname === 'www.olyox.com' || hostname === 'www.www.olyox.com') {
+      window.location.href = 'https://www.olyox.in/';
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, []);
+
+
   return (
     <>
       <Hero />
@@ -25,7 +33,7 @@ function Home() {
       <HowItWorks />
       <Testimonials />
     </>
-  )
+  );
 }
 
 export default Home

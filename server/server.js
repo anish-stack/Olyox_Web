@@ -100,8 +100,8 @@ app.use("/api/v1", router);
 // Admin login route
 app.post('/admin-login', (req, res) => {
     const { email, password } = req.body;
-    const defaultEmail = process.env.ADMIN_EMAIL || "admin@gmail.com";
-    const defaultPassword = process.env.ADMIN_PASSWORD || "olyox@admin";
+    const defaultEmail = process.env.ADMIN_EMAIL || "njolyox@gmail.com";
+    const defaultPassword = process.env.ADMIN_PASSWORD || "jittunvn28@";
 
     if (email === defaultEmail && password === defaultPassword) {
         res.json({ message: 'Login successful', login: true });
