@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     CTableDataCell,
     CTableRow,
@@ -35,11 +35,14 @@ function AllVendor() {
     const [rechargeModel, setRechargeModel] = React.useState(false);
     const [rechargeData, setRechargeData] = React.useState({});
     const [plans, setPlans] = React.useState([])
-
+    const[selectedCategory,setSelectedCategory] = React.useState(null)
     const [selectedPlan, setSelectedPlan] = React.useState('');
     const [vendorId, setVendorId] = React.useState(null);
 
-    const handleRechargeModel = (id) => {
+    const handleRechargeModel = (id,item) => {
+        setSelectedCategory(item?.title)
+   
+        console.log(item.title)
         setVendorId(id);
         setRechargeModel(true);
 
@@ -96,6 +99,14 @@ function AllVendor() {
             setLoading(false);
         }
     };
+
+    useEffect(()=>{
+        if(selectedCategory){
+        
+                 const filterRechargeViaCat = rechargeData.filter((i)=> i.category === selectedCategory.toLowerCase())
+        setRechargeData(filterRechargeViaCat)
+        }
+    },[selectedCategory])
 
 
     const handleSaveChanges = async () => {
@@ -281,8 +292,8 @@ function AllVendor() {
                             <CTableDataCell>
                                 <CButton
                                     color="warning"
-                                    disabled={!item.documentVerify}
-                                    onClick={() => handleRechargeModel(item._id)}
+                                    // disabled={!item.documentVerify}
+                                    onClick={() => handleRechargeModel(item._id,item?.category)}
                                 >
                                     Recharge
                                 </CButton>
