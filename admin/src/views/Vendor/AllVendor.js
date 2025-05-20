@@ -35,13 +35,13 @@ function AllVendor() {
     const [rechargeModel, setRechargeModel] = React.useState(false);
     const [rechargeData, setRechargeData] = React.useState({});
     const [plans, setPlans] = React.useState([])
-    const[selectedCategory,setSelectedCategory] = React.useState(null)
+    const [selectedCategory, setSelectedCategory] = React.useState(null)
     const [selectedPlan, setSelectedPlan] = React.useState('');
     const [vendorId, setVendorId] = React.useState(null);
 
-    const handleRechargeModel = (id,item) => {
+    const handleRechargeModel = (id, item) => {
         setSelectedCategory(item?.title)
-   
+
         console.log(item.title)
         setVendorId(id);
         setRechargeModel(true);
@@ -100,13 +100,24 @@ function AllVendor() {
         }
     };
 
-    useEffect(()=>{
-        if(selectedCategory){
-        
-                 const filterRechargeViaCat = rechargeData.filter((i)=> i.category === selectedCategory.toLowerCase())
-        setRechargeData(filterRechargeViaCat)
+    console.log("selectedCategory", rechargeData)
+    useEffect(() => {
+        if (selectedCategory) {
+            const normalizedSelectedCategory = selectedCategory.toLowerCase().replace(/\s+/g, '');
+
+            const filterRechargeViaCat = rechargeData.filter(plan => {
+                if (!plan.category) return false;
+
+                const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
+                return (
+                    normalizedPlanCategory.includes(normalizedSelectedCategory) ||
+                    normalizedSelectedCategory.includes(normalizedPlanCategory)
+                );
+            });
+
+            setRechargeData(filterRechargeViaCat);
         }
-    },[selectedCategory])
+    }, [selectedCategory])
 
 
     const handleSaveChanges = async () => {
@@ -284,7 +295,7 @@ function AllVendor() {
                                     onClick={() =>
                                         handleModalOpen(item.Documents, 'Documents', item._id, item.documentVerify)
                                     }
-                                    style={{color:'white'}}
+                                    style={{ color: 'white' }}
                                 >
                                     View Documents
                                 </CButton>
@@ -293,7 +304,7 @@ function AllVendor() {
                                 <CButton
                                     color="warning"
                                     // disabled={!item.documentVerify}
-                                    onClick={() => handleRechargeModel(item._id,item?.category)}
+                                    onClick={() => handleRechargeModel(item._id, item?.category)}
                                 >
                                     Recharge
                                 </CButton>
