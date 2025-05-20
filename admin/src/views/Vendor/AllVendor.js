@@ -33,21 +33,54 @@ function AllVendor() {
     const [selected, setSelected] = React.useState('');
     const [documentVerify, setDocumentVerify] = React.useState('');
     const [rechargeModel, setRechargeModel] = React.useState(false);
-    const [rechargeData, setRechargeData] = React.useState({});
-    const [plans, setPlans] = React.useState([])
-    const [selectedCategory, setSelectedCategory] = React.useState(null)
+    const [allRechargeData, setAllRechargeData] = React.useState([]); // Store all recharge data
+    const [filteredRechargeData, setFilteredRechargeData] = React.useState([]); // Store filtered recharge data
+    const [selectedCategory, setSelectedCategory] = React.useState(null);
     const [selectedPlan, setSelectedPlan] = React.useState('');
     const [vendorId, setVendorId] = React.useState(null);
 
     const handleRechargeModel = (id, item) => {
-        setSelectedCategory(item?.title)
-
-        console.log(item.title)
         setVendorId(id);
+        
+        // Set the selected category and filter recharge data
+        if (item?.title) {
+            setSelectedCategory(item.title);
+            filterRechargeDataByCategory(item.title);
+        } else {
+            // If no category, show all recharge plans
+            setSelectedCategory(null);
+            setFilteredRechargeData(allRechargeData);
+        }
+        
         setRechargeModel(true);
-
     };
 
+    // Function to filter recharge data based on category
+    const filterRechargeDataByCategory = (categoryTitle) => {
+        if (!categoryTitle || !allRechargeData.length) {
+            setFilteredRechargeData(allRechargeData);
+            return;
+        }
+
+        const normalizedSelectedCategory = categoryTitle.toLowerCase().replace(/\s+/g, '');
+        
+        const filtered = allRechargeData.filter(plan => {
+            if (!plan.category) return false;
+
+            const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
+            return (
+                normalizedPlanCategory.includes(normalizedSelectedCategory) ||
+                normalizedSelectedCategory.includes(normalizedPlanCategory)
+            );
+        });
+        
+        // If no matches found, show all plans
+        if (filtered.length === 0) {
+            setFilteredRechargeData(allRechargeData);
+        } else {
+            setFilteredRechargeData(filtered);
+        }
+    };
 
     const handleFetchBanner = async () => {
         setLoading(true);
@@ -65,17 +98,17 @@ function AllVendor() {
 
     const handleFetchRecharge = async () => {
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans')
-            setRechargeData(data.data)
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            setAllRechargeData(data.data); // Store all recharge data
+            setFilteredRechargeData(data.data); // Initially show all recharge data
         } catch (error) {
-            console.log("Internal server error", error)
+            console.log("Internal server error", error);
         }
-    }
+    };
 
     React.useEffect(() => {
-        // handleFetchPlans()
         handleFetchRecharge();
-    }, [])
+    }, []);
 
     const handleUpdateActive = async (id, currentStatus) => {
         setLoading(true);
@@ -100,46 +133,23 @@ function AllVendor() {
         }
     };
 
-    console.log("selectedCategory", rechargeData)
-    useEffect(() => {
-        if (selectedCategory) {
-            const normalizedSelectedCategory = selectedCategory.toLowerCase().replace(/\s+/g, '');
-
-            const filterRechargeViaCat = rechargeData.filter(plan => {
-                if (!plan.category) return false;
-
-                const normalizedPlanCategory = plan.category.toLowerCase().replace(/\s+/g, '');
-                return (
-                    normalizedPlanCategory.includes(normalizedSelectedCategory) ||
-                    normalizedSelectedCategory.includes(normalizedPlanCategory)
-                );
-            });
-
-            setRechargeData(filterRechargeViaCat);
-        }
-    }, [selectedCategory])
-
-
     const handleSaveChanges = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
             const { data } = await axios.put('https://webapi.olyox.com/api/v1/free_plan_approve', {
                 vendor_id: vendorId,
                 plan_id: selectedPlan
-            })
-            console.log(data)
+            });
+            console.log(data);
+            toast.success('Plan successfully assigned');
             setRechargeModel(false);
-            setLoading(false)
-
-
+            setLoading(false);
         } catch (error) {
-            console.log(error)
-            setLoading(false)
-
+            console.log(error);
+            toast.error('Failed to assign plan');
+            setLoading(false);
             setRechargeModel(false);
-
         }
-
     };
 
     const handleDeleteBanner = async (email) => {
@@ -159,7 +169,7 @@ function AllVendor() {
     };
 
     const handleVerifyDocument = async () => {
-        console.log(selected)
+        console.log(selected);
         setLoading(true);
         try {
             const res = await axios.post(`https://webapi.olyox.com/api/v1/verify_document?id=${selected}`);
@@ -230,17 +240,23 @@ function AllVendor() {
     };
     const handleModalOpen = (data, type, id, documentVerify) => {
         setModalData(data);
-        setSelected(id)
+        setSelected(id);
         setModalType(type);
         setShowModal(true);
-        setDocumentVerify(documentVerify)
+        setDocumentVerify(documentVerify);
     };
+
+    // Reset selectedPlan when rechargeModel is opened or closed
+    React.useEffect(() => {
+        if (!rechargeModel) {
+            setSelectedPlan('');
+        }
+    }, [rechargeModel]);
 
     const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Created At', 'Action'];
 
     return (
         <>
-
             <div className="d-flex flex-column flex-md-row align-items-center mb-3">
                 <div className="mb-2 col-10 mb-md-0 me-md-3">
                     <CFormInput
@@ -264,7 +280,6 @@ function AllVendor() {
                     </select>
                 </div>
             </div>
-
 
             {loading ? (
                 <div className="spin-style">
@@ -473,7 +488,6 @@ function AllVendor() {
                                 </div>
                             </div>
 
-
                             <button
                                 className="btn btn-primary w-100"
                                 onClick={() => handleVerifyDocument()}
@@ -482,18 +496,12 @@ function AllVendor() {
                             </button>
                         </>
                     )}
-
-
                 </CModalBody>
                 <CModalFooter>
                     <CButton color="secondary" onClick={() => setShowModal(false)}>
                         Close
                     </CButton>
-
-
                 </CModalFooter>
-
-
             </CModal>
 
             <CModal visible={rechargeModel} onClose={() => setRechargeModel(false)}>
@@ -501,29 +509,12 @@ function AllVendor() {
                     <h5>Assign Recharge</h5>
                 </CModalHeader>
                 <CModalBody>
-
-                    <div
-                        className="modal fade"
-                        id="rechargeModal"
-                        tabIndex="-1"
-                        aria-labelledby="rechargeModalLabel"
-                        aria-hidden="true"
-                    >
-
-                        <h5 className="modal-title" id="rechargeModalLabel">
-                            Select Plan
-                        </h5>
-                        <button
-                            type="button"
-                            className="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            onClick={() => setRechargeModel(false)}
-                        ></button>
-                    </div>
                     <div className="modal-body">
                         <form>
                             <div className="mb-3">
+                                {selectedCategory && (
+                                    <p className="mb-2"><strong>Selected Category:</strong> {selectedCategory}</p>
+                                )}
                                 <label htmlFor="planSelect" className="form-label">
                                     Choose a Plan
                                 </label>
@@ -536,15 +527,21 @@ function AllVendor() {
                                     <option value="" disabled>
                                         Select a plan
                                     </option>
-                                    {rechargeData && rechargeData.length > 0 && (
-                                        rechargeData.map((item, index) => (
+                                    {filteredRechargeData && filteredRechargeData.length > 0 ? (
+                                        filteredRechargeData.map((item, index) => (
                                             <option key={index} value={item._id}>
                                                 {item.title} - Rs:{item.price} - Level {item.level} - {item.validityDays}/{item.whatIsThis}
                                             </option>
                                         ))
+                                    ) : (
+                                        <option disabled>No plans available</option>
                                     )}
-
                                 </select>
+                                {filteredRechargeData.length === 0 && (
+                                    <div className="text-warning mt-2">
+                                        No matching plans found for this category. Showing all available plans.
+                                    </div>
+                                )}
                             </div>
                         </form>
                     </div>
@@ -559,17 +556,14 @@ function AllVendor() {
                         </button>
                         <button
                             type="button"
-                            disabled={loading}
+                            disabled={loading || !selectedPlan}
                             className="btn btn-primary"
                             onClick={handleSaveChanges}
                         >
                             {loading ? 'Please Wait ...' : 'Save Changes'}
                         </button>
                     </div>
-
                 </CModalBody>
-
-
             </CModal>
         </>
     );
