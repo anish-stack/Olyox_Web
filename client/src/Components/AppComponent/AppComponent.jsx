@@ -35,11 +35,11 @@ function AppComponent() {
                         </button>
                         {showDropdown && (
                             <div className='absolute top-full z-10 mt-2 bg-white border border-[#A91E1B] rounded-xl shadow-lg flex flex-col w-full sm:w-auto'>
-                                <a href='https://drive.google.com/file/d/18vJyvF6wcZyFrTePw2D1dehPloNXH-N1/view' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Cab APK</a>
-                                <a href='https://drive.google.com/file/d/18vJyvF6wcZyFrTePw2D1dehPloNXH-N1/view' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Parcel APK</a>
+                                <a href='https://olyox.com/cab/Olyox-Driver-App.apk' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Cab APK</a>
+                                <a href='https://olyox.com/cab/Olyox-Driver-App.apk' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Parcel APK</a>
                                 <a href='https://drive.google.com/file/d/1JuN46wKIAxzFMvABC-Rj8rOmO99kQxTi/view?usp=sharing' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Hotel APK</a>
-                                <a href='https://drive.google.com/file/d/1HHxAAppYfZ5EhQqGufEHI8lzgBFoJ_bg/view?usp=sharing' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Tiffin APK</a>
-                                <a href='https://drive.google.com/file/d/1arYU5LnobEmfFtst6n9EVqeG915yx9na/view?usp=sharing' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Transport APK</a>
+                                <a href='https://olyox.com/tiffin/Olyox-tiffins.apk' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Tiffin APK</a>
+                                <a href='https://olyox.com/cargo/cargo.apk' download target='_blank' className='block px-6 py-3 text-[#A91E1B] hover:bg-[#A91E1B] hover:text-white'>Download Transport APK</a>
                             </div>
                         )}
                     </div>
