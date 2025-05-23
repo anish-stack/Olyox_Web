@@ -127,22 +127,30 @@ exports.toggleStatus = async (req, res) => {
 exports.checkBhId = async (req, res) => {
     try {
         const { bh } = req.body;
-        // Check if BH ID exists
-        const bhId = await BhModel.findOne({ BhId: bh });
+
+        // Step 1: Try to find BH ID in BhModel
+        let bhId = await BhModel.findOne({ BhId: bh });
+
+        // Step 2: If not found, try finding in vendor.myReferral
         if (!bhId) {
-            return res.status(404).json({
-                success: false,
-                message: 'BH ID not found',
-            });
+            const vendorData = await vendor.findOne({ myReferral: bh }).select('-password');
+
+            if (!vendorData) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'BH ID not found in BH model or vendor referrals',
+                });
+            }
+
+            bhId = { BhId: vendorData.myReferral, isActive: vendorData.isActive };
         }
 
-        // Check if BH ID is active
+        // Step 3: Check if BH ID is active
         if (bhId.isActive) {
-
-            const findDetails = await vendor.findOne({ myReferral: bhId.BhId }).select('-password')
+            const findDetails = await vendor.findOne({ myReferral: bhId.BhId })
+                .select('-password')
                 .populate('category')
                 .populate('member_id')
-                .populate('payment_id')
                 .populate('payment_id')
                 .populate('copyParentId')
                 .populate({
@@ -208,9 +216,8 @@ exports.checkBhId = async (req, res) => {
                         { path: 'member_id' }
                     ],
                 });
-            ;
 
-            if (findDetails.isActive === false) {
+            if (findDetails?.isActive === false) {
                 return res.status(200).json({
                     success: false,
                     message: 'This BH ID has been blocked by the admin due to suspicious activity. Please contact support for assistance.',
@@ -237,8 +244,8 @@ exports.checkBhId = async (req, res) => {
                 message: 'BH ID is not active',
             });
         }
+
     } catch (error) {
-        // Handle unexpected errors
         return res.status(500).json({
             success: false,
             message: 'An error occurred while checking BH ID',
