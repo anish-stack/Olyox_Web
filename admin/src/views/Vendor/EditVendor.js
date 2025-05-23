@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CCol, CFormInput, CFormLabel, CButton, CFormSelect } from '@coreui/react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -8,6 +8,7 @@ import Form from '../../components/Form/Form';
 function EditVendor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
@@ -21,6 +22,12 @@ function EditVendor() {
     pincode: '',
     landmark: '',
   });
+
+  // Get the return page from URL parameters
+  const getReturnPage = () => {
+    const urlParams = new URLSearchParams(location.search);
+    return urlParams.get('returnPage') || '1';
+  };
 
   const handleFetchCategory = async () => {
     try {
@@ -36,17 +43,18 @@ function EditVendor() {
     try {
       const res = await axios.get(`https://webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
       const vendor = res.data.data;
-      console.log("vendor",vendor)
+      console.log("vendor", vendor);
       setFormData({
         name: vendor.name || '',
         email: vendor.email || '',
         number: vendor.number || '',
-        category: vendor.category || '',
+        // FIX: Handle category properly - check if it's an object or string
+        category: vendor.category?._id || vendor.category || '',
         myReferral: vendor.myReferral || '',
         aadharNumber: vendor.aadharNumber || '',
-        area: vendor.address.area || '',
-        pincode: vendor.address.pincode || '',
-        landmark: vendor.address.landmark || '',
+        area: vendor.address?.area || '',
+        pincode: vendor.address?.pincode || '',
+        landmark: vendor.address?.landmark || '',
       });
     } catch (err) {
       console.error(err);
@@ -85,7 +93,10 @@ function EditVendor() {
       );
 
       toast.success(res.data.message);
-      // navigate('/vendor/all_vendor');
+
+      // Navigate back to all vendors page with the correct page number - Fixed for hash routing
+      const returnPage = getReturnPage();
+      navigate(`/vendor/all_vendor?page=${returnPage}`);
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || 'Failed to update vendor');
@@ -94,11 +105,18 @@ function EditVendor() {
     }
   };
 
+  const handleBackClick = () => {
+    // Navigate back to all vendors page with the correct page number - Fixed for hash routing
+    const returnPage = getReturnPage();
+    navigate(`/vendor/all_vendor?page=${returnPage}`);
+  };
+
   return (
     <Form
-      heading="Edit Heavy Transport Vendor"
+      heading="Edit Vendor"
       btnText="Back"
       btnURL="/vendor/all_vendor"
+      customBackHandler={handleBackClick}
       onSubmit={handleSubmit}
       formContent={
         <>
@@ -144,10 +162,10 @@ function EditVendor() {
 
           <CCol md={12} className="mt-3">
             <CFormLabel htmlFor="category">Category</CFormLabel>
-            <CFormSelect id="category" name="category" value={formData.category._id} onChange={handleChange}>
+            <CFormSelect id="category" name="category" value={formData.category} onChange={handleChange}>
               <option value="">Select a category</option>
               {categories
-                .filter(cat => cat.isActive) // Only show active ones
+                .filter(cat => cat.isActive)
                 .map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.title}
@@ -155,7 +173,6 @@ function EditVendor() {
                 ))}
             </CFormSelect>
           </CCol>
-
 
           <CCol md={12} className="mt-4">
             <CButton color="primary" type="submit" disabled={loading}>
