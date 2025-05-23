@@ -35,7 +35,7 @@ const SendWhatsAppMessage = async (Message, MobileNumber) => {
             },
         });
 
-        console.log("WhatsApp message sent successfully!")
+        console.log("WhatsApp message sent successfully!",response)
         if (response.status === 200) {
             return {
                 success: true,
