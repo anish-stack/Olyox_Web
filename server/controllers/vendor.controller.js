@@ -617,22 +617,24 @@ exports.resendOtp = async (req, res) => {
 
         await vendor.save();
 
-        try {
-            console.log("Message to send:", message);
-            console.log("Vendor Number:", vendor?.number);
+       try {
+    console.log("📤 Sending WhatsApp message...");
+    console.log("To Number:", vendor?.number);
+    console.log("Message Content:", message);
 
-            // Send WhatsApp
-            const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
+    const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
+    const dltMessage = await sendDltMessage(otpToSend, vendor?.number);
 
-            // Send DLT SMS with correct OTP
-            const dltMessage = await sendDltMessage(otpToSend, vendor?.number);
-
-            console.log("WhatsApp message sent:", dataMessage);
-            console.log("DLT message sent:", dltMessage);
-        } catch (error) {
-            console.error("Error sending messages:", error);
-            return res.status(500).json({ success: false, message: "Failed to send OTP via WhatsApp or SMS" });
-        }
+    console.log("✅ WhatsApp message sent:", dataMessage);
+    console.log("✅ DLT message sent:", dltMessage);
+} catch (error) {
+    console.error("❌ Error sending messages:", error);
+    return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP via WhatsApp or SMS",
+        error: error.message || error,
+    });
+}
 
         const successMessage = type === "email"
             ? "OTP sent successfully for number verification"
