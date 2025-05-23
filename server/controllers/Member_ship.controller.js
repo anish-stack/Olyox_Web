@@ -19,6 +19,14 @@ exports.createMembershipPlan = async (req, res) => {
 // Get all membership plans
 exports.getAllMembershipPlans = async (req, res) => {
     try {
+        const plans = await MembershipPlan.find({active:true});
+        res.status(200).json({ success: true, data: plans });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch membership plans', error: error.message });
+    }
+};
+exports.getAllMembershipAdminPlans = async (req, res) => {
+    try {
         const plans = await MembershipPlan.find();
         res.status(200).json({ success: true, data: plans });
     } catch (error) {
