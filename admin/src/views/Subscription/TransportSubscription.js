@@ -22,7 +22,7 @@ const TransportSubscription = () => {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
             const filteredData = data.data.filter(plan => plan.category === 'transport');
             setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
         } catch (error) {

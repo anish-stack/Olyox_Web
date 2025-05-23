@@ -18,11 +18,11 @@ const AllBikeSubscription = () => {
       const [loading, setLoading] = React.useState(false);
       const [currentPage, setCurrentPage] = React.useState(1);
       const itemsPerPage = 10;
-  
+
       const handleFetchMembershipPlans = async () => {
           setLoading(true);
           try {
-              const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+              const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
               const filteredData = data.data.filter(plan => plan.category === 'bike');
               setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
           } catch (error) {
@@ -32,8 +32,8 @@ const AllBikeSubscription = () => {
               setLoading(false);
           }
       };
-  
-  
+
+
       // Update Active Status
       const handleUpdateActive = async (id, currentStatus) => {
     setLoading(true);
@@ -56,7 +56,7 @@ const AllBikeSubscription = () => {
     }
 };
 
-  
+
       // Delete Membership Plan
       const handleDeleteMembershipPlan = async (id) => {
           setLoading(true);
@@ -75,7 +75,7 @@ const AllBikeSubscription = () => {
               setLoading(false);
           }
       };
-  
+
       // Confirm Delete
       const confirmDelete = (id) => {
           Swal.fire({
@@ -92,25 +92,25 @@ const AllBikeSubscription = () => {
               }
           });
       };
-  
+
       React.useEffect(() => {
           handleFetchMembershipPlans();
       }, []);
-  
+
       // Calculate paginated data
       const startIndex = (currentPage - 1) * itemsPerPage;
       const currentData = membershipPlans.slice(startIndex, startIndex + itemsPerPage);
-  
+
       // Calculate total pages
       const totalPages = Math.ceil(membershipPlans.length / itemsPerPage);
-  
+
       // Handle page change
       const handlePageChange = (page) => {
           setCurrentPage(page);
       };
-  
+
       const heading = ['S.No', 'Title', 'Price', 'Money Earn', 'Level', 'Is Active', 'Action'];
-  
+
       return (
           <>
               {loading ? (

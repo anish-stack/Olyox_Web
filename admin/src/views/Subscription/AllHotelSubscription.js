@@ -22,7 +22,7 @@ const AllHotelSubscription = () => {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
             const filteredData = data.data.filter(plan => plan.category === 'Hotel');
             setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
         } catch (error) {
@@ -45,7 +45,7 @@ const AllHotelSubscription = () => {
 
         // Customizing the success message based on the updated status
         toast.success(`Membership plan ${updatedStatus ? 'activated' : 'deactivated'} successfully!`);
-        
+
         handleFetchMembershipPlans();
     } catch (error) {
         console.error('Error updating status:', error);

@@ -22,7 +22,7 @@ const TiffinSubscription = () => {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
             const filteredData = data.data.filter(plan => plan.category === 'tiffin');
             setMembershipPlans(filteredData.reverse() || []); // Ensure default empty array
         } catch (error) {
@@ -129,7 +129,7 @@ const TiffinSubscription = () => {
                             <CTableDataCell>{item.title}</CTableDataCell>
                             <CTableDataCell>{item.price} INR</CTableDataCell>
                                                           <CTableDataCell>{item.HowManyMoneyEarnThisPlan || 0}</CTableDataCell>
-                            
+
                             <CTableDataCell>{item.level}</CTableDataCell>
                             <CTableDataCell>
                                 <CFormSwitch

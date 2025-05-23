@@ -41,7 +41,7 @@ function AllVendor() {
 
     const handleRechargeModel = (id, item) => {
         setVendorId(id);
-        
+
         // Set the selected category and filter recharge data
         if (item?.title) {
             setSelectedCategory(item.title);
@@ -51,7 +51,7 @@ function AllVendor() {
             setSelectedCategory(null);
             setFilteredRechargeData(allRechargeData);
         }
-        
+
         setRechargeModel(true);
     };
 
@@ -63,7 +63,7 @@ function AllVendor() {
         }
 
         const normalizedSelectedCategory = categoryTitle.toLowerCase().replace(/\s+/g, '');
-        
+
         const filtered = allRechargeData.filter(plan => {
             if (!plan.category) return false;
 
@@ -73,7 +73,7 @@ function AllVendor() {
                 normalizedSelectedCategory.includes(normalizedPlanCategory)
             );
         });
-        
+
         // If no matches found, show all plans
         if (filtered.length === 0) {
             setFilteredRechargeData(allRechargeData);
@@ -98,7 +98,7 @@ function AllVendor() {
 
     const handleFetchRecharge = async () => {
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
             setAllRechargeData(data.data); // Store all recharge data
             setFilteredRechargeData(data.data); // Initially show all recharge data
         } catch (error) {
