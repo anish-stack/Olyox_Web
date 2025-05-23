@@ -1463,7 +1463,10 @@ exports.forgetPassword = async (req, res) => {
     try {
         const { number, newPassword } = req.body;
 
+        console.log("Received forgetPassword request:", req.body);
+
         if (!number || !newPassword) {
+            console.warn("Missing number or newPassword");
             return res.status(400).json({
                 success: false,
                 message: "Number and new password are required.",
@@ -1473,6 +1476,7 @@ exports.forgetPassword = async (req, res) => {
         // Find the vendor by number
         const vendor = await Vendor_Model.findOne({ number });
         if (!vendor) {
+            console.warn("Vendor not found for number:", number);
             return res.status(404).json({
                 success: false,
                 message: "Vendor not found. Please check the number and try again.",
@@ -1482,16 +1486,25 @@ exports.forgetPassword = async (req, res) => {
         // Generate OTP and expiry time
         const otpService = new OtpService();
         const { otp, expiryTime } = otpService.generateOtp();
-
-        // Send OTP via email
-
         const message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
+
+        console.log("Generated OTP:", otp);
+        console.log("OTP Expiry Time:", expiryTime);
+        console.log("Sending OTP to number:", vendor.number);
+
+        // Send OTP via WhatsApp and DLT
         try {
-            await SendWhatsAppMessage(message, vendor?.number);
-        } catch (emailError) {
+            const whatsappResponse = await SendWhatsAppMessage(message, vendor.number);
+            console.log("✅ WhatsApp message sent:", whatsappResponse);
+
+            const dltResponse = await sendDltMessage(otp, vendor.number);
+            console.log("✅ DLT message sent:", dltResponse);
+        } catch (sendError) {
+            console.error("❌ Failed to send OTP message:", sendError);
             return res.status(500).json({
                 success: false,
-                message: "Failed to send OTP email. Please try again later.",
+                message: "Failed to send OTP. Please try again later.",
+                error: sendError.message || sendError,
             });
         }
 
@@ -1499,16 +1512,18 @@ exports.forgetPassword = async (req, res) => {
         vendor.password_otp = otp;
         vendor.password_otp_expire = expiryTime;
         vendor.temp_password = newPassword;
+
         await vendor.save();
-        // Respond with success
+        console.log("Vendor updated with OTP and temp password.");
+
         return res.status(200).json({
             success: true,
             email: vendor.email,
-            time: vendor?.password_otp_expire,
-            message: "OTP has been sent to your email. Please check your inbox.",
+            time: expiryTime,
+            message: "OTP has been sent to your registered number. Please check your messages.",
         });
     } catch (error) {
-        console.error("Error in forgetPassword:", error);
+        console.error("❌ Error in forgetPassword:", error);
         return res.status(500).json({
             success: false,
             message: "An unexpected error occurred. Please try again later.",
