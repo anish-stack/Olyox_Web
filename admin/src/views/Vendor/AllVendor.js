@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     CTableDataCell,
     CTableRow,
@@ -20,6 +21,8 @@ import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 
 function AllVendor() {
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const [category, setCategory] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -33,11 +36,25 @@ function AllVendor() {
     const [selected, setSelected] = React.useState('');
     const [documentVerify, setDocumentVerify] = React.useState('');
     const [rechargeModel, setRechargeModel] = React.useState(false);
-    const [allRechargeData, setAllRechargeData] = React.useState([]); // Store all recharge data
-    const [filteredRechargeData, setFilteredRechargeData] = React.useState([]); // Store filtered recharge data
+    const [allRechargeData, setAllRechargeData] = React.useState([]);
+    const [filteredRechargeData, setFilteredRechargeData] = React.useState([]);
     const [selectedCategory, setSelectedCategory] = React.useState(null);
     const [selectedPlan, setSelectedPlan] = React.useState('');
     const [vendorId, setVendorId] = React.useState(null);
+
+    // Get page from URL parameters and set current page
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const pageFromUrl = urlParams.get('page');
+        if (pageFromUrl) {
+            setCurrentPage(parseInt(pageFromUrl, 10));
+        }
+    }, [location.search]);
+
+    // Update URL when page changes - Fixed for hash routing
+    const updateUrlWithPage = (page) => {
+        navigate(`/vendor/all_vendor?page=${page}`, { replace: true });
+    };
 
     const handleRechargeModel = (id, item) => {
         setVendorId(id);
@@ -99,8 +116,8 @@ function AllVendor() {
     const handleFetchRecharge = async () => {
         try {
             const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
-            setAllRechargeData(data.data); // Store all recharge data
-            setFilteredRechargeData(data.data); // Initially show all recharge data
+            setAllRechargeData(data.data);
+            setFilteredRechargeData(data.data);
         } catch (error) {
             console.log("Internal server error", error);
         }
@@ -211,7 +228,7 @@ function AllVendor() {
             const searchMatch =
                 (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
                 (item.email && item.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                (item.number && item.number.toString().includes(searchQuery)) || // Safely handle number with toString()
+                (item.number && item.number.toString().includes(searchQuery)) ||
                 (item?.myReferral && item.myReferral.toLowerCase().includes(searchQuery.toLowerCase()));
 
             // Apply status filter
@@ -226,24 +243,35 @@ function AllVendor() {
 
     // Calculate the total number of pages based on filtered data
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    
     const handlePageChange = (page) => {
         setCurrentPage(page);
+        updateUrlWithPage(page);
     };
+
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
-        setCurrentPage(1); // Reset to first page when search query changes
+        setCurrentPage(1);
+        updateUrlWithPage(1);
     };
 
     const handleStatusFilterChange = (e) => {
         setStatusFilter(e.target.value);
-        setCurrentPage(1); // Reset to first page when status filter changes
+        setCurrentPage(1);
+        updateUrlWithPage(1);
     };
+
     const handleModalOpen = (data, type, id, documentVerify) => {
         setModalData(data);
         setSelected(id);
         setModalType(type);
         setShowModal(true);
         setDocumentVerify(documentVerify);
+    };
+
+    // Handle edit vendor navigation with current page - Fixed for hash routing
+    const handleEditVendor = (vendorId) => {
+        navigate(`/vendor/edit-vendor/${vendorId}?returnPage=${currentPage}`);
     };
 
     // Reset selectedPlan when rechargeModel is opened or closed
@@ -253,7 +281,7 @@ function AllVendor() {
         }
     }, [rechargeModel]);
 
-    const heading = ['S.No', 'Name', 'Referral Id', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Created At', 'Action'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Referred By', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Created At', 'Action'];
 
     return (
         <>
@@ -292,7 +320,6 @@ function AllVendor() {
             ) : (
                 <Table
                     heading="All Vendors"
-                    // btnText="Add Vendor"
                     btnURL="/vendor/add-vendor"
                     tableHeading={heading}
                     tableContent={currentData.map((item, index) => (
@@ -302,6 +329,7 @@ function AllVendor() {
                                 <a href={`#/vendor/vendor_detail/${item._id}`}>{item.name}</a>
                             </CTableDataCell>
                             <CTableDataCell>{item?.myReferral}</CTableDataCell>
+                            <CTableDataCell>{item?.referral_code_which_applied}</CTableDataCell>
                             <CTableDataCell>{item.email}</CTableDataCell>
                             <CTableDataCell>{item.number}</CTableDataCell>
                             <CTableDataCell>
@@ -318,7 +346,6 @@ function AllVendor() {
                             <CTableDataCell>
                                 <CButton
                                     color="warning"
-                                    // disabled={!item.documentVerify}
                                     onClick={() => handleRechargeModel(item._id, item?.category)}
                                 >
                                     Recharge
@@ -347,9 +374,9 @@ function AllVendor() {
 
                             <CTableDataCell>
                                 <div className="action-parent">
-                                    <CNavLink href={`#/vendor/edit-vendor/${item._id}`} className="edit">
+                                    <div className="edit" onClick={() => handleEditVendor(item._id)}>
                                         <i className="ri-pencil-fill"></i>
-                                    </CNavLink>
+                                    </div>
                                     <div className="delete" onClick={() => confirmDelete(item.email)}>
                                         <i className="ri-delete-bin-fill"></i>
                                     </div>
@@ -400,13 +427,13 @@ function AllVendor() {
                     {modalType === 'Referrals' && modalData?.length > 0 && (
                         <div
                             style={{
-                                width: '100%', // Set the desired width
-                                maxWidth: '1200px', // Add a max-width to prevent excessive growth
-                                margin: '0 auto', // Center the modal horizontally
-                                background: '#fff', // Optional: ensure a white background
-                                padding: '20px', // Optional: add padding
-                                borderRadius: '8px', // Optional: rounded corners
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Optional: add a shadow for better appearance
+                                width: '100%',
+                                maxWidth: '1200px',
+                                margin: '0 auto',
+                                background: '#fff',
+                                padding: '20px',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                             }}
                         >
                             <h3>Referrals</h3>
@@ -416,7 +443,6 @@ function AllVendor() {
                                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>#ID</th>
                                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
                                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Redirect</th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -445,7 +471,6 @@ function AllVendor() {
                             </div>
 
                             <div className="row">
-                                {/* Document 1 */}
                                 <div className="col-12 col-md-4 mb-3">
                                     <p>
                                         <a href={modalData?.documentFirst?.image} target='_blank' rel='noopener noreferrer'>
@@ -459,7 +484,6 @@ function AllVendor() {
                                     </p>
                                 </div>
 
-                                {/* Document 2 */}
                                 <div className="col-12 col-md-4 mb-3">
                                     <p>
                                         <a href={modalData?.documentSecond?.image} target='_blank' rel='noopener noreferrer'>
@@ -473,7 +497,6 @@ function AllVendor() {
                                     </p>
                                 </div>
 
-                                {/* Document 3 */}
                                 <div className="col-12 col-md-4 mb-3">
                                     <p>
                                         <a href={modalData?.documentThird?.image} target='_blank' rel='noopener noreferrer'>

@@ -159,8 +159,9 @@ function DoneRefer() {
                           {getPaginatedData(vendor[level]).map((referral, idx) => (
                             <tr key={idx} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {(pagination[level]?.currentPage - 1) * pagination[level]?.itemsPerPage + idx + 1}
+                                {(pagination[level]?.currentPage - 1) * itemsPerPage + idx + 1}
                               </td>
+
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{referral?.myReferral}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{referral.name}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{referral.email}</td>
@@ -171,8 +172,8 @@ function DoneRefer() {
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${referral?.plan_status
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
                                   }`}>
                                   {referral?.plan_status ? 'Active' : 'Inactive'}
                                 </span>
@@ -194,8 +195,8 @@ function DoneRefer() {
                                 key={idx}
                                 onClick={() => handlePageChange(level, idx + 1)}
                                 className={`px-3 py-1 rounded ${pagination[level]?.currentPage === idx + 1
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                   }`}
                               >
                                 {idx + 1}
