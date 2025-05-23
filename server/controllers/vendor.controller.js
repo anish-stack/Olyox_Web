@@ -586,70 +586,66 @@ exports.resendOtp = async (req, res) => {
 
         console.log(req.body);
 
-        // Find vendor by email
         const vendor = await Vendor_Model.findOne({ email });
         if (!vendor) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Vendor not found" });
+            return res.status(404).json({ success: false, message: "Vendor not found" });
         }
 
         const otpService = new OtpService();
         const { otp, expiryTime } = otpService.generateOtp();
+
         let message = "";
+        let otpToSend = "";
 
         if (type === "email") {
             if (vendor.isEmailVerified) {
-                return res
-                    .status(400)
-                    .json({ success: false, message: "Email already verified" });
+                return res.status(400).json({ success: false, message: "Email already verified" });
             }
 
             vendor.otp_ = otp;
             vendor.otp_expire_time = expiryTime;
             message = `Hi ${vendor.name},\n\nYour OTP is: ${otp}.\n\nAt Olyox, we simplify your life with services like taxi booking, food delivery, and more.\n\nThank you for choosing Olyox!`;
+            otpToSend = vendor.otp_;
         } else if (type === "password") {
             vendor.password_otp = otp;
             vendor.password_otp_expire = expiryTime;
             message = `Hi ${vendor.name},\n\nYour OTP to reset your password is: ${otp}.\n\nThank you for choosing Olyox!`;
+            otpToSend = vendor.password_otp;
         } else {
-            return res
-                .status(400)
-                .json({ success: false, message: "Invalid type provided" });
+            return res.status(400).json({ success: false, message: "Invalid type provided" });
         }
 
-        // Save vendor with updated OTP
         await vendor.save();
 
-        // Send WhatsApp message
         try {
-            console.log("Message sent", message);
-            console.log("Message sent Number", vendor?.number);
-            const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
-            const dltMessage = await sendDltMessage(vendor.otp_, vendor?.number);
+            console.log("Message to send:", message);
+            console.log("Vendor Number:", vendor?.number);
 
-            console.log("Data Message sent", dataMessage);
+            // Send WhatsApp
+            const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
+
+            // Send DLT SMS with correct OTP
+            const dltMessage = await sendDltMessage(otpToSend, vendor?.number);
+
+            console.log("WhatsApp message sent:", dataMessage);
+            console.log("DLT message sent:", dltMessage);
         } catch (error) {
-            console.error("Error sending WhatsApp message:", error);
-            return res
-                .status(500)
-                .json({ success: false, message: "Failed to send WhatsApp message" });
+            console.error("Error sending messages:", error);
+            return res.status(500).json({ success: false, message: "Failed to send OTP via WhatsApp or SMS" });
         }
 
-        // Send appropriate response
-        const successMessage =
-            type === "email"
-                ? "OTP sent successfully for  number verification"
-                : "Password change OTP sent successfully";
+        const successMessage = type === "email"
+            ? "OTP sent successfully for number verification"
+            : "Password change OTP sent successfully";
 
         return res.status(200).json({ success: true, message: successMessage });
+
     } catch (error) {
         console.error("Error resending OTP:", error);
-        return res
-            .status(500)
-            .json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 exports.loginVendor = async (req, res) => {
     try {
