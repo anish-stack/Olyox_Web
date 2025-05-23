@@ -22,7 +22,7 @@ function AllMembership() {
     const handleFetchMembershipPlans = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
             setMembershipPlans(data.data || []); // Ensure default empty array
         } catch (error) {
             console.error('Error fetching membership plans:', error);
@@ -31,7 +31,7 @@ function AllMembership() {
             setLoading(false);
         }
     };
-    
+
 
     // Update Active Status
     const handleUpdateActive = async (id, currentStatus) => {
