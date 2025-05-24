@@ -23,9 +23,19 @@ function EditVendor() {
     landmark: '',
   });
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const returnPage = searchParams.get('returnPage');
+    if (returnPage) {
+      localStorage.setItem('returnPage', returnPage);
+    }
+    // console.log('Return Page:', returnPage); // Output: 4
+  }, [])
+
   // Get the return page from URL parameters
   const getReturnPage = () => {
     const urlParams = new URLSearchParams(location.search);
+    // console.log("urlParams", urlParams)
     return urlParams.get('returnPage') || '1';
   };
 
@@ -43,7 +53,7 @@ function EditVendor() {
     try {
       const res = await axios.get(`https://webapi.olyox.com/api/v1/get_Single_Provider/${id}`);
       const vendor = res.data.data;
-      console.log("vendor", vendor);
+      // console.log("vendor", vendor);
       setFormData({
         name: vendor.name || '',
         email: vendor.email || '',
