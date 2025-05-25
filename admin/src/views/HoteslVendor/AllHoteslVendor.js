@@ -10,6 +10,7 @@ import {
     CInputGroupText,
     CFormInput,
     CFormSwitch,
+    CBadge,
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -32,6 +33,7 @@ const AllHoteslVendor = () => {
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/hotels/get_all_hotel');
             const allData = data.data.reverse();
+            console.log(allData)
             setHotels(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching hotels:', error);
@@ -75,6 +77,35 @@ const AllHoteslVendor = () => {
         fetchHotels();
     }, []);
 
+     // Format date function
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    // Format document verification status
+        const renderDocumentVerification = (isVerified) => {
+            return (
+                <CBadge
+                    color={isVerified ? 'success' : 'danger'}
+                    style={{
+                        backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                        color: 'white',
+                        padding: '6px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px'
+                    }}
+                >
+                    {isVerified ? 'Verified' : 'Not Verified'}
+                </CBadge>
+            );
+        };
+
     // Filter hotels by hotel_name, hotel_address, or hotel_phone based on the searchTerm
     const filteredHotels = hotels.filter(hotel => {
         const searchQuery = searchTerm.toLowerCase();
@@ -101,7 +132,7 @@ const AllHoteslVendor = () => {
         navigate(`/hotel/hotel-listin/${hotelId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'Is Blocked', 'View listing', 'Actions', 'Delete'];
+    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'New Registration Date','Document Verification', 'Is Blocked', 'View listing', 'Actions', 'Delete'];
 
     return (
         <>
@@ -142,6 +173,16 @@ const AllHoteslVendor = () => {
                                 <CTableDataCell>{hotel.hotel_address}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_owner}</CTableDataCell>
                                 <CTableDataCell>{hotel.hotel_phone}</CTableDataCell>
+                                {/* New Registration Date column */}
+                                <CTableDataCell>
+                                    <span className="text-muted small">
+                                        {formatDate(hotel.createdAt) || 'N/A'}
+                                    </span>
+                                </CTableDataCell>
+                                {/* New Document Verification column */}
+                                <CTableDataCell>
+                                    {renderDocumentVerification(hotel.DocumentUploadedVerified)}
+                                </CTableDataCell>
                                 <CTableDataCell>
                                     <CFormSwitch
                                         id={`blockSwitch-${hotel._id}`}

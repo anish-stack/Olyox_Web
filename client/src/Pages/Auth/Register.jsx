@@ -5,6 +5,7 @@ import InputField from "./components/InputField";
 import SelectField from "./components/SelectField";
 import ImageUploader from "./components/ImageUploader";
 import LoadingSpinner from "./components/LoadingSpinner";
+import { Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
   const location = new URLSearchParams(window.location.search);
@@ -16,6 +17,7 @@ const Register = () => {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [showPassword, setShowPassword] = useState(false); 
 
   const [formData, setFormData] = useState({
     name: '',
@@ -102,7 +104,7 @@ const Register = () => {
   const validateForm = (touchedOnly = false) => {
     const newErrors = {};
     const currentDate = new Date();
-    
+
     // Only validate fields that have been touched if touchedOnly is true
     const shouldValidate = (field) => !touchedOnly || touched[field];
 
@@ -179,6 +181,10 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -250,22 +256,22 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched for validation
     const allFields = [
-      'name', 'dob', 'email', 'reEmail', 'number', 'password', 
+      'name', 'dob', 'email', 'reEmail', 'number', 'password',
       'category', 'address.area', 'address.pincode', 'aadharNumber'
     ];
-    
+
     const touchedFields = {};
     allFields.forEach(field => touchedFields[field] = true);
     setTouched(touchedFields);
-    
+
     if (!validateForm()) {
       toast.error('Please correct the errors in the form');
       return;
     }
-    
+
     setSubmitting(true);
     const updatedData = new FormData();
 
@@ -333,7 +339,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-   
+
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl">
         <div className="px-8 py-6 border-b border-gray-200">
           <h2 className="text-3xl font-bold text-gray-900 text-center">Vendor Registration</h2>
@@ -353,7 +359,7 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.name}
               />
-              
+
               <InputField
                 label="Date of Birth"
                 id="dob"
@@ -363,7 +369,7 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.dob}
               />
-              
+
               <InputField
                 label="Email"
                 id="email"
@@ -373,7 +379,7 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.email}
               />
-              
+
               <InputField
                 label="Re-Enter Email"
                 id="reEmail"
@@ -383,7 +389,7 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.reEmail}
               />
-              
+
               <InputField
                 label="Phone Number"
                 id="number"
@@ -393,16 +399,38 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.number}
               />
-              
-              <InputField
-                label="Password"
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-              />
+
+              {/* Custom Password Field with Eye Toggle */}
+              <div className="relative">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 ${errors.password ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -418,7 +446,7 @@ const Register = () => {
                 value={formData.address.area}
                 onChange={handleChange}
               />
-              
+
               <InputField
                 label="Aadhaar Number"
                 id="aadharNumber"
@@ -428,7 +456,7 @@ const Register = () => {
                 onChange={handleChange}
                 error={errors.aadharNumber}
               />
-              
+
               <InputField
                 label="Landmark"
                 id="address.landmark"
@@ -437,7 +465,7 @@ const Register = () => {
                 value={formData.address.landmark}
                 onChange={handleChange}
               />
-              
+
               <InputField
                 label="Pincode"
                 id="address.pincode"
@@ -453,7 +481,7 @@ const Register = () => {
           {/* Other Details Section */}
           <div className="bg-gray-50 px-6 pt-4 pb-6 rounded-lg">
             <h4 className="text-xl font-bold text-gray-900 mb-4">Other Important Details</h4>
-            
+
             <div className="mb-6">
               <SelectField
                 label="Category"
@@ -474,12 +502,12 @@ const Register = () => {
               <ImageUploader
                 label="Aadhaar Front"
                 id="aadharfront"
-                
+
                 name="aadharfront"
                 onImageSelected={(file, preview) => handleFileUpload('aadharfront', file, preview)}
                 preview={imagePreview.aadharfront}
               />
-              
+
               <ImageUploader
                 label="Aadhaar Back"
                 id="aadharback"
@@ -487,7 +515,7 @@ const Register = () => {
                 onImageSelected={(file, preview) => handleFileUpload('aadharback', file, preview)}
                 preview={imagePreview.aadharback}
               />
-              
+
               <ImageUploader
                 label="Pan Card"
                 id="pancard"

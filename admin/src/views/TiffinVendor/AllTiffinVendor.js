@@ -14,6 +14,7 @@ import {
     CCol,
     CCard,
     CCardBody,
+    CBadge,
 } from '@coreui/react';
 import { FaEye, FaSearch } from 'react-icons/fa';
 import { X } from 'lucide-react';
@@ -74,7 +75,6 @@ const AllTiffinVendor = () => {
     }
 };
 
-
     const handleDelete = async (vendorId) => {
         try {
             const res = await axios.delete(`https://www.appapi.olyox.com/api/v1/tiffin/delete_tiffin_vendor/${vendorId}`);
@@ -84,6 +84,35 @@ const AllTiffinVendor = () => {
             console.log("Internal server error", error)
         }
     }
+
+    // Format date function
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    // Format document verification status
+    const renderDocumentVerification = (isVerified) => {
+        return (
+            <CBadge 
+                color={isVerified ? 'success' : 'danger'}
+                style={{
+                    backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                }}
+            >
+                {isVerified ? 'Verified' : 'Not Verified'}
+            </CBadge>
+        );
+    };
 
     useEffect(() => {
         fetchVendors();
@@ -142,7 +171,8 @@ const AllTiffinVendor = () => {
         navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions', 'Delete'];
+    // Updated heading array to include new columns
+    const heading = ['S.No', 'BH Id', 'Restaurant Name', 'Category', 'Location', 'Rating', 'Price Range', 'Registration Date', 'Document Verify', 'Status', 'View Tiffin Package', 'Food Listing', 'Actions', 'Delete'];
 
     return (
         <>
@@ -247,6 +277,16 @@ const AllTiffinVendor = () => {
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     ₹{vendor.minPrice} - ₹{vendor.priceForTwoPerson}
+                                </CTableDataCell>
+                                {/* New Registration Date column */}
+                                <CTableDataCell>
+                                    <span className="text-muted small">
+                                        {formatDate(vendor.createdAt)}
+                                    </span>
+                                </CTableDataCell>
+                                {/* New Document Verification column */}
+                                <CTableDataCell>
+                                    {renderDocumentVerification(vendor.documentVerify)}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CFormSwitch

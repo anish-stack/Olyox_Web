@@ -10,6 +10,7 @@ import {
     CInputGroupText,
     CFormInput,
     CFormSwitch,
+    CBadge,
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -32,7 +33,8 @@ const AllCabVendor = () => {
         setLoading(true);
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/rider');
-            const allData = data.reverse();
+            const allData = data;
+            // console.log(allData)
             setRiders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching riders:', error);
@@ -44,28 +46,28 @@ const AllCabVendor = () => {
     };
 
     const handleStatusToggle = async (riderId, currentStatus) => {
-    setLoading(true);
-    try {
-        const updatedStatus = !currentStatus;
+        setLoading(true);
+        try {
+            const updatedStatus = !currentStatus;
 
-        await axios.put(`https://www.appapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
-            isBlockByAdmin: updatedStatus,
-        });
+            await axios.put(`https://www.appapi.olyox.com/api/v1/rider/updateRiderBlock/${riderId}`, {
+                isBlockByAdmin: updatedStatus,
+            });
 
-        if (updatedStatus) {
-            toast.success('Rider has been blocked by admin.');
-        } else {
-            toast.success('Rider has been unblocked.');
+            if (updatedStatus) {
+                toast.success('Rider has been blocked by admin.');
+            } else {
+                toast.success('Rider has been unblocked.');
+            }
+
+            fetchRiders();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            toast.error('Failed to update rider status. Please try again.');
+        } finally {
+            setLoading(false);
         }
-
-        fetchRiders();
-    } catch (error) {
-        console.error('Error updating status:', error);
-        toast.error('Failed to update rider status. Please try again.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
     const handleDelete = async (vendorId) => {
@@ -76,7 +78,7 @@ const AllCabVendor = () => {
         } catch (error) {
             console.log("Internal server error", error)
         }
-    }      
+    }
 
     useEffect(() => {
         fetchRiders();
@@ -86,17 +88,46 @@ const AllCabVendor = () => {
     const filteredRiders = riders.filter(rider => {
         const searchQuery = searchTerm.toLowerCase();
         const matchesSearch =
-          rider.name?.toLowerCase().includes(searchQuery) ||
-          rider.phone?.toLowerCase().includes(searchQuery);
-      
+            rider.name?.toLowerCase().includes(searchQuery) ||
+            rider.phone?.toLowerCase().includes(searchQuery);
+
         const matchesCategory =
-          categoryFilter === 'all' ||
-          (categoryFilter === 'parcel' && rider.category === 'parcel') ||
-          (categoryFilter === 'non-parcel' && rider.category !== 'parcel');
-      
+            categoryFilter === 'all' ||
+            (categoryFilter === 'parcel' && rider.category === 'parcel') ||
+            (categoryFilter === 'non-parcel' && rider.category !== 'parcel');
+
         return matchesSearch && matchesCategory;
-      });
-      
+    });
+
+    // Format date function
+        const formatDate = (dateString) => {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        };
+    
+        // Format document verification status
+        const renderDocumentVerification = (isVerified) => {
+            return (
+                <CBadge
+                    color={isVerified ? 'success' : 'danger'}
+                    style={{
+                        backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                        color: 'white',
+                        padding: '6px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px'
+                    }}
+                >
+                    {isVerified ? 'Verified' : 'Not Verified'}
+                </CBadge>
+            );
+        };
+
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredRiders.reverse().slice(startIndex, startIndex + itemsPerPage);
@@ -114,7 +145,7 @@ const AllCabVendor = () => {
         navigate(`/cab/rider-time/${riderId}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Rider Timing', 'Block', 'Actions'];
+    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating',  'Registration Date', 'Document Verification', 'Rider Timing', 'Block', 'Actions'];
 
     return (
         <>
@@ -172,6 +203,16 @@ const AllCabVendor = () => {
                                         <span className="me-1">{rider.Ratings}</span>
                                         <span className="text-warning">★</span>
                                     </div>
+                                </CTableDataCell>
+                                {/* New Registration Date column */}
+                                <CTableDataCell>
+                                    <span className="text-muted small">
+                                        {formatDate(rider.createdAt) || 'N/A'}
+                                    </span>
+                                </CTableDataCell>
+                                {/* New Document Verification column */}
+                                <CTableDataCell>
+                                    {renderDocumentVerification(rider.DocumentVerify)}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CButton

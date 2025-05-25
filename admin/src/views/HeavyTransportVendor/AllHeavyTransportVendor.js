@@ -10,6 +10,7 @@ import {
     CInputGroupText,
     CFormInput,
     CFormSwitch,
+    CBadge,
 } from '@coreui/react';
 import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
@@ -31,6 +32,7 @@ const AllHeavyTransportVendor = () => {
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/heavy/get_all_hv_vendor');
             const allData = data.data.reverse();
+            // console.log("allData",allData)
             setVendors(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching vendors:', error);
@@ -42,36 +44,64 @@ const AllHeavyTransportVendor = () => {
     };
 
     const handleStatusToggle = async (vendorId, currentStatus) => {
-    setLoading(true);
-    try {
-        const updatedStatus = !currentStatus;
+        setLoading(true);
+        try {
+            const updatedStatus = !currentStatus;
 
-        await axios.put(`https://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
-            is_blocked: updatedStatus,
-        });
+            await axios.put(`https://www.appapi.olyox.com/api/v1/heavy/update_hv_vendor_is_block_status/${vendorId}`, {
+                is_blocked: updatedStatus,
+            });
 
-        if (updatedStatus) {
-            toast.success('Vendor has been blocked.');
-        } else {
-            toast.success('Vendor has been unblocked.');
+            if (updatedStatus) {
+                toast.success('Vendor has been blocked.');
+            } else {
+                toast.success('Vendor has been unblocked.');
+            }
+
+            fetchVendors();
+        } catch (error) {
+            console.error('Error updating block status:', error);
+            toast.error('Failed to update status. Please try again.');
+        } finally {
+            setLoading(false);
         }
+    };
 
-        fetchVendors();
-    } catch (error) {
-        console.error('Error updating block status:', error);
-        toast.error('Failed to update status. Please try again.');
-    } finally {
-        setLoading(false);
-    }
-};
+    // Format date function
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
+    // Format document verification status
+    const renderDocumentVerification = (isVerified) => {
+        return (
+            <CBadge
+                color={isVerified ? 'success' : 'danger'}
+                style={{
+                    backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                }}
+            >
+                {isVerified ? 'Verified' : 'Not Verified'}
+            </CBadge>
+        );
+    };
 
-    const handleDelete = async(vendorId) => {
+    const handleDelete = async (vendorId) => {
         try {
             const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/heavy/heavy_vehicle_profile_delete/${vendorId}`);
             toast.success('Vendor deleted successfully');
         } catch (error) {
-            console.log("Internal Server Error: Failed to delete vendor.",error)
+            console.log("Internal Server Error: Failed to delete vendor.", error)
         }
     }
 
@@ -96,7 +126,7 @@ const AllHeavyTransportVendor = () => {
         setCurrentPage(page);
     };
 
-    const heading = ['S.No', 'BH ID', 'Name', 'Phone', 'Email', 'Vehicles', 'Service Areas', 'Call Timing', 'Blocked', 'Actions'];
+    const heading = ['S.No', 'BH ID', 'Name', 'Phone', 'Email', 'Vehicles', 'Service Areas', 'Call Timing', 'Registration Date', 'Document Verification', 'Blocked', 'Actions'];
 
     return (
         <>
@@ -146,6 +176,15 @@ const AllHeavyTransportVendor = () => {
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     {vendor.call_timing?.start_time} - {vendor.call_timing?.end_time}
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <span className="text-muted small">
+                                        {formatDate(vendor.createdAt)}
+                                    </span>
+                                </CTableDataCell>
+                                {/* New Document Verification column */}
+                                <CTableDataCell>
+                                    {renderDocumentVerification(vendor.isAlldocumentsVerified)}
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <CFormSwitch
