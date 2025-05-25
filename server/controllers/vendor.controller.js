@@ -976,7 +976,7 @@ exports.getProviderDetailsByNumber = async (req, res) => {
     try {
         const { number } = req.body || {};
         console.log("Number", number);
-        const provider = await Vendor_Model.findOne({ number });
+        const provider = await Vendor_Model.findOne({ number }).populate("member_id").populate('payment_id');
 
         if (!provider) {
             return res.status(400).json({
