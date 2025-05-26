@@ -45,7 +45,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const fetchMembershipPlan = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
+            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
 
             // Filter plans based on user category if available
             if (userCategory) {
