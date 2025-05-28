@@ -48,7 +48,7 @@ const RechargeHistory = () => {
   const fetchPastRechargeDetails = async (token) => {
     try {
       setLoading(true);
-      const { data } = await axios.get('https://webapi.olyox.com/api/v1/get-recharge', {
+      const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/get-recharge', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -17,16 +17,22 @@ import Table from '../../components/Table/Table';
 
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
 
 const AllCabVendor = () => {
     const [riders, setRiders] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
+    const [documentVerifyFilter, setDocumentVerifyFilter] = useState('all');
+    
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Get current page from URL params, default to 1
+    const currentPage = parseInt(searchParams.get('page')) || 1;
     const itemsPerPage = 10;
 
     const fetchRiders = async () => {
@@ -34,7 +40,6 @@ const AllCabVendor = () => {
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/rider');
             const allData = data;
-            // console.log(allData)
             setRiders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching riders:', error);
@@ -69,7 +74,6 @@ const AllCabVendor = () => {
         }
     };
 
-
     const handleDelete = async (vendorId) => {
         try {
             const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/rider/delete_rider_vendor/${vendorId}`);
@@ -96,56 +100,73 @@ const AllCabVendor = () => {
             (categoryFilter === 'parcel' && rider.category === 'parcel') ||
             (categoryFilter === 'non-parcel' && rider.category !== 'parcel');
 
-        return matchesSearch && matchesCategory;
+        const matchesDocumentStatus =
+            documentVerifyFilter === 'all' ||
+            (documentVerifyFilter === 'verified' && rider.DocumentVerify === true) ||
+            (documentVerifyFilter === 'not-verified' && rider.DocumentVerify === false);
+
+        return matchesSearch && matchesCategory && matchesDocumentStatus;
     });
 
     // Format date function
-        const formatDate = (dateString) => {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-IN', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        };
-    
-        // Format document verification status
-        const renderDocumentVerification = (isVerified) => {
-            return (
-                <CBadge
-                    color={isVerified ? 'success' : 'danger'}
-                    style={{
-                        backgroundColor: isVerified ? '#28a745' : '#dc3545',
-                        color: 'white',
-                        padding: '6px 12px',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                    }}
-                >
-                    {isVerified ? 'Verified' : 'Not Verified'}
-                </CBadge>
-            );
-        };
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
+    // Format document verification status
+    const renderDocumentVerification = (isVerified) => {
+        return (
+            <CBadge
+                color={isVerified ? 'success' : 'danger'}
+                style={{
+                    backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                }}
+            >
+                {isVerified ? 'Verified' : 'Not Verified'}
+            </CBadge>
+        );
+    };
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredRiders.reverse().slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredRiders.length / itemsPerPage);
 
+    // Update URL when page changes
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        setSearchParams(newSearchParams);
     };
 
+    // Navigate with current page preserved
     const handleViewDetails = (riderId) => {
-        navigate(`/cab/vendor-detail/${riderId}`);
+        navigate(`/cab/vendor-detail/${riderId}?returnPage=${currentPage}`);
     };
 
     const handleRiderTiming = (riderId) => {
-        navigate(`/cab/rider-time/${riderId}`);
+        navigate(`/cab/rider-time/${riderId}?returnPage=${currentPage}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating',  'Registration Date', 'Document Verification', 'Rider Timing', 'Block', 'Actions'];
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        if (currentPage > 1 && (searchTerm || categoryFilter !== 'all' || documentVerifyFilter !== 'all')) {
+            const newSearchParams = new URLSearchParams();
+            newSearchParams.set('page', '1');
+            setSearchParams(newSearchParams);
+        }
+    }, [searchTerm, categoryFilter, documentVerifyFilter]);
+
+    const heading = ['S.No', 'BH Id', 'Rider Name', 'Rider Number', 'Vehicle Name', 'Vehicle Type', 'Total Rides', 'Rating', 'Registration Date', 'Document Verification', 'Rider Timing', 'Block', 'Actions'];
 
     return (
         <>
@@ -170,8 +191,17 @@ const AllCabVendor = () => {
                     <option value="parcel">Parcel</option>
                     <option value="non-parcel">Without Parcel</option>
                 </select>
+                <select
+                    className="form-select"
+                    value={documentVerifyFilter}
+                    onChange={(e) => setDocumentVerifyFilter(e.target.value)}
+                    style={{ maxWidth: '200px' }}
+                >
+                    <option value="all">All Documents</option>
+                    <option value="verified">Verified</option>
+                    <option value="not-verified">Not Verified</option>
+                </select>
             </div>
-
 
             {/* Loader or No Data */}
             {loading ? (
@@ -204,13 +234,11 @@ const AllCabVendor = () => {
                                         <span className="text-warning">★</span>
                                     </div>
                                 </CTableDataCell>
-                                {/* New Registration Date column */}
                                 <CTableDataCell>
                                     <span className="text-muted small">
                                         {formatDate(rider.createdAt) || 'N/A'}
                                     </span>
                                 </CTableDataCell>
-                                {/* New Document Verification column */}
                                 <CTableDataCell>
                                     {renderDocumentVerification(rider.DocumentVerify)}
                                 </CTableDataCell>

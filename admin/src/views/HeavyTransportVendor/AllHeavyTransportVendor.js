@@ -16,16 +16,21 @@ import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
 
 const AllHeavyTransportVendor = () => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Get current page from URL params, default to 1
+    const currentPage = parseInt(searchParams.get('page')) || 1;
+    
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const itemsPerPage = 7;
+    const [verificationFilter, setVerificationFilter] = useState('all'); // 'all', 'verified', 'not_verified'
 
     const fetchVendors = async () => {
         setLoading(true);
@@ -100,6 +105,7 @@ const AllHeavyTransportVendor = () => {
         try {
             const data = await axios.delete(`https://www.appapi.olyox.com/api/v1/heavy/heavy_vehicle_profile_delete/${vendorId}`);
             toast.success('Vendor deleted successfully');
+            fetchVendors();
         } catch (error) {
             console.log("Internal Server Error: Failed to delete vendor.", error)
         }
@@ -109,35 +115,81 @@ const AllHeavyTransportVendor = () => {
         fetchVendors();
     }, []);
 
+    // Handle filter changes and reset to page 1
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        // Reset to page 1 when search changes
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
+    };
+
+    const handleVerificationFilterChange = (e) => {
+        setVerificationFilter(e.target.value);
+        // Reset to page 1 when filter changes
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
+    };
+
     const filteredVendors = vendors.filter(vendor => {
         const searchQuery = searchTerm.toLowerCase();
-        return (
+
+        const matchesSearch = (
             vendor.name?.toLowerCase().includes(searchQuery) ||
             vendor.phone_number?.toLowerCase().includes(searchQuery) ||
             vendor.email?.toLowerCase().includes(searchQuery)
         );
+
+        const matchesVerificationFilter =
+            verificationFilter === 'all' ||
+            (verificationFilter === 'verified' && vendor.isAlldocumentsVerified) ||
+            (verificationFilter === 'not_verified' && !vendor.isAlldocumentsVerified);
+
+        return matchesSearch && matchesVerificationFilter;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredVendors.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredVendors.length / itemsPerPage);
 
+    // Update URL when page changes
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        setSearchParams(newSearchParams);
+    };
+
+    // Navigate with current page preserved
+    const handleViewDetails = (vendorId) => {
+        navigate(`/heavy/heavy-transport-vendor-detail/${vendorId}?returnPage=${currentPage}`);
     };
 
     const heading = ['S.No', 'BH ID', 'Name', 'Phone', 'Email', 'Vehicles', 'Service Areas', 'Call Timing', 'Registration Date', 'Document Verification', 'Blocked', 'Actions'];
 
     return (
         <>
-            <div className="filter-container mb-3">
-                <CInputGroup>
+           <div className="filter-container mb-3 d-flex gap-3">
+                <CInputGroup className="w-50">
                     <CInputGroupText>Search</CInputGroupText>
                     <CFormInput
                         placeholder="Search by name, email, or phone"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                     />
+                </CInputGroup>
+
+                <CInputGroup className="w-25">
+                    <CInputGroupText>Document Status</CInputGroupText>
+                    <select
+                        className="form-select"
+                        value={verificationFilter}
+                        onChange={handleVerificationFilterChange}
+                    >
+                        <option value="all">All</option>
+                        <option value="verified">Verified</option>
+                        <option value="not_verified">Not Verified</option>
+                    </select>
                 </CInputGroup>
             </div>
 
@@ -199,7 +251,7 @@ const AllHeavyTransportVendor = () => {
                                         color="info"
                                         size="sm"
                                         className="d-flex text-white align-items-center gap-2"
-                                        onClick={() => navigate(`/heavy/heavy-transport-vendor-detail/${vendor._id}`)}
+                                        onClick={() => handleViewDetails(vendor._id)}
                                     >
                                         <FaEye />
                                         View

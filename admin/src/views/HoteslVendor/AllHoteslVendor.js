@@ -16,16 +16,21 @@ import { FaEye, FaToggleOn, FaToggleOff } from 'react-icons/fa';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
 
 const AllHoteslVendor = () => {
     const [hotels, setHotels] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Get current page from URL params, default to 1
+    const currentPage = parseInt(searchParams.get('page')) || 1;
+    
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const itemsPerPage = 7;
+    const [documentVerificationFilter, setDocumentVerificationFilter] = useState('all');
 
     const fetchHotels = async () => {
 
@@ -77,7 +82,7 @@ const AllHoteslVendor = () => {
         fetchHotels();
     }, []);
 
-     // Format date function
+    // Format date function
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
@@ -89,64 +94,108 @@ const AllHoteslVendor = () => {
     };
 
     // Format document verification status
-        const renderDocumentVerification = (isVerified) => {
-            return (
-                <CBadge
-                    color={isVerified ? 'success' : 'danger'}
-                    style={{
-                        backgroundColor: isVerified ? '#28a745' : '#dc3545',
-                        color: 'white',
-                        padding: '6px 12px',
-                        borderRadius: '4px',
-                        fontSize: '12px'
-                    }}
-                >
-                    {isVerified ? 'Verified' : 'Not Verified'}
-                </CBadge>
-            );
-        };
+    const renderDocumentVerification = (isVerified) => {
+        return (
+            <CBadge
+                color={isVerified ? 'success' : 'danger'}
+                style={{
+                    backgroundColor: isVerified ? '#28a745' : '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px'
+                }}
+            >
+                {isVerified ? 'Verified' : 'Not Verified'}
+            </CBadge>
+        );
+    };
+
+    // Handle search term change and reset to page 1
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        // Reset to page 1 when search changes
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
+    };
+
+    // Handle document verification filter change and reset to page 1
+    const handleVerificationFilterChange = (e) => {
+        setDocumentVerificationFilter(e.target.value);
+        // Reset to page 1 when filter changes
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
+    };
 
     // Filter hotels by hotel_name, hotel_address, or hotel_phone based on the searchTerm
-    const filteredHotels = hotels.filter(hotel => {
+    const filteredHotels = hotels.filter((hotel) => {
         const searchQuery = searchTerm.toLowerCase();
-        return (
+
+        const matchesSearch =
             hotel.hotel_name?.toLowerCase().includes(searchQuery) ||
             hotel.hotel_address?.toLowerCase().includes(searchQuery) ||
-            hotel.hotel_phone?.toLowerCase().includes(searchQuery)
-        );
+            hotel.hotel_phone?.toLowerCase().includes(searchQuery);
+
+        const matchesVerification =
+            documentVerificationFilter === 'all' ||
+            (documentVerificationFilter === 'verified' && hotel.DocumentUploadedVerified === true) ||
+            (documentVerificationFilter === 'not_verified' && hotel.DocumentUploadedVerified !== true);
+
+        return matchesSearch && matchesVerification;
     });
+
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredHotels.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
 
+    // Update URL when page changes
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        setSearchParams(newSearchParams);
     };
 
+    // Navigate with current page preserved
     const handleViewDetails = (hotelId) => {
-        navigate(`/hotel/vendor-detail/${hotelId}`);
+        navigate(`/hotel/vendor-detail/${hotelId}?returnPage=${currentPage}`);
     };
 
     const handleViewListinDetails = (hotelId) => {
-        navigate(`/hotel/hotel-listin/${hotelId}`);
+        navigate(`/hotel/hotel-listin/${hotelId}?returnPage=${currentPage}`);
     };
 
-    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'New Registration Date','Document Verification', 'Is Blocked', 'View listing', 'Actions', 'Delete'];
+    const heading = ['S.No', 'BH Id', 'Hotel Name', 'Zone', 'Address', 'Owner', 'Phone', 'New Registration Date', 'Document Verification', 'Is Blocked', 'View listing', 'Actions', 'Delete'];
 
     return (
         <>
             {/* Unified Search Input */}
-            <div className="filter-container mb-3">
-                <CInputGroup>
+            <div className="filter-container mb-3 d-flex gap-3 align-items-center">
+                <CInputGroup className="flex-grow-1">
                     <CInputGroupText>Search</CInputGroupText>
                     <CFormInput
                         placeholder="Search by hotel name, address, or phone"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={handleSearchChange}
                     />
                 </CInputGroup>
+
+                <div>
+                    <label className="me-2 fw-semibold">Document Verified:</label>
+                    <select
+                        className="form-select"
+                        value={documentVerificationFilter}
+                        onChange={handleVerificationFilterChange}
+                    >
+                        <option value="all">All</option>
+                        <option value="verified">Verified</option>
+                        <option value="not_verified">Not Verified</option>
+                    </select>
+                </div>
             </div>
+
 
             {/* Loader or No Data */}
             {loading ? (

@@ -35,7 +35,7 @@ function AddCategory() {
     }
 
     try {
-      const res = await axios.post('https://webapi.olyox.com/api/v1/categories_create', formDataToSend, {
+      const res = await axios.post('https://www.webapi.olyox.com/api/v1/categories_create', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -617,24 +617,24 @@ exports.resendOtp = async (req, res) => {
 
         await vendor.save();
 
-       try {
-    console.log("📤 Sending WhatsApp message...");
-    console.log("To Number:", vendor?.number);
-    console.log("Message Content:", message);
+        try {
+            console.log("📤 Sending WhatsApp message...");
+            console.log("To Number:", vendor?.number);
+            console.log("Message Content:", message);
 
-    const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
-    const dltMessage = await sendDltMessage(otpToSend, vendor?.number);
+            const dataMessage = await SendWhatsAppMessage(message, vendor?.number);
+            const dltMessage = await sendDltMessage(otpToSend, vendor?.number);
 
-    console.log("✅ WhatsApp message sent:", dataMessage);
-    console.log("✅ DLT message sent:", dltMessage);
-} catch (error) {
-    console.error("❌ Error sending messages:", error);
-    return res.status(500).json({
-        success: false,
-        message: "Failed to send OTP via WhatsApp or SMS",
-        error: error.message || error,
-    });
-}
+            console.log("✅ WhatsApp message sent:", dataMessage);
+            console.log("✅ DLT message sent:", dltMessage);
+        } catch (error) {
+            console.error("❌ Error sending messages:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to send OTP via WhatsApp or SMS",
+                error: error.message || error,
+            });
+        }
 
         const successMessage = type === "email"
             ? "OTP sent successfully for number verification"
@@ -831,6 +831,18 @@ exports.loginVendor = async (req, res) => {
                 success: false,
                 message:
                     "Your account has been blocked due to suspicious activity. Please contact the admin for further assistance.",
+            });
+        }
+
+        if(vendor.isActive === false){
+            console.warn("Inactive vendor attempted login:", {
+                vendorId: vendor._id,
+                email,
+            });
+            return res.status(401).json({
+                success: false,
+                message:
+                    "Your account is inactive. Please contact the admin for further assistance.",
             });
         }
 
@@ -1938,3 +1950,49 @@ exports.updateVendorDocument = async (req, res) => {
         });
     }
 };
+
+
+exports.uploadAdditionalDocImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log("I am uploading",id)
+        const vendor = await Vendor_Model.findById(id);
+        if (!vendor) {
+            return res.status(404).json({
+                success: false,
+                message: "Vendor not found",
+            });
+        }
+
+        if (req.files && Array.isArray(req.files)) {
+    const additionalDocImageOne = req.files.find(file => file.fieldname === 'additionalDocImageOne');
+    const additionalDocImageTwo = req.files.find(file => file.fieldname === 'additionalDocImageTwo');
+
+    if (additionalDocImageOne) {
+        const imageUrl = await uploadSingleImage(additionalDocImageOne.buffer);
+        const { image, public_id } = imageUrl;
+        vendor.additionalDocImageOne = { image, public_id };
+    }
+    if (additionalDocImageTwo) {
+        const imageUrl = await uploadSingleImage(additionalDocImageTwo.buffer);
+        const { image, public_id } = imageUrl;
+        vendor.additionalDocImageTwo = { image, public_id };
+    }
+}
+
+        await vendor.save()
+        return res.status(200).json({
+            success: true,
+            message: "Vendor documents updated successfully",
+            data: vendor,
+        });
+
+    } catch (error) {
+        console.error("Internal server error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error,
+        });
+    }
+}

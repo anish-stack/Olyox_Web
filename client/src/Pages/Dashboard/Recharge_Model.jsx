@@ -31,7 +31,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const fetchUserDetails = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get(`https://webapi.olyox.com/api/v1/get_Single_Provider/${user_id}`);
+            const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_Single_Provider/${user_id}`);
             setUserData(data.data);
             setUserCategory(data.data.category?.title || '');
             setLoading(false);
@@ -45,7 +45,7 @@ const Recharge_Model = ({ isOpen, onClose, user_id, alreadySelectedMember_id }) 
     const fetchMembershipPlan = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans');
 
             // Filter plans based on user category if available
             if (userCategory) {

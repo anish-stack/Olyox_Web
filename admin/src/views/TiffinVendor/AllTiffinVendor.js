@@ -21,18 +21,25 @@ import { X } from 'lucide-react';
 import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
 
 const AllTiffinVendor = () => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    
+    // Get current page from URL params, default to 1
+    const currentPage = parseInt(searchParams.get('page')) || 1;
+    
     const [filters, setFilters] = useState({
         bhid: '',
         name: '',
-        phone: ''
+        phone: '',
+        documentVerify: '' // new field for filter
     });
+
+    
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
@@ -40,7 +47,7 @@ const AllTiffinVendor = () => {
         setLoading(true);
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/tiffin/get_restaurant');
-            console.log("data.data",data.data)
+            console.log("data.data", data.data)
             setVendors(Array.isArray(data.data) ? data.data.reverse() : []);
         } catch (error) {
             console.error('Error fetching vendors:', error);
@@ -52,28 +59,28 @@ const AllTiffinVendor = () => {
     };
 
     const handleStatusToggle = async (vendorId, currentStatus) => {
-    setLoading(true);
-    try {
-        const updatedStatus = !currentStatus;
+        setLoading(true);
+        try {
+            const updatedStatus = !currentStatus;
 
-        await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${vendorId}`, {
-            status: updatedStatus,
-        });
+            await axios.put(`https://www.appapi.olyox.com/api/v1/tiffin/update_restaurant_status/${vendorId}`, {
+                status: updatedStatus,
+            });
 
-        if (updatedStatus) {
-            toast.success('Vendor has been activated successfully.');
-        } else {
-            toast.success('Vendor has been deactivated.');
+            if (updatedStatus) {
+                toast.success('Vendor has been activated successfully.');
+            } else {
+                toast.success('Vendor has been deactivated.');
+            }
+
+            fetchVendors();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            toast.error('Failed to update vendor status. Please try again.');
+        } finally {
+            setLoading(false);
         }
-
-        fetchVendors();
-    } catch (error) {
-        console.error('Error updating status:', error);
-        toast.error('Failed to update vendor status. Please try again.');
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
     const handleDelete = async (vendorId) => {
         try {
@@ -99,7 +106,7 @@ const AllTiffinVendor = () => {
     // Format document verification status
     const renderDocumentVerification = (isVerified) => {
         return (
-            <CBadge 
+            <CBadge
                 color={isVerified ? 'success' : 'danger'}
                 style={{
                     backgroundColor: isVerified ? '#28a745' : '#dc3545',
@@ -124,51 +131,66 @@ const AllTiffinVendor = () => {
             ...prev,
             [name]: value
         }));
-        setCurrentPage(1); // Reset to first page when filters change
+        // Reset to page 1 when filters change
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
     };
 
     const clearFilters = () => {
         setFilters({
             bhid: '',
             name: '',
-            phone: ''
+            phone: '',
+            documentVerify: ''
         });
-        setCurrentPage(1);
+        // Reset to page 1 when clearing filters
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', '1');
+        setSearchParams(newSearchParams);
     };
 
     // Filter vendors based on multiple criteria
     const filteredVendors = vendors.filter(vendor => {
         const matchesBHID = filters.bhid === '' || 
             vendor.restaurant_BHID?.toLowerCase().includes(filters.bhid.toLowerCase());
-        
+
         const matchesName = filters.name === '' || 
             vendor.restaurant_name?.toLowerCase().includes(filters.name.toLowerCase());
-        
+
         const matchesPhone = filters.phone === '' || 
             (vendor.restaurant_contact && 
              vendor.restaurant_contact.toString().includes(filters.phone));
-        
-        return matchesBHID && matchesName && matchesPhone;
+
+        const matchesDocumentVerify =
+            filters.documentVerify === '' ||
+            String(vendor.documentVerify) === filters.documentVerify;
+
+        return matchesBHID && matchesName && matchesPhone && matchesDocumentVerify;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredVendors.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredVendors.length / itemsPerPage);
 
+    // Update URL when page changes
     const handlePageChange = (page) => {
-        setCurrentPage(page);
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.set('page', page.toString());
+        setSearchParams(newSearchParams);
     };
 
+    // Navigate with current page preserved
     const handleViewDetails = (vendorId) => {
-        navigate(`/tiffin/vendor-detail/${vendorId}`);
+        navigate(`/tiffin/vendor-detail/${vendorId}?returnPage=${currentPage}`);
     };
 
     const handleViewTiffinPackage = (vendorId) => {
-        navigate(`/tiffin/tiffin-listin/${vendorId}`);
+        navigate(`/tiffin/tiffin-listin/${vendorId}?returnPage=${currentPage}`);
     };
 
     const handleViewFoodListing = (vendorId) => {
-        navigate(`/tiffin/tiffin-food-listin/${vendorId}`);
+        navigate(`/tiffin/tiffin-food-listin/${vendorId}?returnPage=${currentPage}`);
     };
 
     // Updated heading array to include new columns
@@ -210,6 +232,24 @@ const AllTiffinVendor = () => {
                         <CCol md={3}>
                             <CInputGroup>
                                 <CInputGroupText>
+                                    Document
+                                </CInputGroupText>
+                                <select
+                                    className="form-select"
+                                    name="documentVerify"
+                                    value={filters.documentVerify}
+                                    onChange={handleFilterChange}
+                                >
+                                    <option value="">All</option>
+                                    <option value="true">Verified</option>
+                                    <option value="false">Not Verified</option>
+                                </select>
+                            </CInputGroup>
+                        </CCol>
+
+                        <CCol md={3}>
+                            <CInputGroup>
+                                <CInputGroupText>
                                     Phone
                                 </CInputGroupText>
                                 <CFormInput
@@ -222,14 +262,14 @@ const AllTiffinVendor = () => {
                             </CInputGroup>
                         </CCol>
                         <CCol md={3} className="d-flex align-items-center">
-                            <CButton 
+                            <CButton
                                 color="primary"
                                 className="me-2"
                                 onClick={fetchVendors}
                             >
                                 <FaSearch className="me-1" /> Search
                             </CButton>
-                            <CButton 
+                            <CButton
                                 color="secondary"
                                 variant="outline"
                                 onClick={clearFilters}

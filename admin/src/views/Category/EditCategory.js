@@ -39,7 +39,7 @@ function EditCategory() {
     setLoading(true);
 
     try {
-      const { data } = await axios.get(`https://webapi.olyox.com/api/v1/categories/${id}`);
+      const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/categories/${id}`);
       setFormData({
         title: data.data.title,
         isActive: data.data.isActive ?? true, // default to true if missing
@@ -69,7 +69,7 @@ function EditCategory() {
     }
 
     try {
-      const res = await axios.put(`https://webapi.olyox.com/api/v1/categories/${id}`, formDataToSend, {
+      const res = await axios.put(`https://www.webapi.olyox.com/api/v1/categories/${id}`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
