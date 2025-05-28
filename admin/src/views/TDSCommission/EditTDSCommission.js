@@ -26,7 +26,7 @@ const EditTDSCommission = () => {
   const fetchCommissionTDS = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`https://webapi.olyox.com/api/v1/get_single_commission_tds/681fa157d45bee7fc60813cb`);
+      const { data } = await axios.get(`https://www.webapi.olyox.com/api/v1/get_single_commission_tds/681fa157d45bee7fc60813cb`);
       const { tdsPercentage, withdrawCommision, isActive } = data.data;
       setFormData({ tdsPercentage, withdrawCommision, isActive });
     } catch (error) {
@@ -49,7 +49,7 @@ const EditTDSCommission = () => {
 
     setLoading(true);
     try {
-      const res = await axios.put(`https://webapi.olyox.com/api/v1/update_commission_tds/681fa157d45bee7fc60813cb`, formData);
+      const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_commission_tds/681fa157d45bee7fc60813cb`, formData);
       toast.success(res.data.message || 'Commission TDS updated successfully.');
     //   navigate('/all-tds-commission');
     } catch (error) {

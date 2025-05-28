@@ -274,6 +274,24 @@ const vendorSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Review',
         default: []
+    },
+    additionalDocImageOne:{
+        image: {
+            type: String,
+            default: 'https://placehold.co/600x400?text=Aadhaar+Front'
+        },
+        public_id: {
+            type: String,
+        }
+    },
+    additionalDocImageTwo:{
+        image: {
+            type: String,
+            default: 'https://placehold.co/600x400?text=Aadhaar+Front'
+        },
+        public_id: {
+            type: String,
+        }
     }
 }, { timestamps: true });
 

@@ -5,21 +5,20 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import Form from '../../components/Form/Form';
 
-const UpdateVendorDocuments = () => {
+const UploadVendorAdditionDocument = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     existingDocuments: {
-      documentFirst: '',
-      documentSecond: '',
-      documentThird: ''
+      additionalDocImageOne: 'https://placehold.co/600x400?text=Aadhaar+Front',
+      additionalDocImageTwo: 'https://placehold.co/600x400?text=Aadhaar+Back',
     },
     files: {
-      documentFirst: null,
-      documentSecond: null,
-      documentThird: null
-    }
+      additionalDocImageOne: null,
+      additionalDocImageTwo: null,
+    },
   });
 
   useEffect(() => {
@@ -30,10 +29,9 @@ const UpdateVendorDocuments = () => {
         setFormData((prev) => ({
           ...prev,
           existingDocuments: {
-            documentFirst: data.data.Documents?.documentFirst?.image || '',
-            documentSecond: data.data.Documents?.documentSecond?.image || '',
-            documentThird: data.data.Documents?.documentThird?.image || ''
-          }
+            additionalDocImageOne: data.data?.additionalDocImageOne?.image || prev.existingDocuments.additionalDocImageOne,
+            additionalDocImageTwo: data.data?.additionalDocImageTwo?.image || prev.existingDocuments.additionalDocImageTwo,
+          },
         }));
       } catch (error) {
         toast.error(error?.response?.data?.message || 'Failed to fetch vendor data.');
@@ -49,7 +47,7 @@ const UpdateVendorDocuments = () => {
     const { name, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      files: { ...prev.files, [name]: files[0] }
+      files: { ...prev.files, [name]: files[0] },
     }));
   };
 
@@ -57,7 +55,7 @@ const UpdateVendorDocuments = () => {
     e.preventDefault();
 
     const formDataToSend = new FormData();
-    ['documentFirst', 'documentSecond', 'documentThird'].forEach((key) => {
+    ['additionalDocImageOne', 'additionalDocImageTwo'].forEach((key) => {
       if (formData.files[key]) {
         formDataToSend.append(key, formData.files[key]);
       }
@@ -66,14 +64,14 @@ const UpdateVendorDocuments = () => {
     setLoading(true);
     try {
       const res = await axios.put(
-        `https://www.webapi.olyox.com/api/v1/update_document/${id}`,
+        `https://www.webapi.olyox.com/api/v1/update_addition_document/${id}`,
         formDataToSend,
         {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
       toast.success(res.data.message);
-      // navigate('/vendors/all');
+      // navigate('/vendor/all_vendor');
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Update failed');
     } finally {
@@ -90,9 +88,8 @@ const UpdateVendorDocuments = () => {
       formContent={
         <>
           {[
-            { key: 'documentFirst', label: 'Aadhaar Front' },
-            { key: 'documentSecond', label: 'Aadhaar Back' },
-            { key: 'documentThird', label: 'PAN Card' }
+            { key: 'additionalDocImageOne', label: 'Additional Document One' },
+            { key: 'additionalDocImageTwo', label: 'Additional Document Two' },
           ].map(({ key, label }) => (
             <CCol md={12} className="mt-3" key={key}>
               <CFormLabel>{label}</CFormLabel>
@@ -118,4 +115,4 @@ const UpdateVendorDocuments = () => {
   );
 };
 
-export default UpdateVendorDocuments;
+export default UploadVendorAdditionDocument;

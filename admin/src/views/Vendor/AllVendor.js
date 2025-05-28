@@ -30,6 +30,7 @@ function AllVendor() {
     const [modalData, setModalData] = React.useState(null);
     const [searchQuery, setSearchQuery] = React.useState('');
     const [statusFilter, setStatusFilter] = React.useState('');
+    const [documentVerifyFilter, setDocumentVerifyFilter] = React.useState(''); // New filter state
 
     const [showModal, setShowModal] = React.useState(false);
     const [modalType, setModalType] = React.useState('');
@@ -102,7 +103,7 @@ function AllVendor() {
     const handleFetchBanner = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/all_vendor');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/all_vendor');
             const allData = data.data;
             setCategory(allData.reverse() || []);
         } catch (error) {
@@ -115,7 +116,7 @@ function AllVendor() {
 
     const handleFetchRecharge = async () => {
         try {
-            const { data } = await axios.get('https://webapi.olyox.com/api/v1/membership-plans-admin');
+            const { data } = await axios.get('https://www.webapi.olyox.com/api/v1/membership-plans-admin');
             setAllRechargeData(data.data);
             setFilteredRechargeData(data.data);
         } catch (error) {
@@ -131,7 +132,7 @@ function AllVendor() {
         setLoading(true);
         try {
             const updatedStatus = !currentStatus;
-            const res = await axios.put(`https://webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
+            const res = await axios.put(`https://www.webapi.olyox.com/api/v1/update_vendor_status/${id}`, {
                 isActive: updatedStatus,
             });
 
@@ -153,7 +154,7 @@ function AllVendor() {
     const handleSaveChanges = async () => {
         setLoading(true);
         try {
-            const { data } = await axios.put('https://webapi.olyox.com/api/v1/free_plan_approve', {
+            const { data } = await axios.put('https://www.webapi.olyox.com/api/v1/free_plan_approve', {
                 vendor_id: vendorId,
                 plan_id: selectedPlan
             });
@@ -172,7 +173,7 @@ function AllVendor() {
     const handleDeleteBanner = async (email) => {
         setLoading(true);
         try {
-            const res = await axios.delete('https://webapi.olyox.com/api/v1/delete_account', {
+            const res = await axios.delete('https://www.webapi.olyox.com/api/v1/delete_account', {
                 data: { email },
             });
             toast.success(res?.data?.message);
@@ -189,7 +190,7 @@ function AllVendor() {
         console.log(selected);
         setLoading(true);
         try {
-            const res = await axios.post(`https://webapi.olyox.com/api/v1/verify_document?id=${selected}`);
+            const res = await axios.post(`https://www.webapi.olyox.com/api/v1/verify_document?id=${selected}`);
             console.log(res?.data);
             toast.success(res?.data?.message);
             handleFetchBanner();
@@ -234,7 +235,10 @@ function AllVendor() {
             // Apply status filter
             const statusMatch = statusFilter ? item.isActive.toString() === statusFilter : true;
 
-            return searchMatch && statusMatch;
+            // Apply document verification filter
+            const documentVerifyMatch = documentVerifyFilter ? item.documentVerify.toString() === documentVerifyFilter : true;
+
+            return searchMatch && statusMatch && documentVerifyMatch;
         });
 
     const itemsPerPage = 20;
@@ -261,6 +265,13 @@ function AllVendor() {
         updateUrlWithPage(1);
     };
 
+    // New handler for document verification filter
+    const handleDocumentVerifyFilterChange = (e) => {
+        setDocumentVerifyFilter(e.target.value);
+        setCurrentPage(1);
+        updateUrlWithPage(1);
+    };
+
     const handleModalOpen = (data, type, id, documentVerify) => {
         setModalData(data);
         setSelected(id);
@@ -281,12 +292,12 @@ function AllVendor() {
         }
     }, [rechargeModel]);
 
-    const heading = ['S.No', 'Name', 'Referral Id', 'Referred By', 'Email', 'Number', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Created At', 'Action'];
+    const heading = ['S.No', 'Name', 'Referral Id', 'Referred By', 'Email', 'Number', 'Category', 'KYC Status', 'Free Plan Approve', 'Active/Block', 'View Detail', 'Document Update', 'Additional Doc Upload', 'Created At', 'Action'];
 
     return (
         <>
             <div className="d-flex flex-column flex-md-row align-items-center mb-3">
-                <div className="mb-2 col-10 mb-md-0 me-md-3">
+                <div className="mb-2 col-lg-8 col-md-6 col-12 mb-md-0 me-md-3">
                     <CFormInput
                         type="text"
                         placeholder="Search by Name, Email, Phone Number or BH"
@@ -295,16 +306,28 @@ function AllVendor() {
                         className="form-control"
                     />
                 </div>
-                <div className="mb-2 col-2 mb-md-0 me-md-3">
+                <div className="mb-2 col-lg-2 col-md-3 col-12 mb-md-0 me-md-3">
                     <select
                         value={statusFilter}
                         onChange={handleStatusFilterChange}
                         aria-label="Select Vendor Status"
                         className="form-select"
                     >
-                        <option value="">Select Status</option>
+                        <option value="">All Status</option>
                         <option value="true">Active</option>
                         <option value="false">Blocked</option>
+                    </select>
+                </div>
+                <div className="mb-2 col-lg-2 col-md-3 col-12 mb-md-0">
+                    <select
+                        value={documentVerifyFilter}
+                        onChange={handleDocumentVerifyFilterChange}
+                        aria-label="Select Document Verification Status"
+                        className="form-select"
+                    >
+                        <option value="">All Documents</option>
+                        <option value="true">Verified</option>
+                        <option value="false">Not Verified</option>
                     </select>
                 </div>
             </div>
@@ -332,6 +355,7 @@ function AllVendor() {
                             <CTableDataCell>{item?.referral_code_which_applied}</CTableDataCell>
                             <CTableDataCell>{item.email}</CTableDataCell>
                             <CTableDataCell>{item.number}</CTableDataCell>
+                            <CTableDataCell>{item.category?.title}</CTableDataCell>
                             <CTableDataCell>
                                 <CButton
                                     color={item.documentVerify ? 'success' : 'danger'}
@@ -366,6 +390,11 @@ function AllVendor() {
                             <CTableDataCell>
                                 <CButton color="info">
                                     <a style={{ color: 'white' }} href={`#/update-vendor-documents/${item._id}`}>View</a>
+                                </CButton>
+                            </CTableDataCell>
+                            <CTableDataCell>
+                                <CButton color="info">
+                                    <a style={{ color: 'white' }} href={`#/update-vendor-addition-documents/${item._id}`}>View</a>
                                 </CButton>
                             </CTableDataCell>
                             <CTableDataCell>
