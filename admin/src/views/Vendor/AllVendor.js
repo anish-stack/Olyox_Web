@@ -247,7 +247,7 @@ function AllVendor() {
 
     // Calculate the total number of pages based on filtered data
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    
+
     const handlePageChange = (page) => {
         setCurrentPage(page);
         updateUrlWithPage(page);
@@ -421,15 +421,33 @@ function AllVendor() {
                             >
                                 Previous
                             </CPaginationItem>
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <CPaginationItem
-                                    key={index}
-                                    active={index + 1 === currentPage}
-                                    onClick={() => handlePageChange(index + 1)}
-                                >
-                                    {index + 1}
-                                </CPaginationItem>
-                            ))}
+
+                            {(() => {
+                                const pageItems = [];
+                                const visiblePages = 4;
+                                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                                let endPage = startPage + visiblePages - 1;
+
+                                if (endPage > totalPages) {
+                                    endPage = totalPages;
+                                    startPage = Math.max(1, endPage - visiblePages + 1);
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pageItems.push(
+                                        <CPaginationItem
+                                            key={i}
+                                            active={i === currentPage}
+                                            onClick={() => handlePageChange(i)}
+                                        >
+                                            {i}
+                                        </CPaginationItem>
+                                    );
+                                }
+
+                                return pageItems;
+                            })()}
+
                             <CPaginationItem
                                 disabled={currentPage === totalPages}
                                 onClick={() => handlePageChange(currentPage + 1)}
@@ -438,6 +456,7 @@ function AllVendor() {
                             </CPaginationItem>
                         </CPagination>
                     }
+
                 />
             )}
             <CModal visible={showModal} onClose={() => setShowModal(false)}>

@@ -26,11 +26,11 @@ const AllCabVendor = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [documentVerifyFilter, setDocumentVerifyFilter] = useState('all');
-    
+
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams, setSearchParams] = useSearchParams();
-    
+
     // Get current page from URL params, default to 1
     const currentPage = parseInt(searchParams.get('page')) || 1;
     const itemsPerPage = 10;
@@ -294,15 +294,33 @@ const AllCabVendor = () => {
                             >
                                 Previous
                             </CPaginationItem>
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <CPaginationItem
-                                    key={index}
-                                    active={index + 1 === currentPage}
-                                    onClick={() => handlePageChange(index + 1)}
-                                >
-                                    {index + 1}
-                                </CPaginationItem>
-                            ))}
+
+                            {(() => {
+                                const pageItems = [];
+                                const visiblePages = 4;
+                                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                                let endPage = startPage + visiblePages - 1;
+
+                                if (endPage > totalPages) {
+                                    endPage = totalPages;
+                                    startPage = Math.max(1, endPage - visiblePages + 1);
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pageItems.push(
+                                        <CPaginationItem
+                                            key={i}
+                                            active={i === currentPage}
+                                            onClick={() => handlePageChange(i)}
+                                        >
+                                            {i}
+                                        </CPaginationItem>
+                                    );
+                                }
+
+                                return pageItems;
+                            })()}
+
                             <CPaginationItem
                                 disabled={currentPage === totalPages}
                                 onClick={() => handlePageChange(currentPage + 1)}
@@ -311,6 +329,7 @@ const AllCabVendor = () => {
                             </CPaginationItem>
                         </CPagination>
                     }
+
                 />
             )}
         </>

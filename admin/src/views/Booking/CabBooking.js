@@ -31,7 +31,7 @@ const CabBooking = () => {
         startDate: '',
         endDate: '',
     });
-    
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters((prevFilters) => ({
@@ -39,7 +39,7 @@ const CabBooking = () => {
             [name]: value,
         }));
     };
-    
+
 
     const fetchOrders = async () => {
 
@@ -47,6 +47,7 @@ const CabBooking = () => {
         try {
             const { data } = await axios.get('https://www.appapi.olyox.com/api/v1/rides/all_rides');
             const allData = data.data.reverse();
+            console.log("allData", allData)
             setOrders(Array.isArray(allData) ? allData : []);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -88,22 +89,22 @@ const CabBooking = () => {
     const filteredOrders = orders.filter((order) => {
         const searchQuery = filters.search.toLowerCase();
         const orderCreatedAt = new Date(order.createdAt);
-    
+
         const matchesSearch = (
             (order?.user?.name && order.user.name.toLowerCase().includes(searchQuery)) ||
             (order?.user?.number && order.user.number.includes(searchQuery)) ||
             (order?.rider?.name && order.rider.name.toLowerCase().includes(searchQuery)) ||
             (order?.rider?.phone && order.rider.phone.includes(searchQuery))
         );
-    
+
         const matchesStatus = filters.status ? order.rideStatus === filters.status : true;
-    
+
         const matchesStartDate = filters.startDate ? orderCreatedAt >= new Date(filters.startDate) : true;
         const matchesEndDate = filters.endDate ? orderCreatedAt <= new Date(filters.endDate) : true;
-    
+
         return matchesSearch && matchesStatus && matchesStartDate && matchesEndDate;
     });
-    
+
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentData = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
@@ -125,35 +126,35 @@ const CabBooking = () => {
         <>
             {/* Filter Section - Search input */}
             <div className="filters mb-3 d-flex gap-3">
-    <CFormInput
-        type="text"
-        name="search"
-        placeholder="Search by Name or Number"
-        value={filters.search}
-        onChange={handleFilterChange}
-    />
-    <CFormSelect name="status" value={filters.status} onChange={handleFilterChange}>
-        <option value="">All Status</option>
-        <option value="pending">Pending</option>
-        <option value="accepted">Accepted</option>
-        <option value="in_progress">In Progress</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-        <option value="drivers_found">Drivers Found</option>
-    </CFormSelect>
-    <CFormInput
-        type="date"
-        name="startDate"
-        value={filters.startDate}
-        onChange={handleFilterChange}
-    />
-    <CFormInput
-        type="date"
-        name="endDate"
-        value={filters.endDate}
-        onChange={handleFilterChange}
-    />
-</div>
+                <CFormInput
+                    type="text"
+                    name="search"
+                    placeholder="Search by Name or Number"
+                    value={filters.search}
+                    onChange={handleFilterChange}
+                />
+                <CFormSelect name="status" value={filters.status} onChange={handleFilterChange}>
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="drivers_found">Drivers Found</option>
+                </CFormSelect>
+                <CFormInput
+                    type="date"
+                    name="startDate"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                />
+                <CFormInput
+                    type="date"
+                    name="endDate"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                />
+            </div>
 
 
             {/* Loader or No Data */}
@@ -229,15 +230,33 @@ const CabBooking = () => {
                             >
                                 Previous
                             </CPaginationItem>
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <CPaginationItem
-                                    key={index}
-                                    active={index + 1 === currentPage}
-                                    onClick={() => handlePageChange(index + 1)}
-                                >
-                                    {index + 1}
-                                </CPaginationItem>
-                            ))}
+
+                            {(() => {
+                                const pageItems = [];
+                                const visiblePages = 4;
+                                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                                let endPage = startPage + visiblePages - 1;
+
+                                if (endPage > totalPages) {
+                                    endPage = totalPages;
+                                    startPage = Math.max(1, endPage - visiblePages + 1);
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pageItems.push(
+                                        <CPaginationItem
+                                            key={i}
+                                            active={i === currentPage}
+                                            onClick={() => handlePageChange(i)}
+                                        >
+                                            {i}
+                                        </CPaginationItem>
+                                    );
+                                }
+
+                                return pageItems;
+                            })()}
+
                             <CPaginationItem
                                 disabled={currentPage === totalPages}
                                 onClick={() => handlePageChange(currentPage + 1)}
@@ -246,6 +265,7 @@ const CabBooking = () => {
                             </CPaginationItem>
                         </CPagination>
                     }
+
                 />
             )}
         </>
