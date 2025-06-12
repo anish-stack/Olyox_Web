@@ -17,6 +17,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function AllCarList() {
     const [rides, setRides] = useState([]);
@@ -57,6 +58,22 @@ function AllCarList() {
             setLoading(false);
         }
     };
+
+    const confirmDelete = () => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDeleteRide();
+                }
+            });
+        };
 
     const handleStatusToggle = async (rideId, currentStatus) => {
         setLoading(true);
@@ -202,7 +219,7 @@ function AllCarList() {
                     <CButton color="secondary" onClick={() => setDeleteModal(false)}>
                         Close
                     </CButton>
-                    <CButton color="danger" onClick={handleDeleteRide}>
+                    <CButton color="danger" onClick={confirmDelete}>
                         Delete
                     </CButton>
                 </CModalFooter>

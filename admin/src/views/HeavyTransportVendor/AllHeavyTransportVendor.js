@@ -18,6 +18,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const AllHeavyTransportVendor = () => {
     const [vendors, setVendors] = useState([]);
@@ -110,6 +111,22 @@ const AllHeavyTransportVendor = () => {
             console.log("Internal Server Error: Failed to delete vendor.", error)
         }
     }
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     useEffect(() => {
         fetchVendors();
@@ -262,7 +279,7 @@ const AllHeavyTransportVendor = () => {
                                         color="danger"
                                         size="sm"
                                         className="d-flex text-white align-items-center gap-2"
-                                        onClick={() => handleDelete(vendor._id)}
+                                        onClick={() => confirmDelete(vendor._id)}
                                     >
                                         <Delete />
                                         Delete

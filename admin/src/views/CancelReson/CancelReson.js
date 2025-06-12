@@ -15,6 +15,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const CancelReason = () => {
     const [reasons, setReasons] = useState([]);
@@ -63,6 +64,22 @@ const CancelReason = () => {
             toast.error('Failed to delete cancel reason. Please try again.');
         }
     };
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     useEffect(() => {
         fetchCancelReasons();
@@ -140,7 +157,7 @@ const CancelReason = () => {
                                         color="danger"
                                         size="sm"
                                         className="ms-2"
-                                        onClick={() => handleDelete(reason._id)}
+                                        onClick={() => confirmDelete(reason._id)}
                                     >
                                         Delete
                                     </CButton>

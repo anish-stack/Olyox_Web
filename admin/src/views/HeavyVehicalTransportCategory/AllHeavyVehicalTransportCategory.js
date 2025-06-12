@@ -16,6 +16,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Delete, Edit } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const AllHeavyVehicalTransportCategory = () => {
     const [categories, setCategories] = useState([]);
@@ -62,6 +63,22 @@ const AllHeavyVehicalTransportCategory = () => {
             console.log("Internal Server Error: Failed to delete category.", error);
         }
     };
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     useEffect(() => {
         fetchCategories();
@@ -137,7 +154,7 @@ const AllHeavyVehicalTransportCategory = () => {
                                         color="danger"
                                         size="sm"
                                         className="d-flex text-white align-items-center gap-2"
-                                        onClick={() => handleDelete(category._id)}
+                                        onClick={() => confirmDelete(category._id)}
                                     >
                                         <Delete />
                                         Delete

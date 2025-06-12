@@ -18,6 +18,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const AllHoteslVendor = () => {
     const [hotels, setHotels] = useState([]);
@@ -77,6 +78,22 @@ const AllHoteslVendor = () => {
         }
 
     }
+
+    const confirmDelete = (email) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                handleDelete(email);
+            }
+        });
+    };
 
     useEffect(() => {
         fetchHotels();
@@ -267,7 +284,7 @@ const AllHoteslVendor = () => {
                                         color="danger"
                                         size="sm"
                                         className="d-flex align-items-center gap-2 text-white"
-                                        onClick={() => handleDelete(hotel._id)}
+                                        onClick={() => confirmDelete(hotel._id)}
                                     >
                                         <Delete />
                                         Delete

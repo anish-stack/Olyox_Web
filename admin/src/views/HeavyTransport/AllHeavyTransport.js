@@ -14,6 +14,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const AllHeavyTransport = () => {
     const [vehicles, setVehicles] = useState([]);
@@ -47,6 +48,22 @@ const AllHeavyTransport = () => {
             toast.error('Failed to delete vehicle. Please try again.');
         }
     };
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     useEffect(() => {
         fetchVehicles();
@@ -109,7 +126,7 @@ const AllHeavyTransport = () => {
                                 </CTableDataCell>
                                 <CTableDataCell>{vehicle.active ? 'Active' : 'Inactive'}</CTableDataCell>
                                 <CTableDataCell>
-                                    <CButton color="danger" size="sm" onClick={() => handleDelete(vehicle._id)}>Delete</CButton>
+                                    <CButton color="danger" size="sm" onClick={() => confirmDelete(vehicle._id)}>Delete</CButton>
                                     <CButton color="primary" size="sm" onClick={() => navigate(`/edit-heacy-transport-option/${vehicle._id}`)} className="ms-2">Update</CButton>
                                 </CTableDataCell>
                             </CTableRow>

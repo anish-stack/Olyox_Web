@@ -17,6 +17,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Delete } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const CabBooking = () => {
     const [orders, setOrders] = useState([]);
@@ -67,6 +68,22 @@ const CabBooking = () => {
             console.log("Internal server error", error)
         }
     }
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     const handleUpdateOrderStatus = async (orderId, status) => {
         try {
@@ -214,7 +231,7 @@ const CabBooking = () => {
                                     color="danger"
                                     size="sm"
                                     className="d-flex text-white align-items-center gap-2"
-                                    onClick={() => handleDelete(order._id)}
+                                    onClick={() => confirmDelete(order._id)}
                                 >
                                     <Delete />
                                     Delete
