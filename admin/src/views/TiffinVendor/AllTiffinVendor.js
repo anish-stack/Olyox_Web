@@ -23,15 +23,16 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const AllTiffinVendor = () => {
     const [vendors, setVendors] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    
+
     // Get current page from URL params, default to 1
     const currentPage = parseInt(searchParams.get('page')) || 1;
-    
+
     const [filters, setFilters] = useState({
         bhid: '',
         name: '',
@@ -39,7 +40,7 @@ const AllTiffinVendor = () => {
         documentVerify: '' // new field for filter
     });
 
-    
+
     const navigate = useNavigate();
     const itemsPerPage = 10;
 
@@ -91,6 +92,22 @@ const AllTiffinVendor = () => {
             console.log("Internal server error", error)
         }
     }
+
+    const confirmDelete = (email) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                handleDelete(email);
+            }
+        });
+    };
 
     // Format date function
     const formatDate = (dateString) => {
@@ -152,15 +169,15 @@ const AllTiffinVendor = () => {
 
     // Filter vendors based on multiple criteria
     const filteredVendors = vendors.filter(vendor => {
-        const matchesBHID = filters.bhid === '' || 
+        const matchesBHID = filters.bhid === '' ||
             vendor.restaurant_BHID?.toLowerCase().includes(filters.bhid.toLowerCase());
 
-        const matchesName = filters.name === '' || 
+        const matchesName = filters.name === '' ||
             vendor.restaurant_name?.toLowerCase().includes(filters.name.toLowerCase());
 
-        const matchesPhone = filters.phone === '' || 
-            (vendor.restaurant_contact && 
-             vendor.restaurant_contact.toString().includes(filters.phone));
+        const matchesPhone = filters.phone === '' ||
+            (vendor.restaurant_contact &&
+                vendor.restaurant_contact.toString().includes(filters.phone));
 
         const matchesDocumentVerify =
             filters.documentVerify === '' ||
@@ -374,7 +391,7 @@ const AllTiffinVendor = () => {
                                         color="danger"
                                         size="sm"
                                         className="d-flex align-items-center gap-2 text-white"
-                                        onClick={() => handleDelete(vendor._id)}
+                                        onClick={() => confirmDelete(vendor._id)}
                                     >
                                         <Delete />
                                         Delete
@@ -384,48 +401,48 @@ const AllTiffinVendor = () => {
                         ))
                     }
                     pagination={
-  <CPagination className="justify-content-center">
-    <CPaginationItem
-      disabled={currentPage === 1}
-      onClick={() => handlePageChange(currentPage - 1)}
-    >
-      Previous
-    </CPaginationItem>
+                        <CPagination className="justify-content-center">
+                            <CPaginationItem
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                Previous
+                            </CPaginationItem>
 
-    {(() => {
-      const pageItems = [];
-      const visiblePages = 4;
-      let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
-      let endPage = startPage + visiblePages - 1;
+                            {(() => {
+                                const pageItems = [];
+                                const visiblePages = 4;
+                                let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+                                let endPage = startPage + visiblePages - 1;
 
-      if (endPage > totalPages) {
-        endPage = totalPages;
-        startPage = Math.max(1, endPage - visiblePages + 1);
-      }
+                                if (endPage > totalPages) {
+                                    endPage = totalPages;
+                                    startPage = Math.max(1, endPage - visiblePages + 1);
+                                }
 
-      for (let i = startPage; i <= endPage; i++) {
-        pageItems.push(
-          <CPaginationItem
-            key={i}
-            active={i === currentPage}
-            onClick={() => handlePageChange(i)}
-          >
-            {i}
-          </CPaginationItem>
-        );
-      }
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pageItems.push(
+                                        <CPaginationItem
+                                            key={i}
+                                            active={i === currentPage}
+                                            onClick={() => handlePageChange(i)}
+                                        >
+                                            {i}
+                                        </CPaginationItem>
+                                    );
+                                }
 
-      return pageItems;
-    })()}
+                                return pageItems;
+                            })()}
 
-    <CPaginationItem
-      disabled={currentPage === totalPages}
-      onClick={() => handlePageChange(currentPage + 1)}
-    >
-      Next
-    </CPaginationItem>
-  </CPagination>
-}
+                            <CPaginationItem
+                                disabled={currentPage === totalPages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                Next
+                            </CPaginationItem>
+                        </CPagination>
+                    }
 
                 />
             )}

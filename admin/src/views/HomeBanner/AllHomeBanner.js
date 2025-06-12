@@ -15,6 +15,7 @@ import Table from '../../components/Table/Table';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const AllHomeBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -48,6 +49,22 @@ const AllHomeBanner = () => {
       toast.error('Failed to delete banner. Please try again.');
     }
   };
+
+  const confirmDelete = (email) => {
+          Swal.fire({
+              title: 'Are you sure?',
+              text: 'This action cannot be undone!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'Yes, delete it!',
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  handleDelete(email);
+              }
+          });
+      };
 
   const toggleStatus = async (id, currentStatus) => {
   try {
@@ -123,7 +140,7 @@ const AllHomeBanner = () => {
                 />
               </CTableDataCell>
               <CTableDataCell>
-                <CButton color="danger" size="sm" onClick={() => handleDelete(banner._id)}>
+                <CButton color="danger" size="sm" onClick={() => confirmDelete(banner._id)}>
                   Delete
                 </CButton>
                 <CButton color="primary" size="sm" onClick={() => navigate(`/edit-home-banner/${banner._id}`)} className="ms-2">

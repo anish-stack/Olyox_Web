@@ -19,6 +19,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { Delete } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const AllCabVendor = () => {
     const [riders, setRiders] = useState([]);
@@ -83,6 +84,22 @@ const AllCabVendor = () => {
             console.log("Internal server error", error)
         }
     }
+
+    const confirmDelete = (email) => {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    handleDelete(email);
+                }
+            });
+        };
 
     useEffect(() => {
         fetchRiders();
@@ -277,7 +294,7 @@ const AllCabVendor = () => {
                                         color="danger"
                                         size="sm"
                                         className="d-flex text-white align-items-center gap-2"
-                                        onClick={() => handleDelete(rider._id)}
+                                        onClick={() => confirmDelete(rider._id)}
                                     >
                                         <Delete />
                                         Delete
